@@ -1,5 +1,5 @@
 # LC42 Trapping Rain Water
-标签（空格分隔）： LeetCode Two_Pointers
+标签（空格分隔）： LeetCode TwoPointers
 
 ---
     /**
