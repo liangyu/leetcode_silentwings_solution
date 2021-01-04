@@ -3,6 +3,44 @@
 标签（空格分隔）： LeetCode BFS
 
 ---
+    /**
+     * Given an array of integers arr, you are initially positioned at the first index of the array.
+     *
+     * In one step you can jump from index i to index:
+     *
+     * i + 1 where: i + 1 < arr.length.
+     * i - 1 where: i - 1 >= 0.
+     * j where: arr[i] == arr[j] and i != j.
+     * Return the minimum number of steps to reach the last index of the array.
+     *
+     * Notice that you can not jump outside of the array at any time.
+     *
+     * Input: arr = [100,-23,-23,404,100,23,23,23,3,404]
+     * Output: 3
+     *
+     * Input: arr = [7,6,9,6,9,6,9,7]
+     * Output: 1
+     *
+     * @param arr
+     * @return
+     */
+
+【难点误区】
+ 
+     * BFS:
+     * 1. Build a graph of n nodes where nodes are the indices of the array and edges for node i are nodes i+1, i-1,
+     * j where arr[i] == arr[j].
+     *
+     * 2. Start bfs from node 0 and keep distance, answer is the distance when you reach node n-1.
+
+
+
+【解题思路】
+
+1. 从后往前找，找到位置0即为终点，起点是最后的index = n - 1，dist[n - 1] = 0，因为不需要任何操作。
+2. 先对arr[i]以及所有值为arr[i]的index进行HashMap建图，然后利用BFS从n - 1出发遍历三种可能的情况进行填值和入队的操作
+3. 对于重复遍历的情况，利用HashSet进行查重。要注意的是，因为所有值为arr[i]的index都在map.get(arr[i])的list里，所以一次for loop就能访问所有的点，因此可以把访问过的全部加到HashSet里，下次就不需要再分别访问和加入到set里了，从而剪枝而节省时间！
+
 
 ```java
 // time = O(n), space = O(n)
@@ -49,8 +87,3 @@ public int minJumps(int[] arr) {
     return dist[0];
 }
 ```
-【解题思路】
-
-1. 从后往前找，找到位置0即为终点，起点是最后的index = n - 1，dist[n - 1] = 0，因为不需要任何操作。
-2. 先对arr[i]以及所有值为arr[i]的index进行HashMap建图，然后利用BFS从n - 1出发遍历三种可能的情况进行填值和入队的操作
-3. 对于重复遍历的情况，利用HashSet进行查重。要注意的是，因为所有值为arr[i]的index都在map.get(arr[i])的list里，所以一次for loop就能访问所有的点，因此可以把访问过的全部加到HashSet里，下次就不需要再分别访问和加入到set里了，从而剪枝而节省时间！
