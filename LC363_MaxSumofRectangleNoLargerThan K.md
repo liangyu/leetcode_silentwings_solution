@@ -67,55 +67,54 @@
 
 
 ```java     
-    // time = O(m * m * nlogn) => O(min(m, n)^2 * max(m, n) * log(max(m, n)), space = O(max(m, n))
-    // when m >> n => time = O(n * n * mlogm) < O(m * m * nlogn) as O(nlogm) < O(mlogn)
-    public int maxSumSubmatrix(int[][] matrix, int k) {
-        // corner case
-        if (matrix == null || matrix.length == 0 || matrix[0] == null || matrix[0].length == 0) return 0;
+// time = O(m * m * nlogn) => O(min(m, n)^2 * max(m, n) * log(max(m, n)), space = O(max(m, n))
+// when m >> n => time = O(n * n * mlogm) < O(m * m * nlogn) as O(nlogm) < O(mlogn)
+public int maxSumSubmatrix(int[][] matrix, int k) {
+    // corner case
+    if (matrix == null || matrix.length == 0 || matrix[0] == null || matrix[0].length == 0) return 0;
 
-        int row = matrix.length, col = matrix[0].length;
+    int row = matrix.length, col = matrix[0].length;
 
-        // step 3: 优化 -> 转置
-        if (row > col) {
-            int[][] matrix2 = new int[col][row];
-            for (int i = 0; i < row; i++) {
-                for (int j = 0; j < col; j++) {
-                    matrix2[j][i] = matrix[i][j];
-                }
-            }
-            return maxSumSubmatrix(matrix2, k);
-        }
-        int res = Integer.MIN_VALUE;
-
-        // step 1: 拍扁
-        for (int i = 0; i < row; i++) { // fix upper bound O(m)
-            int[] temp = new int[col];
-            for (int j = i; j < row; j++) { // O(m)(
-                for (int l = 0; l < col; l++) { // O(n) 注意： 这里的O(n)与下面的O(nlogn)在同一层 => 取O(nlogn)
-                    temp[l] = temp[l] + matrix[j][l];
-                }
-                res = Math.max(res, helper(temp, k)); // O(nlogn)
+    // step 3: 优化 -> 转置
+    if (row > col) {
+        int[][] matrix2 = new int[col][row];
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                matrix2[j][i] = matrix[i][j];
             }
         }
-        return res;
+        return maxSumSubmatrix(matrix2, k);
     }
+    int res = Integer.MIN_VALUE;
 
-    // step 2: helper 找不大于k的subArray
-    private int helper(int[] temp, int k) {
-        int len = temp.length;
-        int presum = 0;
-        int res = Integer.MIN_VALUE;
-        TreeSet<Integer> treeSet = new TreeSet<>();
-        treeSet.add(0);
-        for (int j = 0; j < len; j++) { // O(nlogn)
-            presum += temp[j];
-            Integer ck = treeSet.ceiling(presum - k);
-            if (ck != null) {
-                res = Math.max(res, presum - ck);
+    // step 1: 拍扁
+    for (int i = 0; i < row; i++) { // fix upper bound O(m)
+        int[] temp = new int[col];
+        for (int j = i; j < row; j++) { // O(m)(
+            for (int l = 0; l < col; l++) { // O(n) 注意： 这里的O(n)与下面的O(nlogn)在同一层 => 取O(nlogn)
+                temp[l] = temp[l] + matrix[j][l];
             }
-            treeSet.add(presum);
+            res = Math.max(res, helper(temp, k)); // O(nlogn)
         }
-        return res;
     }
+    return res;
+}
 
+// step 2: helper 找不大于k的subArray
+private int helper(int[] temp, int k) {
+    int len = temp.length;
+    int presum = 0;
+    int res = Integer.MIN_VALUE;
+    TreeSet<Integer> treeSet = new TreeSet<>();
+    treeSet.add(0);
+    for (int j = 0; j < len; j++) { // O(nlogn)
+        presum += temp[j];
+        Integer ck = treeSet.ceiling(presum - k);
+        if (ck != null) {
+            res = Math.max(res, presum - ck);
+        }
+        treeSet.add(presum);
+    }
+    return res;
+}
 ```
