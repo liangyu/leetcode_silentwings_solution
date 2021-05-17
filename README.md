@@ -3,4 +3,6 @@ Cracking the leetcode for coding interviews
 
 Reference links:
 
-wisdompeak's LeetCode Repo: https://github.com/wisdompeak/LeetCode.git
+1. LeetCode: https://leetcode.com/
+2. LeetCode China: https://leetcode-cn.com/
+3. wisdompeak's LeetCode Repo: https://github.com/wisdompeak/LeetCode.git
