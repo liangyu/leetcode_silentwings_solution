@@ -1,5 +1,5 @@
 # leetcode
-Cracking the leetcode for coding interviews
+leetcode solutions for coding interviews
 
 Reference links:
 
