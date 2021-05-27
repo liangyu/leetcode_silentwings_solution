@@ -64,12 +64,4 @@ public class LC297_SerializeandDeserializeBinaryTree {
         root.right = buildTree(list);
         return root;
     }
-
-    private class TreeNode {
-        private int val;
-        private TreeNode left, right;
-        public TreeNode(int val) {
-            this.val = val;
-        }
-    }
 }
