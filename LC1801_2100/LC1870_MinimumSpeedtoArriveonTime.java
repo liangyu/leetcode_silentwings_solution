@@ -30,33 +30,33 @@ public class LC1870_MinimumSpeedtoArriveonTime {
      * @param hour
      * @return
      */
-    // time = O(n), space = O(1)
+    // S1: B.S.
+    // time = O(nlogk), space = O(n) k: 二分的上下界之差
     public int minSpeedOnTime(int[] dist, double hour) {
         // corner case
         if (dist == null || dist.length == 0) return 0;
-        if (hour < dist.length - 1) return -1;
-
-        int n = dist.length, sum = 0;
-        for (int i = 0; i < n; i++) sum += dist[i];
-        int left = Math.max(1, sum / ((int) hour + 1));
-        int right = (int)1e7;
-
-        while (left + 1 < right) {
-            int mid = left + (right - left) / 2;
-            if (helper(mid, dist) <= hour) right = mid;
-            else left = mid;
+        int n = dist.length;
+        if (hour <= n - 1) return -1;
+        int low = 1, high = (int)1e7;
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            double time = helper(dist, mid);
+            if (time > hour) low = mid + 1; // mid本身不符合要求，下界要+1
+            else high = mid; // mid本身是一个解，但不是最优解，可以再小一点
         }
-        return helper(left, dist) <= hour ? left : right;
+        return low;
     }
 
-    private double helper(int speed, int[] dist) {
+    private double helper(int[] dist, int speed) {
         double time = 0;
-        int n = dist.length;
-        for (int i = 0; i < n - 1; i++) {
-            time += (int)(dist[i] / speed);
-            if (dist[i] % speed > 0) time++;
+        for (int i = 0; i < dist.length - 1; i++) {
+            time += (dist[i] - 1) / speed + 1; // 向上取整的模板！！！
         }
-        time += (double)dist[n - 1] / speed;
+        time += dist[dist.length - 1] * 1.0 / speed;
         return time;
     }
 }
+/**
+ * 猜大猜小 -> B.S. 整型搜索，效率非常高
+ * 浮点数相等的比较是没有意义的，大小比较是没有问题的，不涉及精度问题。
+ */
