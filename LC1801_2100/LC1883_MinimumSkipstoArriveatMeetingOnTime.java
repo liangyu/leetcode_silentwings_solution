@@ -35,14 +35,80 @@ public class LC1883_MinimumSkipstoArriveatMeetingOnTime {
      * @param hoursBefore
      * @return
      */
+    // time = O(n^2), space = O(n^2)
     public int minSkips(int[] dist, int speed, int hoursBefore) {
         // corner case
         if (dist == null || dist.length == 0) return 0;
 
-        double total = 0, n = dist.length;
-        for (int i = 0; i < n; i++) total += dist[i] / speed * 1.0;
-        if (total > hoursBefore * 1.0) return -1;
+        int n = dist.length;
+        double[][] dp = new double[n + 1][n + 1];
+        for (int i = 0; i <= n; i++) Arrays.fill(dp[i], 1e20);
+        dp[0][0] = 0; // dp[0][1] -> 无意义
 
+        // 纠正精度问题 -> 定义一个eps
+        double eps = 1e-8;
 
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j <= i; j++) {
+                dp[i][j] = Math.ceil(dp[i - 1][j] + dist[i - 1] * 1.0 / speed - eps);
+                if (j >= 1) {
+                    dp[i][j] = Math.min(dp[i - 1][j - 1] + dist[i - 1] * 1.0 / speed, dp[i][j]);
+                }
+            }
+        }
+
+        for (int j = 0; j <= n; j++) {
+            dp[n][j] = dp[n - 1][j] + dist[n - 1] * 1.0 / speed;
+            if (dp[n][j] <= hoursBefore) return j;
+        }
+        return -1;
     }
 }
+/**
+ * skip k rests
+ * time needed vs hoursbefore
+ * while (low < high) {
+ *     mid = low + (high - low) / 2;
+ *     timeneeded = cumputeTime(dist, speed, mid);
+ *     if (timeneeded > hoursbefore)
+ *          high = mid - 1;
+*      else
+ *          low = mid;
+ * }
+ * return low;
+ *
+ * double computeTime(dist, speed, k) {
+ *
+ * }
+ *
+ * the minimum time needed to run n roads with k skipped rests  => dp
+ * dp[i][j]: the minimum time needed to run i roads with j skipped rests，跑完后如果休息的话这段休息时间也算在内
+ * 突破口：当前第i条路
+ *
+ * (1) skip the rest for the i-th road
+ * dp[i-1][j-1] + dist[i] * 1.0/speed
+ * (2) do not skip the rest for the i-th road
+ * ceil(dp[i-1][j] + dist[i] * 1.0/speed)
+ * => dp[i][j] = min(t1,t2);
+ * return dp[n][k]  跑完n条路休息k次
+ * i:1~n
+ * j:0~k
+ * 你每次给我一个k，我都要把dp[i][j]算一遍,重新构建起来，效率不高，有重复的地方 => B.S.这层壳不需要
+ * i:1~n
+ * j:0~n
+ * 把二维数组都算满了
+ * for (int j = 0; j <= n; j++) {
+ *     if (dp[n][j] <= hoursBefore)
+ *          return j;
+ * }
+ *
+ * 最大挑战：精度！
+ * 因为浮点的误差有可能正好跨越了整数这个槛
+ * System.out.println(Math.ceil(8.0 + 1.0/3 + 1.0/3 + 1.0/3));
+ * => 10.0 而不是9.0,为什么呢？
+ * System.out.println(8.0 + 1.0/3 + 1.0/3 + 1.0/3);
+ * => 9.000000000000002 => ceil = 10
+ * 向上取整很可能会越过这个槛 => 减掉这个多余的部分
+ * => System.out.println(Math.ceil(8.0 + 1.0/3 + 1.0/3 + 1.0/3 - 1e-8));
+ * => 9.0
+ */
