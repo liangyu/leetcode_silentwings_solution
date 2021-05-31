@@ -19,12 +19,10 @@ public class LC1345_JumpGameIV {
      * Input: arr = [7,6,9,6,9,6,9,7]
      * Output: 1
      *
-     * =====================================
-     * BFS:
-     * 1. Build a graph of n nodes where nodes are the indices of the array and edges for node i are nodes i+1, i-1,
-     * j where arr[i] == arr[j].
+     * Constraints:
      *
-     * 2. Start bfs from node 0 and keep distance, answer is the distance when you reach node n-1.
+     * 1 <= arr.length <= 5 * 10^4
+     * -10^8 <= arr[i] <= 10^8
      *
      * @param arr
      * @return
@@ -32,7 +30,7 @@ public class LC1345_JumpGameIV {
     // time = O(n), space = O(n)
     public int minJumps(int[] arr) {
         // corner case
-        if (arr == null || arr.length == 0) return 0;
+        if (arr == null || arr.length <= 1) return 0; // 注意corner case，只有一个元素时[7] => 0 而不是1
 
         int n = arr.length;
         // step 1: build a graph of n nodes
@@ -43,37 +41,52 @@ public class LC1345_JumpGameIV {
         }
 
         Queue<Integer> queue = new LinkedList<>();
-        HashSet<Integer> set = new HashSet<>();
-        queue.offer(n - 1);
-        int[] dist = new int[n];
-        Arrays.fill(dist, Integer.MAX_VALUE);
-        dist[n - 1] = 0;
+        queue.offer(0);
+        boolean[] visited = new boolean[n];
 
+        // step 2: bfs
+        int minLen = 0;
         while (!queue.isEmpty()) {
-            int cur = queue.poll();
-            if (cur - 1 >= 0 && dist[cur - 1] == Integer.MAX_VALUE) {
-                dist[cur - 1] = dist[cur] + 1;
-                queue.offer(cur - 1);
-            }
-            if (cur + 1 < n && dist[cur + 1] == Integer.MAX_VALUE) {
-                dist[cur + 1] = dist[cur] + 1;
-                queue.offer(cur + 1);
-            }
-            if (set.add(cur)) {
-                for (int next : map.get(arr[cur])) {
-                    if (dist[next] == Integer.MAX_VALUE) {
-                        dist[next] = dist[cur] + 1;
-                        queue.offer(next);
-                        set.add(next); // 相同的arr[i]只需要遍历一次就行，不用重复遍历，因为都聚集在同一个list
+            int size = queue.size();
+            while (size-- > 0) {
+                int cur = queue.poll();
+                if (cur + 1 < n && !visited[cur + 1]) {
+                    queue.offer(cur + 1);
+                    visited[cur + 1] = true;
+                }
+                if (cur - 1 >= 0 && !visited[cur - 1]) {
+                    queue.offer(cur - 1);
+                    visited[cur - 1] = true;
+                }
+                if (map.containsKey(arr[cur])) {
+                    for (int next : map.get(arr[cur])) {
+                        if (!visited[next]) {
+                            queue.offer(next);
+                            visited[next] = true;
+                        }
                     }
                 }
+                map.remove(arr[cur]); // 所有arr[cur]的点都已经访问过了，以后不再需要访问了
             }
+            minLen++;
+            if (visited[n - 1]) return minLen;
         }
-        return dist[0];
+        return -1;
     }
 }
+/**
+ * 1, 1, 1, 1, 1, 1, ......
+ * step 1: queue = {1, 1, 1, 1, ....}
+ * step 2: 一一弹出1，继续访问所有数值为1的index,虽然不会加入到队列里，但都会访问一遍
+ * => 在hashmap里把数值为1的删掉
+ *
+ * 1. 从后往前找，找到位置0即为终点，起点是最后的index = n - 1，dist[n - 1] = 0，因为不需要任何操作。
+ * 2. 先对arr[i]以及所有值为arr[i]的index进行HashMap建图，然后利用BFS从n - 1出发遍历三种可能的情况进行填值和入队的操作
+ * 3. 对于重复遍历的情况，利用HashSet进行查重。要注意的是，因为所有值为arr[i]的index都在map.get(arr[i])的list里，所以一次for loop就能
+ * 访问所有的点，因此可以把访问过的全部加到HashSet里，下次就不需要再分别访问和加入到set里了，从而剪枝而节省时间！
+ * BFS:
+ * 1. Build a graph of n nodes where nodes are the indices of the array and edges for node i are nodes i+1, i-1,
+ * j where arr[i] == arr[j].
+ * 2. Start bfs from node 0 and keep distance, answer is the distance when you reach node n-1.
+ */
 
-// 1. 从后往前找，找到位置0即为终点，起点是最后的index = n - 1，dist[n - 1] = 0，因为不需要任何操作。
-// 2. 先对arr[i]以及所有值为arr[i]的index进行HashMap建图，然后利用BFS从n - 1出发遍历三种可能的情况进行填值和入队的操作
-// 3. 对于重复遍历的情况，利用HashSet进行查重。要注意的是，因为所有值为arr[i]的index都在map.get(arr[i])的list里，所以一次for loop就能
-// 访问所有的点，因此可以把访问过的全部加到HashSet里，下次就不需要再分别访问和加入到set里了，从而剪枝而节省时间！

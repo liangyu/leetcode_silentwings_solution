@@ -58,4 +58,31 @@ public class LC45_JumpGameII {
         }
         return res;
     }
+
+    // S3: Greedy
+    // time = O(n), space = O(1)
+    public int jump3(int[] nums) {
+        // corner case
+        if (nums == null || nums.length == 0) return 0;
+
+        int start = 0, end = 0, step = 0;
+        if (nums.length == 1) return 0;
+
+        while (start <= end) {
+            int end_new = end;
+            for (int i = start; i <= end; i++) {
+                end_new = Math.max(end_new, i + nums[i]);
+                if (end_new >= nums.length - 1) return step + 1;
+            }
+            step++;
+            start = end + 1;
+            end = end_new;
+        }
+        return -1;
+    }
 }
+/**
+ * 类似于一个贪心
+ * [x] (x x) (o o) (* * * * * *)
+ * 最少多少步 -> 层级遍历bfs -> 虚拟的遍历一遍就可以了，只要头和尾
+ */

@@ -53,3 +53,11 @@ public class LC55_JumpGame {
         return true;
     }
 }
+/**
+ * [(x x x) x x | x x x x]
+ *  0
+ *  1 2
+ *  3 4
+ *  走到右边界撞墙了，没法继续走了 -> 如果所在位置还没到最后，就return false
+ *  => 贪心解
+ */
