@@ -18,28 +18,24 @@ public class LC259_3SumSmaller {
      * @param target
      * @return
      */
-    // time = O(n^2), space = O(1)
+    // time = O(n^2), space = O(logn)
     public int threeSumSmaller(int[] nums, int target) {
         // corner case
         if (nums == null || nums.length == 0) return 0;
 
-        Arrays.sort(nums); // O(nlogn)
-        int count = 0;
+        Arrays.sort(nums);
 
-        for (int i = 0; i < nums.length - 2; i++) {
-            count += twoSumSmaller(nums, target - nums[i], i + 1);
+        int n = nums.length, res = 0;
+        for (int i = 0; i < n; i++) {
+            int left = i + 1, right = n - 1;
+            while (left < right) {
+                int sum = nums[i] + nums[left] + nums[right];
+                if (sum < target) {
+                    res += right - left;
+                    left++;
+                } else right--;
+            }
         }
-        return count;
-    }
-
-    private int twoSumSmaller(int[] nums, int target, int start) {
-        int count = 0, end = nums.length - 1;
-        while (start < end) {
-            if (nums[start] + nums[end] < target) {
-                count += end - start;
-                start++;
-            } else end--;
-        }
-        return count;
+        return res;
     }
 }

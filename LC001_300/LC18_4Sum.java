@@ -19,7 +19,7 @@ public class LC18_4Sum {
      * @param target
      * @return
      */
-    // time = O(n^3), space = O(1)
+    // time = O(n^3), space = O(logn)
     public List<List<Integer>> fourSum(int[] nums, int target) {
         List<List<Integer>> res = new ArrayList<>();
         // corner case

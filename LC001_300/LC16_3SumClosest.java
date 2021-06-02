@@ -17,7 +17,7 @@ public class LC16_3SumClosest {
      * @param target
      * @return
      */
-    // time = O(n^2), space = O(1)
+    // time = O(n^2), space = O(logn)
     public int threeSumClosest(int[] nums, int target) {
         Arrays.sort(nums);
         int res = nums[0] + nums[1] + nums[2];

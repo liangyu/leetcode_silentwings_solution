@@ -17,7 +17,7 @@ public class LC15_3Sum {
      * @param nums
      * @return
      */
-    // time = O(n^2), space = O(1)
+    // time = O(n^2), space = O(logn)
     public List<List<Integer>> threeSum(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
         // corner case

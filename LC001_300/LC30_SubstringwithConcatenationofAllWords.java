@@ -22,7 +22,7 @@ public class LC30_SubstringwithConcatenationofAllWords {
      * @param words
      * @return
      */
-    // time = O(m * n), space = O(n)    m: length of string s, n: words.length
+    // time = O(n * l * w), space = O(n * w)    l: length of string s, n: words.length
     public List<Integer> findSubstring(String s, String[] words) {
         List<Integer> res = new ArrayList<>();
         // corner case
@@ -32,12 +32,12 @@ public class LC30_SubstringwithConcatenationofAllWords {
         for (String word : words) map.put(word, map.getOrDefault(word, 0) + 1);
 
         int w = words[0].length(), n = words.length;
-        for (int i = 0; i <= s.length() - n * w; i++) { // O(m)
+        for (int i = 0; i <= s.length() - n * w; i++) { // O(l)
             // create a copy of hashmap
             HashMap<String, Integer> copy = new HashMap<>(map);
             int k = n, j = i;
             while (k > 0) { // O(n)
-                String str = s.substring(j, j + w);
+                String str = s.substring(j, j + w); // O(w)
                 if (!copy.containsKey(str) || copy.get(str) < 1) break;
                 copy.put(str, copy.get(str) - 1);
                 k--;
