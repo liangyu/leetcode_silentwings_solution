@@ -50,3 +50,16 @@ public class LC97_InterleavingString {
         return dp[m][n];
     }
 }
+/**
+ * dp[i][j]: whether s3[0:i+j] is formed by the interleaving of s1[0:i] and s2[0:j]
+ *
+ * x x x i
+ * y y y y y y y j
+ * z z z z z z z z z z z z
+ *
+ * dp[i][j]
+ *
+ * dp[i-1][j]
+ * dp[i][j-1]
+ *
+ */

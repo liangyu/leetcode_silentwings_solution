@@ -26,52 +26,121 @@ public class LC1878_GetBiggestThreeRhombusSumsinaGrid {
      * @param grid
      * @return
      */
-    // time = O(m * n * min(m, n)), space = O(1)
+    // time = O(m * n * min(m, n) * min(m, n)), space = O(1)
     public int[] getBiggestThree(int[][] grid) {
         // corner case
         if (grid == null || grid.length == 0 || grid[0] == null || grid[0].length == 0) return new int[0];
 
-        int m = grid.length, n= grid[0].length;
+        int m = grid.length, n = grid[0].length;
         TreeSet<Integer> set = new TreeSet<>();
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                set.add(grid[i][j]);
-                if (set.size() > 3) set.pollFirst();
-            }
-        }
+                int R = Math.min(i, j);
+                R = Math.min(R, m - 1 - i);
+                R = Math.min(R, n - 1 - j);
 
-        int k = 1;
-        while (k < Math.min(m, n)) {
-            for (int i = k; i < m - k; i++) {
-                for (int j = k; j < n - k; j++) {
-                    set.add(calSum(grid, i, j, k));
-                    if (set.size() > 3) set.pollFirst();
+                set.add(grid[i][j]);
+                for (int r = 1; r <= R; r++) {
+                    int a = i - r, b = j;
+                    int sum = 0;
+
+                    for (int k = 0; k < r; k++) {
+                        a += 1;
+                        b -= 1;
+                        sum += grid[a][b];
+                    }
+                    for (int k = 0; k < r; k++) {
+                        a += 1;
+                        b += 1;
+                        sum += grid[a][b];
+                    }
+                    for (int k = 0; k < r; k++) {
+                        a -= 1;
+                        b += 1;
+                        sum += grid[a][b];
+                    }
+                    for (int k = 0; k < r; k++) {
+                        a -= 1;
+                        b -= 1;
+                        sum += grid[a][b];
+                    }
+                    set.add(sum);
+                    if (set.size() > 3) set.pollFirst(); // limit the treeSet in size of 3
                 }
             }
-            k++;
         }
 
-        int[] res = new int[set.size()];
-        for (int i = 0; i < res.length; i++) res[i] = set.pollLast();
+        int[] res = new int[Math.min(3, set.size())];
+        for (int i = 0; i < res.length; i++) {
+            res[i] = set.pollLast();
+        }
         return res;
     }
 
-    private int calSum(int[][] grid, int i, int j, int k) {
-        int sum = 0;
-        int x = i, y = j - k;
+    // S2: presum (optimization)
+    // time = O(m * n * min(m, n)), space = O(1)
+    public int[] getBiggestThree2(int[][] grid) {
+        // corner case
+        if (grid == null || grid.length == 0 || grid[0] == null || grid[0].length == 0) return new int[0];
 
-        // upper left
-        while (x > i - k && y < j) sum += grid[x--][y++];
+        int m = grid.length, n = grid[0].length;
+        TreeSet<Integer> set = new TreeSet<>();
+        int[][] presum1 = new int[m][n]; // "\"
+        int[][] presum2 = new int[m][n]; // "/"
 
-        // upper right
-        while (x < i && y < j + k) sum += grid[x++][y++];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                presum1[i][j] = ((i - 1 >= 0 && j - 1 >= 0) ? presum1[i - 1][j - 1] : 0) + grid[i][j];
+            }
+        }
 
-        // bottom right
-        while (x < i + k && y > j) sum += grid[x++][y--];
+        for (int i = 0; i < m; i++) {
+            for (int j = n - 1; j >= 0; j--) {
+                presum2[i][j] = ((i - 1 >= 0 && j + 1 < n) ? presum2[i - 1][j + 1] : 0) + grid[i][j];
+            }
+        }
 
-        // bottom left
-        while (x > i && y  > j - k) sum += grid[x--][y--];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int R = Math.min(i, j);
+                R = Math.min(R, m - 1 - i);
+                R = Math.min(R, n - 1 - j);
 
-        return sum;
+                set.add(grid[i][j]);
+                for (int r = 1; r <= R; r++) {
+                    int sum = 0;
+                    int x1, y1, x2, y2;
+
+                    x1 = i - r; y1 = j;
+                    x2 = i; y2 = j + r;
+                    sum+= presum1[x2][y2] - ((x1 - 1 >= 0 && y1 - 1 >= 0) ? presum1[x1 - 1][y1 - 1] : 0);
+
+                    x1 = i; y1 = j - r;
+                    x2 = i + r; y2 = j;
+                    sum+= presum1[x2][y2] - ((x1 - 1 >= 0 && y1 - 1 >= 0) ? presum1[x1 - 1][y1 - 1] : 0);
+
+                    x1 = i - r; y1 = j;
+                    x2 = i; y2 = j - r;
+                    sum += presum2[x2 - 1][y2 + 1] - presum2[x1][y1];
+
+                    x1 = i; y1 = j + r;
+                    x2 = i + r; y2 = j;
+                    sum += presum2[x2 - 1][y2 + 1] - presum2[x1][y1];
+
+                    set.add(sum);
+                    if (set.size() > 3) set.pollFirst(); // limit the treeSet in size of 3
+                }
+            }
+        }
+
+        int[] res = new int[Math.min(3, set.size())];
+        for (int i = 0; i < res.length; i++) {
+            res[i] = set.pollLast();
+        }
+        return res;
     }
 }
+/**
+ * 以中心点来枚举所有可能的菱形 => O(m * n * m * n) 暴力解
+ * 优化：区间和 -> 用前缀和数组
+ */
