@@ -37,7 +37,7 @@ public class LC743_NetworkDelayTime {
 
         PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] - o2[0]);
         pq.offer(new int[]{0, k}); // 起点是k，距离起点的位置则是0, 把dist放前面，这样好按照距离在pq里进行排序
-        int[] visited = new int[n + 1];
+        int[] visited = new int[n + 1]; // node is 1-based
         int res = 0;
 
         while (!pq.isEmpty()) { // O(ElogE)

@@ -80,3 +80,14 @@ public class LC1889_MinimumSpaceWastedFromPackaging {
         return right;
     }
 }
+/**
+ * 双指针，固定一个y，看有多少个x能被收录其中
+ * [x x x] [] x x x x
+ *      j
+ * y y y y
+ * i
+ * 固定一个box的指针，然后移动package的指针
+ * => O(n + k) * m = O(nm + mk) ~ 10^10 -> TLE
+ *
+ * B.S. 找最后一个小于等于box i的 j => O(logn * k) * m = logn * km = TlogT (T ~ 10^5)
+ */

@@ -35,32 +35,47 @@ public class LC505_TheMazeII {
      * @param destination
      * @return
      */
-    // time = O(m * n), space = O(m * n)
+    // time = O(m * n * log(m * n)), space = O(m * n)
     private static final int[][] DIRECTIONS = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
     public int shortestDistance(int[][] maze, int[] start, int[] destination) {
         int m = maze.length, n = maze[0].length;
-        int[][] dist = new int[m][n];
-        for (int[] d : dist) Arrays.fill(d, -1);
-        Queue<Integer> queue = new LinkedList<>();
-        queue.offer(start[0] * n + start[1]);
-        dist[start[0]][start[1]] = 0;
 
-        while (!queue.isEmpty()) {
-            int cur = queue.poll();
+        PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] - o2[0]);
+        pq.offer(new int[]{0, start[0], start[1]});
+        boolean[][] visited = new boolean[m][n];
+
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int d = cur[0];
+            int x = cur[1];
+            int y = cur[2];
+            if (visited[x][y]) continue;
+            visited[x][y] = true;
+
+            if (x == destination[0] && y == destination[1]) return d;
+
             for (int[] dir : DIRECTIONS) {
-                int i = cur / n, j = cur % n;
-                int minLen = dist[i][j];
-                while (i + dir[0] >= 0 && i + dir[0] < m && j + dir[1] >= 0 && j + dir[1] < n && maze[i + dir[0]][j + dir[1]] == 0) {
+                int i = x, j = y, dist = 0;
+                while (i + dir[0] >= 0 && i + dir[0] < m && j + dir[1] >= 0 && j + dir[1] < n && maze[i + dir[0]][j + dir[1]] != 1) {
+                    dist++;
                     i += dir[0];
                     j += dir[1];
-                    minLen++;
                 }
-                if (dist[i][j] == -1 || dist[i][j] > minLen) {
-                    dist[i][j] = minLen;
-                    queue.offer(i * n + j);
-                }
+                if (visited[i][j]) continue;
+                pq.offer(new int[]{d + dist, i, j});
             }
         }
-        return dist[destination[0]][destination[1]];
+        return -1;
     }
 }
+/**
+ * BFS + PQ -> 出队列有一定的决策，并不是按照先进先出的策略来进行的 [Dijkstra的标准模板题] 边是正的，权重不能为负
+ * 传统BFS默认所有边权重为1，在这里不一样
+ * 先出的是整个队列里起点离distance最近的那个
+ * [A]
+ * A -> B[B1 B2 B3 B4]
+ * dist(B3) 固定一个起点的最短距离
+ * B3 [B1 B2 B4 C1 C2 C3 C4]
+ * dist(C1) = dist(B3) + edge(B3 -> C1)   贪心的思想
+ * C1 [B1 B2 B4 C2 C3 C4]
+ */
