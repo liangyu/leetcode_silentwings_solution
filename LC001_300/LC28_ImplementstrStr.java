@@ -80,4 +80,89 @@ public class LC28_ImplementstrStr {
     private int charToInt(int i, String s) {
         return s.charAt(i) - 'a';
     }
+
+    // S3: KMP
+    // time = O(n), space = O(n)
+    public int strStr3(String haystack, String needle) {
+        String s = haystack;
+        String p = needle;
+        int n = s.length(), m = p.length();
+
+        if (m == 0) return 0;
+        if (n == 0) return -1;
+
+        int[] dp = new int[n]; // 与目标串一样长
+        dp[0] = (s.charAt(0) == p.charAt(0) ? 1 : 0);
+        if (m == 1 && dp[0] == 1) return 0;
+        int[] suffix = preprocess(p);
+
+        for (int i = 1; i < n; i++) {
+            int j = dp[i - 1];
+            while (j > 0 && s.charAt(i) != p.charAt(j)) {
+                j = suffix[j - 1];
+            }
+            dp[i] = j + (s.charAt(i) == p.charAt(j) ? 1 : 0);
+            if (dp[i] == m) return i - m + 1;
+        }
+        return -1;
+    }
+
+    private int[] preprocess(String s) {
+        // corner case
+        if (s == null || s.length() == 0) return new int[0];
+
+        int n = s.length();
+        int[] dp = new int[n];
+        dp[0] = 0;
+
+        for (int i = 1; i < n; i++) {
+            // computer dp[i]
+            int j = dp[i - 1];
+            while (j >= 1 && s.charAt(j) != s.charAt(i)) { // j不能越界
+                j = dp[j - 1];
+            }
+            dp[i] = j + (s.charAt(i) == s.charAt(j) ? 1 : 0);
+        }
+        return dp;
+    }
 }
+/**
+ * s: target string
+ * p: pattern string
+ *
+ * KMP:
+ * 1. the suffix array of p
+ * suffix[i]: the max length k s.t. p[0:k-1] = p[i-k+1:i]
+ *
+ * 2. dp[i]: the max length k s.t. p[0:k-1] = s[i-k+1:i]
+ * when dp[i] = p.size() => match!
+ *
+ * dp[i] => dp[i-1]?
+ * s:    ________________ * * * * * * * * * * * * * * * *  X _________
+ *                                                     i-1 i
+ * p:                     * * * * * * * * * * * * * * * *  Y _________
+ *                                                     j-1 j
+ * j = dp[i-1]
+ * if (s[i] == p[j]) => dp[i] = dp[i-1]+1 = j+1
+ *
+ * suffix[j-1]
+ * s:    ________________ _______________________ + + + +  X _________
+ *                                                     i-1 i
+ * p:                     + + + + Z _____________ + + + +  Y _________
+ *                             j'-1                    j-1 j
+ * j' = suffix[j-1]
+ * if (s[i] == p[j']) dp[i] = j'+1
+ * ...
+ * j'' = suffix[j'-1]
+ * if (s[i] == p[j'']) dp[i] = j''+1
+ *
+ * for (int i = 0; i < n; i++) {
+ *     // compute dp[i]
+ *     int j = dp[i - 1];
+ *     while (j > 0 && s.charAt(i) != p.charAt(j)) {
+ *         j = suffix[j - 1];
+ *     }
+ *     dp[i] = j + (s.charAt(i) == p.charAt(j) ? 1 : 0);
+ *     if (dp[i] == p.length()) return i - p.length() + 1; // starting point
+ * }
+ */

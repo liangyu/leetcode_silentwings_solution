@@ -27,7 +27,87 @@ public class LC621_TaskScheduler {
      * @param n
      * @return
      */
+    // S1: PriorityQueue
+    // time = O(n), space = O(1)
     public int leastInterval(char[] tasks, int n) {
+        // corner case
+        if (tasks == null || tasks.length == 0 || n < 0) return 0;
 
+        HashMap<Character, Integer> map = new HashMap<>();
+        for (char c : tasks) map.put(c, map.getOrDefault(c, 0) + 1);
+
+        PriorityQueue<Integer> pq = new PriorityQueue<>((o1, o2) -> o2 - o1);
+        for (char key : map.keySet()) pq.offer(map.get(key));
+
+        // 每一轮处理 n + 1 个
+        n++;
+        int count = 0;
+        while (!pq.isEmpty()) {
+            int k = Math.min(pq.size(), n);
+            List<Integer> temp = new ArrayList<>();
+            for (int i = 0; i < k; i++) { // O(n)
+                int freq = pq.poll();
+                if (freq - 1 > 0) temp.add(freq - 1);
+            }
+            if (k == n) count += n;
+            else if (temp.size() > 0) count += n;
+            else count += k;
+
+            for (int x : temp) pq.offer(x);
+        }
+        return count;
+    }
+
+    // S2: Greedy
+    // time = O(m), space = O(1)   m: number of tasks
+    public int leastInterval2(char[] tasks, int n) {
+        // corner case
+        if (tasks == null || tasks.length == 0 || n < 0) return 0;
+
+        HashMap<Character, Integer> map = new HashMap<>();
+        for (char c : tasks) map.put(c, map.getOrDefault(c, 0) + 1);
+
+        int maxFreq = 0;
+        for (char key : map.keySet()) maxFreq = Math.max(maxFreq, map.get(key));
+
+        int res = (maxFreq - 1) * (n + 1);
+        int count = 0;
+        for (char key : map.keySet()) {
+            if (map.get(key) == maxFreq) count++;
+        }
+        return Math.max(res + count, tasks.length);
     }
 }
+/**
+ * [A B C] [A B C] [A B C] [A B C] [A B X] [A B X]
+ * A X X A X X A ...
+ * [A B C] [A B D] [A B C] [A D B]
+ *
+ * A A A A A A
+ * B B B B B
+ * C C C
+ * D D D D
+ * E E
+ * F
+ *
+ * A A A A A
+ * B B B B
+ *
+ * [A B X] [A B X] [A B X] [A B X] [A X X]
+ * => PriorityQueue
+ * 频次高的元素应该尽量紧凑的频率高的去使用它，瓶颈就在这个地方
+ * 非常紧凑的排列方式，每一轮取高频的n+1个
+ *
+ * S2:
+ * A A A A A
+ * B B B B C
+ * C C D D D
+ * E E F
+ *
+ * A A A A A
+ * B B B B X
+ * X X X X X
+ *
+ * 贪心法 => 一开始要保证它们分的足够开，强制分开至少为n
+ *
+ */
