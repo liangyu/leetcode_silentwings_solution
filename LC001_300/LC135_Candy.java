@@ -28,23 +28,25 @@ public class LC135_Candy {
         if (ratings == null || ratings.length == 0) return 0;
 
         int n = ratings.length;
-        int[] candies = new int[n];
-        Arrays.fill(candies, 1);
+        int[] f = new int[n];
+        Arrays.fill(f, 1);
 
-        for (int i = 1; i < n; i++) { // 从左到右扫一遍
-            if (candies[i] > candies[i - 1]) {
-                candies[i] = candies[i - 1] + 1;
+        for (int i = 1; i < n; i++) {
+            if (ratings[i] > ratings[i - 1]) {
+                f[i] = Math.max(1, f[i - 1] + 1);
             }
         }
 
-        for (int i = n - 2; i >= 0; i--) { // 从右到左再扫一遍
-            if (candies[i] > candies[i + 1]) {
-                candies[i] = Math.max(candies[i], candies[i + 1] + 1);
+        for (int i = n - 2; i>= 0; i--) {
+            if (ratings[i] > ratings[i + 1]) {
+                f[i] = Math.max(f[i], f[i + 1] + 1);
             }
         }
 
+        // 2轮只是满足了必要条件，刷新了下限
+        // 恰好又是充分条件
         int res = 0;
-        for (int c : candies) res += c; // 求下加和
+        for (int num : f) res += num;
         return res;
     }
 

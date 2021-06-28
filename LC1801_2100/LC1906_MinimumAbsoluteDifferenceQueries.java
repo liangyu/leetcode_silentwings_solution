@@ -33,6 +33,7 @@ public class LC1906_MinimumAbsoluteDifferenceQueries {
      * @param queries
      * @return
      */
+    // S1
     // time = O(m + n), space = O(m + n)
     public int[] minDifference(int[] nums, int[][] queries) {
         int[] res = new int[queries.length];
@@ -57,4 +58,48 @@ public class LC1906_MinimumAbsoluteDifferenceQueries {
         }
         return res;
     }
+
+    // S2
+    // time = O(100 * (m + n)) = O(m + n), space = O(m + n)
+    public int[] minDifference2(int[] nums, int[][] queries) {
+        int n = nums.length;
+        int[][] presum = new int[101][n];
+
+        for (int k = 1; k <= 100; k++) {
+            for (int i = 0; i < n; i++) {
+                presum[k][i] = (i == 0 ? 0 : presum[k][i - 1]) + (nums[i] == k ? 1 : 0) ;
+            }
+        }
+
+        int[] res = new int[queries.length];
+        for (int j = 0; j < queries.length; j++) {
+            int left = queries[j][0], right = queries[j][1];
+            List<Integer> arr = new ArrayList<>();
+            for (int k = 1; k <= 100; k++) {
+                int count = presum[k][right] - (left == 0 ? 0 : presum[k][left - 1]);
+                if (count > 0) arr.add(k);
+                if (arr.size() > 2 && arr.get(arr.size() - 1) - arr.get(arr.size() - 2) == 1) break;
+            }
+            if (arr.size() <= 1) res[j] = -1;
+            else {
+                int gap = Integer.MAX_VALUE;
+                for (int i = 1; i < arr.size(); i++) {
+                    gap = Math.min(gap, arr.get(i) - arr.get(i - 1));
+                }
+                res[j] = gap;
+            }
+        }
+        return res;
+    }
 }
+/**
+ * nums[i] <= 100  遍历元素的值
+ * x x x [x x x x x] x x x
+ * 问一个区间里元素出现的频次，2种方法：
+ * 1. segment tree -》 O(n) + O(logn)
+ * 2. frequency presum => O(n) + O(1) -> presum[right] - presum[left-1]
+ * 100 * n
+ * Q*100
+ * time = 100*(Q+N)
+ * 没有nums[i] <= 100 就变成codeForce F 3100分 -> use 主席树 time = Q*(logN)^2
+ */

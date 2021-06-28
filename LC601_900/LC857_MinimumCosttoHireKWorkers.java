@@ -33,7 +33,7 @@ public class LC857_MinimumCosttoHireKWorkers {
         for (int i = 0; i < n; i++) {
             persons[i] = new int[]{quality[i], wage[i]};
         }
-        Arrays.sort(persons, ((o1, o2) -> Double.compare(o1[1] * 1.0 / o1[0], o2[1] * 1.0 / o2[0])));
+        Arrays.sort(persons, (o1, o2) -> Double.compare(o1[1] * 1.0 / o1[0], o2[1] * 1.0 / o2[0]));
 
         PriorityQueue<Integer> pq = new PriorityQueue<>((o1, o2) -> o2 - o1);
         int quality_sum = 0;

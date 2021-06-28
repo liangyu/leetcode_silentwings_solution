@@ -22,25 +22,28 @@ public class LC120_Triangle {
      * @param triangle
      * @return
      */
-    // time = O(n^2), space = O(n^2)
+    // time = O(n^2), space = O(n)
     public int minimumTotal(List<List<Integer>> triangle) {
-        // corner case
-        if (triangle == null || triangle.size() == 0 || triangle.get(0) == null || triangle.get(0).size() == 0) {
-            return 0;
-        }
-
         int n = triangle.size();
-        int[][] dp = new int[n][n];
+        int[] dp = new int[n];
+        dp[0] = triangle.get(0).get(0);
 
-        for (int j = 0; j < n; j++) {
-            dp[n - 1][j] = triangle.get(n - 1).get(j);
-        }
-
-        for (int i = n - 2; i >= 0; i--) {
+        for (int i = 1; i < n; i++) {
+            int[] temp = dp.clone();
             for (int j = 0; j <= i; j++) {
-                dp[i][j] += Math.min(dp[i + 1][j], dp[i + 1][j + 1]) + triangle.get(i).get(j);
+                if (j == 0) {
+                    dp[j] = temp[0] + triangle.get(i).get(j);
+                } else if (j == i) {
+                    dp[j] = temp[i - 1] + triangle.get(i).get(j);
+                } else {
+                    dp[j] = Math.min(temp[j - 1], temp[j]) + triangle.get(i).get(j);
+                }
             }
         }
-        return dp[0][0];
+        int res = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            res = Math.min(dp[i], res);
+        }
+        return res;
     }
 }

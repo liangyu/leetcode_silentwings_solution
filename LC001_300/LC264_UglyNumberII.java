@@ -17,16 +17,54 @@ public class LC264_UglyNumberII {
      */
     // time = O(n), space = O(n)
     public int nthUglyNumber(int n) {
-        int[] nums = new int[n];
-        int idx2 = 0, idx3 = 0, idx5 = 0;
-        nums[0] = 1;
+        int i = 0, j = 0, k = 0;
+        int[] res = new int[n];
+        res[0] = 1;
 
-        for (int i = 1; i < n; i++) {
-            nums[i] = Math.min(nums[idx2] * 2, Math.min(nums[idx3] * 3, nums[idx5] * 5));
-            if (nums[i] == nums[idx2] * 2) idx2++;
-            if (nums[i] == nums[idx3] * 3) idx3++;
-            if (nums[i] == nums[idx5] * 5) idx5++;
+        for (int t = 1; t < n; t++) {
+            res[t] = Math.min(res[i] * 2, Math.min(res[j] * 3, res[k] * 5));
+            if (res[t] == res[i] * 2) i++;
+            if (res[t] == res[j] * 3) j++;
+            if (res[t] == res[k] * 5) k++;
         }
-        return nums[n - 1];
+        return res[n - 1];
+    }
+
+    // S2: PQ
+    // time = O(3n * log(3n)), space = O(n)
+    public int nthUglyNumber2(int n) {
+        PriorityQueue<Long> pq = new PriorityQueue<>();
+        pq.offer((long)1);
+
+        for (int t = 0; t < n; t++) {
+            long cur = pq.poll();
+            if (t == n - 1) return (int)cur;
+            while (!pq.isEmpty() && pq.peek() == cur) pq.poll(); // 重复的数都要扔掉
+            pq.offer(cur * 2);
+            pq.offer(cur * 3);
+            pq.offer(cur * 5);
+        }
+        return -1;
     }
 }
+/**
+ * 类似bfs
+ * [1]
+ * [2,3,5]
+ * [3,5,4,6,10]
+ * [4,5,6,10,6,9,15] pq 最小数在上面
+ * [5,6,6,9,10,15]
+ *
+ * BFS: queue
+ *      PQ
+ * 通过弹出来的最小丑数再以此为基础往外扩散 -> bfs
+ * time complexity = O(3n * log(3n))
+ * 弹出n个数(求前n小数 -> 弹1个进3个)
+ *
+ * new ugly number = old[i] * 2
+ *                   old[j] * 3
+ *                   old[k] * 5
+ * 三个指针
+ * dp[t] = min{dp[i] * 2, dp[j] * 3, dp[k] * 5}
+ * update(i, j, k)  i, j, k 是指针
+ */

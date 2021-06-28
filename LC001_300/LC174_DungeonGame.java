@@ -66,3 +66,8 @@ public class LC174_DungeonGame {
         return dp[0][0];
     }
 }
+/**
+ * dp[i][j] = min{dp[i][j+1] - dungeion[j][j+1], dp[i+1][j] - dungeon[i+1][j]}
+ * dp[i][j] 不能 <= 0 => dp[i][j] = Math.max(dp[i][j], 1)
+ * 右下往左上推
+ */

@@ -38,5 +38,15 @@ public class LC630_CourseScheduleIII {
 /**
  * Sort the courses by their deadlines (Greedy! We have to deal with courses with early deadlines first)
  * If time exceeds, drop the previous course which costs the most time. (That must be the best choice!)
+ *
+ * sort + pq
+ * => 凡是有deadline属性出现的，优先满足deadline
+ *          Day 5, Day 7, Day 8, Day X
+ *            3      4      2     +10
+ *  +3+4+2 > 8   无论如何完不成  -> +3+2+?
+ *  pq 在过往里面最长的都扔掉，换成轻巧的 -> 每一天都充分利用 优化时间
+ *  贪心策略
+ *  1. 先处理deadline
+ *  2. 精华：赶不上deadline,就优化days，把上的最长的课cancel掉，把短的提上来，优化了days，有更多充裕时间完成更多的课
  */
 

@@ -49,4 +49,42 @@ public class LC1904_TheNumberofFullRoundsYouHavePlayed {
         if (hdiff < 0 || (hdiff == 0 && mdiff < 0)) hdiff += 24;
         return (hdiff * 60 + mdiff) / 15;
     }
+
+    // S2
+    // time = O(1), space = O(1)
+    public int numberOfRounds2(String startTime, String finishTime) {
+        int sh = Integer.parseInt(startTime.substring(0, 2));
+        int fh = Integer.parseInt(finishTime.substring(0, 2));
+        int sm = Integer.parseInt(startTime.substring(3));
+        int fm = Integer.parseInt(finishTime.substring(3));
+
+        int[] start = new int[]{sh, sm};
+        int[] end = new int[]{fh, fm};
+
+        // 跨过0点 -> 补上24小时
+        if (start[0] * 60 + start[1] > end[0] * 60 + end[1]) {
+            end[0] += 24;
+        }
+
+        start[1] = (start[1] + 14) / 15 * 15; // 向后取整
+        end[1] = end[1] / 15 * 15; // 向前取整
+
+        // hour -> min
+        int a = start[0] * 60 + start[1];
+        int b = end[0] * 60 + end[1];
+
+        return Math.max(0,(b - a) / 15); // 00:47 00:57 这样的例子，a = 60, b = 45, 产生交错而导致变成负数，所以要取0
+    }
 }
+/**
+ * 有零有整
+ * 处理边角余料 01 -> 15   向后取整
+ * finish time 往前取整
+ * 中间把时刻一减即可
+ *
+ * 00 -> 00
+ * 01 -> 15
+ * 02 -> 15
+ * 15 -> 15
+ * 16 -> 30
+ */

@@ -42,4 +42,38 @@ public class LC92_ReverseLinkedListII {
         }
         return dummy.next;
     }
+
+    // S2
+    // time = O(n), space = O(1)
+    public ListNode reverseBetween2(ListNode head, int left, int right) {
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+
+        ListNode cur = dummy;
+        for (int i = 1; i <= left - 1; i++) {
+            cur = cur.next;
+        }
+
+        ListNode endOfFirst = cur;
+        cur = cur.next;
+        ListNode startOfSecond = cur;
+
+        // reverse
+        ListNode prev = null, next = null;
+        for (int i = left; i <= right; i++) {
+            next = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = next;
+        }
+        endOfFirst.next = prev;
+        startOfSecond.next = cur;
+        return dummy.next;
+    }
 }
+/**
+ * one-pass
+ * 记录两个节点
+ * 处理逆序区也要有左右节点指针
+ * 同时维护三个指针
+ */
