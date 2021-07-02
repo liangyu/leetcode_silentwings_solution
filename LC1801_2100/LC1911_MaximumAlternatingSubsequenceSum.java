@@ -37,4 +37,10 @@ public class LC1911_MaximumAlternatingSubsequenceSum {
 }
 /**
  * same as LC122
+ * a-b  b-c  => a-c
+ * 股市买卖 => 攫取每一天的利润
+ * 有0对，直接加
+ * 不违反正负交替的原则
+ * 虚拟的给邻接的2位加上正负号，都互相前后抵消
+ * 非常典型的greedy算法
  */

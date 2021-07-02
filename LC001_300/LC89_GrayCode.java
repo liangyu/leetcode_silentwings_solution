@@ -20,14 +20,14 @@ public class LC89_GrayCode {
     // time = O(2^n), space = O(1)
     public List<Integer> grayCode(int n) {
         List<Integer> res = new ArrayList<>();
-        // corner case
-        if (n == 0) return Arrays.asList(0);
-
         res.add(0);
+        // corner case
+        if (n == 0) return res;
+
         for (int i = 0; i < n; i++) {
             int len = res.size();
             for (int j = len - 1; j >= 0; j--) {
-                res.add(res.get(j) | (1 << i)); // 在最高位 + 1
+                res.add(res.get(j) | (1 << i));
             }
         }
         return res;

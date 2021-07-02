@@ -34,7 +34,6 @@ public class LC906_SuperPalindromes {
         int end = (int)Math.pow(10, right.length() / 4 + 1);
 
         int count = 0;
-        boolean flag = false;
         for (int i = start; i <= end; i++) {
             for (int j = 0; j <= 1; j++) {
                 long palin = constructPalin(i, j); // j: type
@@ -42,12 +41,7 @@ public class LC906_SuperPalindromes {
                 if (superPalin >= a && superPalin <= b && isPalin(superPalin)) {
                     count++;
                 }
-                if (j == 1 && superPalin > b) {
-                    flag = true;
-                    break;
-                }
             }
-            if (flag) break;
         }
         return count;
     }
@@ -73,9 +67,10 @@ public class LC906_SuperPalindromes {
     }
 }
 /**
- * refer: LC866 prime palindrome -> 先遍历比较稀疏的 -> 先遍历回文数
+ * refer: LC866 prime palindrome -> 先遍历比较稀疏的 -> 先遍历回文数,因为回文数比较好构造
  * 1-100 -> 1-10000 => 10^8
- *         palindrome superpalindrome
- * 1e5 -> 1e9 -> 1e18
+ *         palindrome superpalindrome => 转化成string，看是否左右对称即可
+ * 1e5 -> 1e9 -> 1e18   => 1000 0 0001
  * 遍历他的平方根的前一半，撬动它的平方根，数字扩大一倍，再回文一下，再扩大一倍
+ * 尽量用小杠杆撬动大杠杆
  */
