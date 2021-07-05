@@ -1,4 +1,4 @@
-package LC1201_1500;
+package LC901_1200;
 import java.util.*;
 public class LC1140_StoneGameII {
     /**

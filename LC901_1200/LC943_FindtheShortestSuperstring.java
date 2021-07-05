@@ -76,7 +76,6 @@ public class LC943_FindtheShortestSuperstring {
             last = last_prev;
         }
         Collections.reverse(path);
-        // System.out.println(path.toString());
         String ans = words[path.get(0)];
         for (int i = 1; i < n; i++) {
             ans = combine(ans, words[path.get(i)]);

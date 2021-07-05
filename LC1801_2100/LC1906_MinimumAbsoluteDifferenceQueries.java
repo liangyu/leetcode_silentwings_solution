@@ -96,7 +96,7 @@ public class LC1906_MinimumAbsoluteDifferenceQueries {
  * nums[i] <= 100  遍历元素的值
  * x x x [x x x x x] x x x
  * 问一个区间里元素出现的频次，2种方法：
- * 1. segment tree -》 O(n) + O(logn)
+ * 1. segment tree -> O(n) + O(logn)
  * 2. frequency presum => O(n) + O(1) -> presum[right] - presum[left-1]
  * 100 * n
  * Q*100
