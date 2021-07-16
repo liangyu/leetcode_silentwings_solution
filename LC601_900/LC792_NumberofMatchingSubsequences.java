@@ -22,6 +22,7 @@ public class LC792_NumberofMatchingSubsequences {
      * @param words
      * @return
      */
+    // S1
     // time = O(n + m * k), space = O(m) n: length of s, m: length of words, k: average length of word
     public int numMatchingSubseq(String s, String[] words) {
         // corner case
@@ -50,4 +51,106 @@ public class LC792_NumberofMatchingSubsequences {
         }
         return count;
     }
+
+    // S2: TreeSet
+    // time = O(n * logm * k), space = O(m) n: length of s, m: length of words, k: average length of word
+    public int numMatchingSubseq2(String s, String[] words) {
+        // corner case
+        if (s == null || s.length() == 0 || words == null || words.length == 0) return 0;
+
+        HashMap<Integer, TreeSet<Integer>> map = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            int key = s.charAt(i) - 'a';
+            map.putIfAbsent(key, new TreeSet<>());
+            map.get(key).add(i);
+        }
+
+        int count = 0;
+        for (String word : words) {
+            if (word.length() > s.length()) continue;
+            if (check(word, map)) count++;
+        }
+        return count;
+    }
+
+    private boolean check(String word, HashMap<Integer, TreeSet<Integer>> map) {
+        int i = 0;
+        for (char ch : word.toCharArray()) {
+            if (map.containsKey(ch - 'a')) {
+                Integer iter = map.get(ch - 'a').ceiling(i);
+                if (iter == null) return false;
+                i = iter + 1;
+            } else return false;
+        }
+        return true;
+    }
+
+    // S3: State Machine
+    // time = O(26m + n * k), space = O(26m) n: length of s, m: length of words, k: average length of word
+    public int numMatchingSubseq3(String s, String[] words) {
+        // corner case
+        if (s == null || s.length() == 0 || words == null || words.length == 0) return 0;
+
+        int m = s.length();
+        s = "#" + s; // s[1:m]
+
+        int[][] next = new int[m + 1][26];
+        for (int k = 0; k < 26; k++) next[m][k] = -1; // init,站在最尾端向右看，什么字符都没有，即-1
+
+        for (int i = m; i >= 1; i--) { // O(m)
+            for (int k = 0; k < 26; k++) next[i - 1][k] = next[i][k];
+            next[i - 1][s.charAt(i) - 'a'] = i;
+        }
+
+        int res = 0;
+        for (String word : words) { // O(n)
+            int i = 0;
+            boolean flag = true;
+            for (char ch : word.toCharArray()) { // O(k)
+                i = next[i][ch - 'a'];
+                if (i == -1) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) res++;
+        }
+        return res;
+    }
 }
+/**
+ * 状态机 state machine
+ * 最常见做法 subsequence 双指针
+ * s = [axxxx]a{x}
+ * word = a {bc}  找剩下字符串里最靠前的
+ *           ^
+ * O((m+n)*k) = m*k
+ * 找的就是s里面的第一个a
+ * 挨个扫一遍才能找到s里的第一个a => bs
+ * pos[a] = {3,5,7}
+ * pos[b] = {2,4,8}
+ * pos[c] = {.2,3,6...}
+ * word = a b c  -> 找a后面的b
+ * O(n*logm*k)
+ *    0 1 2 3 4 5 6 7 8
+ * s =  x x a b a x a c
+ * S3: next[0][a] = 3
+ *     next[3][b] = 4
+ *     next[4][c] = 8   -> read directly from the table    跳转非常快 -> 读n次
+ *     next[8][d] = -1  没有，找不到d
+ * 2个维度，m * 26 矩阵
+ *  预处理，从后往前
+ *  next[10][a] = -1
+ *  next[10][b] = -1
+ *  next[10][c] = -1
+ *  next[10][d] = -1
+ *
+ *  站在9往右看，
+ *  next[9][a] = -1
+ *  next[9][b] = 10
+ *  next[9][c] = -1
+ *  next[9][d] = -1
+ *
+ *  理论上时间复杂度 = O(26m + n * k)
+ *  状态机：从一个状态直接跳转到下一个状态
+ */

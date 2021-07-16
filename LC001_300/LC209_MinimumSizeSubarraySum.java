@@ -27,13 +27,14 @@ public class LC209_MinimumSizeSubarraySum {
         // corner case
         if (nums == null || nums.length == 0) return 0;
 
-        int n = nums.length, res = Integer.MAX_VALUE, sum = 0, start = 0;
-
-        for (int i = 0; i < n; i++) {
+        int j = -1; // left pointer     (j, i]  左开右闭
+        int sum = 0, res = Integer.MAX_VALUE;
+        for (int i = 0; i < nums.length; i++) { // right pointer
             sum += nums[i];
-            while (start <= i && sum >= target) {
-                res = Math.min(res, i - start + 1);
-                sum -= nums[start++];
+            while (sum >= target) {
+                res = Math.min(res, i - j); // j 不包括，所以长度是 i - j
+                j++;
+                sum -= nums[j];
             }
         }
         return res == Integer.MAX_VALUE ? 0 : res;
@@ -90,3 +91,8 @@ public class LC209_MinimumSizeSubarraySum {
         return start == sum.length ? -1 : start; // if start == sum.length，表明end没动过，start直接越过end出界，没找到！
     }
 }
+/**
+ * 和一定是>0
+ * sliding window
+ * fixed left, slide right pointer
+ */

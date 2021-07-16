@@ -34,20 +34,29 @@ public class LC295_FindMedianfromDataStream {
      */
     /** initialize your data structure here. */
     // time = O(nlogn), space = O(n)
-    private PriorityQueue<Integer> minHeap;
-    private PriorityQueue<Integer> maxHeap;
+    PriorityQueue<Integer> minHeap;
+    PriorityQueue<Integer> maxHeap;
+    /** initialize your data structure here. */
     public LC295_FindMedianfromDataStream() {
         minHeap = new PriorityQueue<>();
         maxHeap = new PriorityQueue<>((o1, o2) -> o2 - o1);
     }
 
     public void addNum(int num) {
-        maxHeap.offer(num);
-        minHeap.offer(maxHeap.poll());
-        if (minHeap.size() > maxHeap.size() + 1) maxHeap.offer(minHeap.poll());
+        if (minHeap.size() == maxHeap.size()) {
+            maxHeap.offer(num);
+            minHeap.offer(maxHeap.poll());
+        } else {
+            minHeap.offer(num);
+            maxHeap.offer(minHeap.poll());
+        }
     }
 
     public double findMedian() {
-        return minHeap.size() > maxHeap.size() ? (double)minHeap.peek() : (minHeap.peek() + maxHeap.peek()) / 2.0;
+        if (minHeap.size() == maxHeap.size()) return (minHeap.peek() + maxHeap.peek()) / 2.0;
+        return (double)minHeap.peek();
     }
 }
+/**
+ * 只进不出
+ */
