@@ -29,42 +29,42 @@ public class LC1707_MaximumXORWithanElementFromArray {
         // corner case
         if (nums == null || nums.length == 0) return res;
 
-        int[][] que = new int[queries.length][3]; // O(m)
+        int[][] que = new int[queries.length][3];
         for (int i = 0; i < queries.length; i++) {
             que[i][0] = queries[i][0];
             que[i][1] = queries[i][1];
             que[i][2] = i;
         }
-        Arrays.sort(nums); // O(nlogn)
-        Arrays.sort(que, (o1, o2) -> o1[1] - o2[1]); // O(mlogm)
 
-        TrieNode root = new TrieNode('\0');
+        Arrays.sort(nums);
+        Arrays.sort(que, (o1, o2) -> o1[1] - o2[1]); // sort according to mi
+
+        TrieNode root = new TrieNode();
         int i = 0;
-        for (int[] q : que) { // 挨个处理 O(m)
-            while (i < nums.length && nums[i] <= q[1]) { // O(n)
-                TrieNode cur = root;
+        for (int[] q : que) {
+            while (i < nums.length && nums[i] <= q[1]) {
+                TrieNode node = root;
                 for (int k = 31; k >= 0; k--) {
-                    if (cur.nexts[(nums[i] >> k) & 1] == null) {
-                        cur.nexts[(nums[i] >> k) & 1] = new TrieNode('\0');
+                    if (node.next[(nums[i] >> k) & 1] == null) {
+                        node.next[(nums[i] >> k) & 1] = new TrieNode();
                     }
-                    cur = cur.nexts[(nums[i] >> k) & 1];
+                    node = node.next[(nums[i] >> k) & 1];
                 }
                 i++;
             }
-            // 能否找到最佳/准最佳
             if (i == 0) {
                 res[q[2]] = -1;
                 continue;
             }
 
-            TrieNode cur = root;
+            TrieNode node = root;
             int ans = 0;
             for (int k = 31; k >= 0; k--) {
-                if (cur.nexts[1 - (q[0] >> k) & 1] != null) {
-                    cur = cur.nexts[1 - ((q[0] >> k) & 1)];
+                if (node.next[1 - ((q[0] >> k) & 1)] != null) {
+                    node = node.next[1 - ((q[0] >> k) & 1)];
                     ans = ans * 2 + 1;
                 } else {
-                    cur = cur.nexts[(q[0] >> k) & 1];
+                    node = node.next[(q[0] >> k) & 1];
                     ans = ans * 2 + 0;
                 }
             }
@@ -74,11 +74,9 @@ public class LC1707_MaximumXORWithanElementFromArray {
     }
 
     private class TrieNode {
-        private char ch;
-        private TrieNode[] nexts;
-        public TrieNode(char ch) {
-            this.ch = ch;
-            this.nexts = new TrieNode[2];
+        private TrieNode[] next;
+        public TrieNode() {
+            this.next = new TrieNode[2];
         }
     }
 }
