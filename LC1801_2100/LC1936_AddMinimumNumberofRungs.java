@@ -41,6 +41,7 @@ public class LC1936_AddMinimumNumberofRungs {
     }
 
     // S2: TreeSet
+    // time = O(nlogn), space = O(n)
     public int addRungs2(int[] rungs, int dist) {
         // corner case
         if (rungs == null || rungs.length == 0 || dist <= 0) return -1;

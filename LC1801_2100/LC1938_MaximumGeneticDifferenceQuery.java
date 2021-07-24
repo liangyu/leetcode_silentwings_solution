@@ -30,34 +30,34 @@ public class LC1938_MaximumGeneticDifferenceQuery {
      */
     // time = O(m + n), space = O(m + n)
     public int[] maxGeneticDifference(int[] parents, int[][] queries) {
-        int[] res = new int[queries.length];
-
-        HashMap<Integer, List<Integer>> graph = new HashMap<>();
-        int rootVal = -1;
-        for (int i = 0; i < parents.length; i++) { // O(m)
-            if (parents[i] != -1) {
-                graph.putIfAbsent(parents[i], new ArrayList<>());
-                graph.get(parents[i]).add(i);
-            } else rootVal = i;
-        }
-
         TrieNode root = new TrieNode();
-        HashMap<Integer, List<int[]>> map = new HashMap<>();
-        for (int i = 0; i < queries.length; i++) { // O(n)
-            int[] q = queries[i];
-            int node = q[0], val = q[1];
-            map.putIfAbsent(node, new ArrayList<>());
-            map.get(node).add(new int[]{val, i});
+        HashMap<Integer, List<int[]>> map = new HashMap<>(); // node -> {val, idx}
+
+        for (int i = 0; i < queries.length; i++) {
+            map.putIfAbsent(queries[i][0], new ArrayList<>());
+            map.get(queries[i][0]).add(new int[]{queries[i][1], i});
         }
 
-        dfs(root, graph, map, rootVal, res);
+        int n = parents.length;
+        int topNode = -1;
+        HashMap<Integer, List<Integer>> children = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            if (parents[i] != -1) {
+                children.putIfAbsent(parents[i], new ArrayList<>());
+                children.get(parents[i]).add(i);
+            } else topNode = i; // root
+        }
+
+        int[] res = new int[queries.length];
+        dfs(topNode, map, children, root, res);
         return res;
     }
 
-    private void dfs(TrieNode root, HashMap<Integer, List<Integer>> graph, HashMap<Integer, List<int[]>> map, int cur, int[] res) {
+    private void dfs(int cur, HashMap<Integer, List<int[]>> map, HashMap<Integer, List<Integer>> children, TrieNode root, int[] res) {
+        // globally use the same trie -> built trie
         TrieNode node = root;
-        for (int k = 31; k >= 0; k--) {
-            int d = ((cur >> k) & 1);
+        for (int i = 31; i >= 0; i--) {
+            int d = ((cur >> i) & 1);
             if (node.next[d] == null) {
                 node.next[d] = new TrieNode();
             }
@@ -66,33 +66,35 @@ public class LC1938_MaximumGeneticDifferenceQuery {
         }
 
         if (map.containsKey(cur)) {
-            for (int[] child : map.get(cur)) {
+            for (int[] q : map.get(cur)) {
+                int val = q[0], idx = q[1], ans = 0;
                 node = root;
-                int val = child[0], idx = child[1], ans = 0;
-                for (int k = 31; k >= 0; k--) {
-                    int d = ((val >> k) & 1);
+                for (int i = 31; i >= 0; i--) {
+                    int d = ((val >> i) & 1);
                     if (node.next[1 - d] == null || node.next[1 - d].count == 0) {
                         node = node.next[d];
-                        ans = ans * 2 + 0;
+                        ans = ans * 2 + d;
                     } else {
                         node = node.next[1 - d];
-                        ans = ans * 2 + 1;
+                        ans = ans * 2 + (1 - d);
                     }
                 }
-                res[idx] = ans;
+                res[idx] = ans ^ val;
             }
         }
 
-        if (graph.containsKey(cur)) {
-            for (int c : graph.get(cur)) {
-                dfs(root, graph, map, c, res);
+        // dfs
+        if (children.containsKey(cur)) {
+            for (int child : children.get(cur)) {
+                dfs(child, map, children, root, res);
             }
         }
 
-        // setback the count to start fresh in the following round
+        // backtracing
         node = root;
-        for (int k = 31; k >= 0; k--) {
-            node = node.next[(cur >> k) & 1];
+        for (int i = 31; i >= 0; i--) {
+            int d = ((cur >> i) & 1);
+            node = node.next[d];
             node.count--;
         }
     }
@@ -106,3 +108,16 @@ public class LC1938_MaximumGeneticDifferenceQuery {
         }
     }
 }
+/**
+ * ref: LC421
+ * O(32n)来建trie,如何提高效率，避免对每个query都建树
+ * 从上往下每多一个数就多一条支链
+ * 可以用dfs，progressively built trie
+ * 按照深度优先的顺序来建树 => 用hash来存query
+ * dfs要记得回溯 => trie不仅要增加结点，还要能够减少结点 => ref: LC212
+ * 每个结点增加一个属性，count，用来标记这个结点是否被删除了！！！
+ * 总结下来要解决以下三个问题：
+ * 1. how to pick a from an array so that maximize a^b
+ * 2. DFS, solve queries when traversing the tree
+ * 3. how to deal with backtracing when DFS for trie (i.e. delete nodes in Trie)
+ */

@@ -1,5 +1,5 @@
 package LC1801_2100;
-
+import java.util.*;
 public class LC1937_MaximumNumberofPointswithCost {
     /**
      * You are given an m x n integer matrix points (0-indexed). Starting with 0 points, you want to maximize the
@@ -38,34 +38,44 @@ public class LC1937_MaximumNumberofPointswithCost {
         if (points == null || points.length == 0 || points[0] == null || points[0].length == 0) return 0;
 
         int m = points.length, n = points[0].length;
-        long[][] f = new long[m][n];
 
-        // init
-        for (int j = 0; j < n; j++) f[0][j] = points[0][j];
+        long[][] dp = new long[m][n];
+        for (int i = 0; i < m; i++) Arrays.fill(dp[i], Integer.MIN_VALUE);
+        for (int j = 0; j < n; j++) dp[0][j] = points[0][j];
+
 
         for (int i = 1; i < m; i++) {
-            long[] left = new long[n];
-            long[] right = new long[n];
-
-            left[0] = f[i - 1][0] + 0;
-            for (int k = 1; k < n; k++) {
-                left[k] = Math.max(left[k - 1], f[i - 1][k] + k);
-            }
-
-            right[n - 1] = f[i - 1][n - 1] - (n - 1);
-            for (int k = n - 2; k >= 0; k--) {
-                right[k] = Math.max(right[k + 1], f[i - 1][k] - k);
-            }
-
+            long rollingMax = Long.MIN_VALUE;
             for (int j = 0; j < n; j++) {
-                f[i][j] = Math.max(left[j] - j, right[j] + j) + points[i][j];
+                rollingMax = Math.max(rollingMax, dp[i - 1][j] + j);
+                dp[i][j] = Math.max(dp[i][j], rollingMax + points[i][j] - j);
+            }
+            rollingMax = Long.MIN_VALUE;
+            for (int j = n - 1; j >= 0; j--) {
+                rollingMax = Math.max(rollingMax, dp[i - 1][j] - j);
+                dp[i][j] = Math.max(dp[i][j], rollingMax + points[i][j] + j);
             }
         }
 
-        long res = 0;
+        long res = Long.MIN_VALUE;
         for (int j = 0; j < n; j++) {
-            res = Math.max(res, f[m - 1][j]);
+            res = Math.max(res, dp[m - 1][j]);
         }
         return res;
     }
 }
+/**
+ * dp[i][j]: starting from the first row until i-th row, and you pick points[i][j], then the maximum points you can obtain
+ * for (int i = 0; i < m; i++) {
+ *     for (int j = 0; j < n; j++) {
+ *         for (int k = 0; k < n; k++) {
+ *             dp[i][j] = max{dp[i - 1][k] + points[i][j] - Math.abs(j - k)};
+ *         }
+ *     }
+ * }
+ * time = O(m*n^2) => 10^10 TLE
+ * dp[i][j] = max{dp[i - 1][k] + k} + points[i][j] - j;   k = 0, 1, 2, ..., j  (k <= j)
+ * p[i][j] = max{dp[i - 1][k] - k} + points[i][j] + j;   k = j+1,j+2, j+3, ..., n-1 (k > j)
+ * rolling max => 均摊O(1)
+ *
+ */

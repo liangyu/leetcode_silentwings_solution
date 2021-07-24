@@ -27,77 +27,81 @@ public class LC212_WordSearchII {
     private static final int[][] DIRECTIONS = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
     public List<String> findWords(char[][] board, String[] words) {
         List<String> res = new ArrayList<>();
+
+        // build trie
+        TrieNode root = new TrieNode();
+        for (String word : words) {
+            TrieNode node = root;
+            for (char ch : word.toCharArray()) {
+                if (node.next[ch - 'a'] == null) {
+                    node.next[ch - 'a'] = new TrieNode();
+                }
+                node = node.next[ch - 'a'];
+                node.count++;
+            }
+            node.isWord = true;
+        }
+
         int m = board.length, n = board[0].length;
         boolean[][] visited = new boolean[m][n];
-        Trie trie = new Trie();
-
-        for (String word : words) trie.addWord(word);
+        HashSet<String> set = new HashSet<>();
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                dfs(board, i, j, new StringBuilder(), trie.root, res, visited, trie.root);
+                TrieNode node = root;
+                visited[i][j] = true;
+                dfs(board, i, j, root, node, visited, new StringBuilder(), set);
+                visited[i][j] = false;
             }
         }
+
+        for (String s : set) res.add(s);
         return res;
     }
 
-    private void dfs(char[][] board, int i, int j, StringBuilder path, TrieNode cur, List<String> res, boolean[][] visited, TrieNode root)  {
+    private void dfs(char[][] board, int i, int j, TrieNode root, TrieNode node, boolean[][] visited, StringBuilder path, HashSet<String> set) {
         int m = board.length, n = board[0].length;
-        // base case - fail
-        if (i < 0 || i >= m || j < 0 || j >= n || visited[i][j] || cur.nexts[board[i][j] - 'a'] == null || cur.nexts[board[i][j] - 'a'].count == 0) return;
+        // base case
+        if (node.next[board[i][j] - 'a'] == null || node.next[board[i][j] - 'a'].count == 0) return;
 
-        visited[i][j] = true;
-        TrieNode next = cur.nexts[board[i][j] - 'a'];
+        TrieNode next = node.next[board[i][j] - 'a'];
         path.append(board[i][j]);
+
+        // check if next is a word as the first node in dfs is root
         if (next.isWord) {
-            String s = path.toString();
-            res.add(s);
+            String word = path.toString();
+            set.add(word);
+            remove(root, word);
             next.isWord = false;
-            remove(root, s);
         }
+
         for (int[] dir : DIRECTIONS) {
             int ii = i + dir[0];
             int jj = j + dir[1];
-            dfs(board, ii, jj, path, next, res, visited, root);
+            if (ii >= 0 && ii < m && jj >= 0 && jj < n && !visited[ii][jj]) {
+                visited[ii][jj] = true;
+                dfs(board, ii, jj, root, next, visited, path, set);
+                visited[ii][jj] = false;
+            }
         }
-        visited[i][j] = false;
         path.setLength(path.length() - 1);
     }
 
-    private void remove(TrieNode cur, String word) {
+    private void remove(TrieNode root, String word) {
+        TrieNode node = root;
         for (char ch : word.toCharArray()) {
-            cur = cur.nexts[ch - 'a'];
-            cur.count--;
+            node = node.next[ch - 'a'];
+            node.count--;
         }
     }
 
     private class TrieNode {
-        private char ch;
-        private TrieNode[] nexts;
+        private TrieNode[] next;
         private boolean isWord;
         private int count;
-        public TrieNode(char ch) {
-            this.ch = ch;
-            this.nexts = new TrieNode[26];
+        public TrieNode() {
+            this.next = new TrieNode[26];
             this.isWord = false;
             this.count = 0;
-        }
-    }
-
-    private class Trie {
-        private TrieNode root;
-        public Trie() {
-            root = new TrieNode('\0');
-        }
-
-        private void addWord(String word) {
-            char[] chars = word.toCharArray();
-            TrieNode cur = root;
-            for (char ch : chars) {
-                if (cur.nexts[ch - 'a'] == null) cur.nexts[ch - 'a'] = new TrieNode(ch);
-                cur = cur.nexts[ch - 'a'];
-                cur.count++;
-            }
-            cur.isWord = true;
         }
     }
 }
