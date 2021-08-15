@@ -53,18 +53,28 @@ public class LC1944_NumberofVisiblePeopleinaQueue {
     // S2: stack
     // time = O(n), space = O(n)
     public int[] canSeePersonsCount2(int[] heights) {
-        // corner case
-        if (heights == null || heights.length == 0) return new int[0];
-
         int n = heights.length;
-        int[] res = new int[n];
         Stack<Integer> stack = new Stack<>();
 
-        for (int i = 0; i < n; i++) {
-            while (!stack.isEmpty() && heights[stack.peek()] <= heights[i]) res[stack.pop()]++;
-            if (!stack.isEmpty()) res[stack.peek()]++;
+        int[] res = new int[n];
+
+        for (int i = n - 1; i >= 0; i--) {
+            int count = 0;
+            while (!stack.isEmpty() && heights[i] > heights[stack.peek()]) { // 不遵循递减规律
+                count++;
+                stack.pop();
+            }
+            if (!stack.isEmpty()) count++;
+            res[i] = count;
             stack.push(i);
         }
         return res;
     }
 }
+/**
+ * next greater element => 单调栈
+ * 最多会增加到多少呢？一直到大于A的next greater element就到头了，对A来说能看到的就是BCDE
+ * A的左边是A',中间的BCD是A'看不到的 => 不管A'比A大还是比A小，BCD是看不到，可以扔掉 => 从右往左是一个递减的序列
+ * 逆序，从右往左维护一个单调递减栈
+ * 退栈是因为用不到了，同时需要计数
+ */

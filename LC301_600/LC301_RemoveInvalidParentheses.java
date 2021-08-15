@@ -23,7 +23,7 @@ public class LC301_RemoveInvalidParentheses {
         // corner case
         if (s == null) return res;
 
-        int[] rmlr = calrmlr(s); // 能够预算去掉多少左括号，去掉多少右括号
+        int[] rmlr = calrmlr(s);
         dfs(s, new StringBuilder(), 0, rmlr[0], rmlr[1], 0, res);
         return res;
     }
@@ -48,7 +48,7 @@ public class LC301_RemoveInvalidParentheses {
             // case 1.1: remove '('
             dfs(s, path, idx + 1, rml - 1, rmr, delta, res);
 
-            // case 1.2: keep '(' -> 连续的多个相同括号，要加就全都得加，否则就会有重复！！！
+            // case 1.2: keep '('
             int i = idx, k = 0;
             while (i < s.length() && s.charAt(i) == '(') {
                 path.append('(');
@@ -77,7 +77,6 @@ public class LC301_RemoveInvalidParentheses {
         }
     }
 
-    // 预先计算要去掉多少左括号，多少右括号，大大减少了时间复杂度！！！
     private int[] calrmlr(String s) {
         int rml = 0, rmr = 0;
         for (char c : s.toCharArray()) {
@@ -96,42 +95,47 @@ public class LC301_RemoveInvalidParentheses {
     private int maxLen = 0;
     public List<String> removeInvalidParentheses2(String s) {
         List<String> res = new ArrayList<>();
-        // corner case
-        if (s == null) return res;
+
+        int count = 0, remove = 0;
+        for (char ch : s.toCharArray()) {
+            if (ch == '(') count++;
+            else if (ch == ')') count--; // allow other chars to exist
+            if (count < 0) {
+                remove++;
+                count = 0;
+            }
+        }
+        remove += count;
+        maxLen = s.length() - remove;
 
         String curStr = "";
-        dfs(curStr, s, 0, 0, res); // pos, count
+        dfs(s, 0, curStr, 0, res);
         return res;
     }
 
-    private void dfs(String curStr, String s, int i, int count, List<String> res) {
+    private void dfs(String s, int i, String curStr, int count, List<String> res) {
         // base case
-        if (count < 0) return; // 非法条件
+        if (count < 0) return;
+        if (curStr.length() > maxLen) return;
         if (i == s.length()) {
-            if (count == 0) {
-                if (curStr.length() > maxLen) {
-                    res.clear();
-                    res.add(curStr);
-                    maxLen = curStr.length();
-                } else if (curStr.length() == maxLen) {
-                    res.add(curStr);
-                }
+            if (count == 0 && curStr.length() == maxLen) {
+                res.add(curStr);
             }
             return;
         }
 
         // case 0: 非括号字符 -> 直接加入，不影响括号之间的匹配
         if (s.charAt(i) != '(' && s.charAt(i) != ')') {
-            dfs(curStr + s.substring(i, i + 1), s, i + 1, count, res);
-            return;
-        }
+            dfs(s, i + 1, curStr + s.substring(i, i + 1), count, res);
+        } else {
+            // case 1: choose s[i]
+            dfs(s, i + 1, curStr + s.substring(i, i + 1), count + (s.charAt(i) == '(' ? 1 : -1), res);
 
-        // case 1: choose s[i]
-        dfs(curStr + s.substring(i, i + 1), s, i + 1, count + (s.charAt(i) == '(' ? 1 : -1), res);
-
-        // case 2: not choose s[i] -> 避免做重复的DFS的技巧，不同路径得到同一个结果，及时剪枝！！！
-        if (curStr.length() == 0 || s.charAt(i) != curStr.charAt(curStr.length() - 1)) { // 不选
-            dfs(curStr, s, i + 1, count, res);
+            // case 2: not choose s[i] -> 避免做重复的DFS的技巧，不同路径得到同一个结果，及时剪枝！！！
+            if (curStr.length() == 0 || s.charAt(i) != curStr.charAt(curStr.length() - 1)) { // Important: pruning!!!
+                // not take
+                dfs(s, i + 1, curStr, count, res); // This path is not always taken!
+            }
         }
     }
 }
@@ -173,4 +177,39 @@ public class LC301_RemoveInvalidParentheses {
  *   cur = (((
  *         OOX
  *         XOO (与上面重复)
+ *
+ *
+ *  minimum number of removed parentheses
+ *  print
+ *  count: unmatched left parentheses
+ *  maxLen => LC921的方法
+ *  ((()))) ...
+ *  减掉哪一个是任意都可以的。没法用贪心精准的抓准如何去删除右括号。
+ *  比较笨的办法就是每个括号尝试一下
+ *  O(2^n)
+ *  pruning:
+ *  1. count < 0 -> 当前走不下去了，这条路没救了
+ *  2. 最多能保留多少也能知道， size > maxLen
+ *  本题的考点不在于pruning，而在于去重！
+ *  ((((  ))
+ *  删哪2个？-> 任意2个都可以
+ *  2^4 = 16种可能性，其中合法的为C(4,2) = 6，但最终答案只有1
+ *  这个是本题最重要的地方，把这个解决了，复杂度会大幅降低！
+ *  => dfs中经常用到的一个技巧：search in an array 如何正确设计dfs的方法能够去重！！！
+ *  如何避免？
+ *  经典方法：   A * A * A * A
+ *         B   x   x   x   x => B
+ *         B   x   x   x   A => BA
+ *         B   x   x   A   A => BAA  所有取2个A的情况，我就已经枚举完了
+ *         B   x   A   A   A => BAAA 强制你必须选，取3个A方案就得到了
+ *         B   A   A   A   A => BAAAA 取4个A的方案也就得到了
+ *
+ *  策略：
+ *  1. if s[i] != ret.back()
+ *     ret+s[i] -> ...
+ *     ret -> ...
+ *  2. if s[i] == ret.back()
+ *     ret+s[i] -> ...
+ * 本质：永远只会取最后的要求个数的A,用这种机制可以去重，不需要用set。
+ * 在很多dfs里都用到来去重。
  */

@@ -27,30 +27,37 @@ public class LC1249_MinimumRemovetoMakeValidParentheses {
      * @param s
      * @return
      */
-    // time = O(n), space = O(n）
+    // time = O(n), space = O(n)
     public String minRemoveToMakeValid(String s) {
         // corner case
         if (s == null || s.length() == 0) return "";
 
-        Stack<Integer> stack = new Stack<>(); // 存放左括号来和右括号去配对check，一旦出现则互相抵消，剩下的就是要被删除的
-        HashSet<Integer> set = new HashSet<>(); // 存放所有要被删除的元素index
-
-        for (int i = 0; i < s.length();i++) { // O(n)
-            char c = s.charAt(i);
-            if (c == '(') stack.push(i); // 遇到左括号依然按照传统套路去压栈
-            else if (c == ')') {
-                if (stack.isEmpty()) set.add(i); // 无对应左括号，则右括号要放入要被删除元素的set里
-                else stack.pop(); // 遇到右括号如果有对应的左括号，则是合法成对，右括号可无视，左括号出栈
+        Stack<Integer> stack = new Stack<>();
+        char[] chars = s.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            if (chars[i] == '(') {
+                stack.push(i);
+            } else if (chars[i] == ')') {
+                if (!stack.isEmpty()) stack.pop();
+                else chars[i] = '\0';
             }
         }
+        while (!stack.isEmpty()) chars[stack.pop()] = '\0'; // 剩下没匹配完的左括号必须删除
 
-        // stack里剩下的左括号都是没有对应右括号匹配的，因此也要加入到被删除的set里
-        while (!stack.isEmpty()) set.add(stack.pop());
         StringBuilder sb = new StringBuilder();
-        for (int i = 0 ; i < s.length(); i++) { // O(n)
-            // 除去set里都是要被删除的元素，其他可以无脑加入StringBuilder出答案
-            if (!set.contains(i)) sb.append(s.charAt(i));
+        for (char c : chars) {
+            if (c != '\0') sb.append(c);
         }
         return sb.toString();
     }
 }
+/**
+ * ref：LC921: # of minimum remove minimum # of parentheses
+ *      LC301: all valid strings by removing minimum # of parentheses => dfs
+ *      LC1249: any valid strings by removing minimum # of parentheses
+ * 括号：Stack: 轻而易举的找到括号的匹配
+ *      Greedy: # of unmatched left parenthesis
+ *             when count < 0
+ *      (( )) ) ... 要至少删掉一个右括号，标记下要删的就是这个右括号，输出一种怎么方便怎么来 => 删掉最后一个
+ *      贪心思想变现 => 删掉unmatched左括号
+ */

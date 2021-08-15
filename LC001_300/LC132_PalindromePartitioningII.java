@@ -51,6 +51,7 @@ public class LC132_PalindromePartitioningII {
         }
         return isPalin;
     }
+
     // S2
     // time = O(n^2), space = O(n^2)
     public int minCut2(String s) {

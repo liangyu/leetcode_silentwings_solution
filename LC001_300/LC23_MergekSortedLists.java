@@ -21,7 +21,7 @@ public class LC23_MergekSortedLists {
      * @param lists
      * @return
      */
-    // time = O(nlogk), space = O(k)  k: the number of linked lists, n: total number of nnodes
+    // time = O(nlogk), space = O(k)  k: the number of linked lists, n: total number of nodes
     public ListNode mergeKLists(ListNode[] lists) {
         // corner case
         if (lists == null || lists.length == 0) return null;

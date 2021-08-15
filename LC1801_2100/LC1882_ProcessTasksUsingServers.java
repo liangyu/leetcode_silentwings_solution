@@ -102,8 +102,8 @@ public class LC1882_ProcessTasksUsingServers {
     }
 }
 /**
- * FreePQ{weight, idx}
- * BusyPQ{timeToWork, weight, idx}
+ * FreePQ{weight, idx}   已经开工的
+ * BusyPQ{timeToWork, weight, idx}  还没开工的服务器，根据未来预期的开工时刻排序的
  * 若干个可以开工的
  * 会出现我手头机器比较多，若干个机器开工时间不同，但都比当前时间晚
  * 8:00

@@ -28,7 +28,7 @@ public class LC621_TaskScheduler {
      * @return
      */
     // S1: PriorityQueue
-    // time = O(n), space = O(1)
+    // time = O(mlogm), space = O(m)
     public int leastInterval(char[] tasks, int n) {
         // corner case
         if (tasks == null || tasks.length == 0 || n < 0) return 0;
@@ -79,6 +79,8 @@ public class LC621_TaskScheduler {
     }
 }
 /**
+ * S1: 全模拟 -> 打印具体方案
+ * 任务总数 ~ 10^4 用pq可以接受
  * [A B C] [A B C] [A B C] [A B C] [A B X] [A B X]
  * A X X A X X A ...
  * [A B C] [A B D] [A B C] [A D B]
@@ -98,6 +100,9 @@ public class LC621_TaskScheduler {
  * 频次高的元素应该尽量紧凑的频率高的去使用它，瓶颈就在这个地方
  * 非常紧凑的排列方式，每一轮取高频的n+1个
  *
+ * 永远是每次我们取当前频次最高的n种元素，每种元素取1个，如果队列里没有n种元素，就拿idle来凑
+ * 最后一轮不需要加idle -> 看temp，不需要塞回pq
+ *
  * S2:
  * A A A A A
  * B B B B C
@@ -109,5 +114,4 @@ public class LC621_TaskScheduler {
  * X X X X X
  *
  * 贪心法 => 一开始要保证它们分的足够开，强制分开至少为n
- *
  */

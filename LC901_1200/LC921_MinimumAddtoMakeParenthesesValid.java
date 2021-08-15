@@ -25,20 +25,32 @@ public class LC921_MinimumAddtoMakeParenthesesValid {
      */
     // time = O(n), space = O(1)
     public int minAddToMakeValid(String s) {
-        // corner case
-        if (s == null || s.length() == 0) return 0;
-
-        int delta = 0, count = 0;
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            if (c == '(') delta++;
-            else delta--;
-            if (delta < 0) {
-                count++;
-                delta = 0;
+        int count = 0, res = 0;
+        for (char c : s.toCharArray()) {
+            if (c == '(') count++;
+            else count--;
+            if (count < 0) {
+                res++;
+                count = 0;
             }
         }
-        if (delta > 0) count += delta;
-        return count;
+        res += count;
+        return res;
     }
 }
+/**
+ * 对于括号，无非2种做法：
+ * 1. stack: ( -> enter stack, ) -> pop out of stack
+ * 好处：针对每一个右括号，你可以找到与之匹配的最近的左括号 ((**))
+ * 2. Greedy: 维护一个计数器， count -> the number of unmatched left parentheses (one pass) 当前未被匹配的左括号
+ * 非常经典，要掌握！！！
+ * (()))((
+ * ((...    count = 2
+ * (() ...  count = 1
+ * (()) ... count = 0
+ * (())) .. count = -1 -> 无论后面怎么操作，无法挽救右括号，必须出手做一次操作使之变得合法 => count = 0   + left
+ * (()))( . count = 1
+ * (()))((  count = 2 -> 不得不出手，最小出手次数 = 2 -> count = 0    + 2 right
+ * follow-up: minimum deletion -> 答案跟这个一模一样！
+ *
+ */

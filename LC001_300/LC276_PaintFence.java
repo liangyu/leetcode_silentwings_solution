@@ -27,7 +27,7 @@ public class LC276_PaintFence {
         if (n == 1) return k;
 
         int same = k, diff = k * (k - 1);
-        for (int i = 3; i <= n; i++) {
+        for (int i = 3; i <= n; i++) { // 注意: 这里 i <= n!!!
             int same_tmp = same, diff_tmp = diff;
             same = diff_tmp;
             diff = (same_tmp + diff_tmp) * (k - 1);

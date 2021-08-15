@@ -98,4 +98,37 @@ public class LC1943_DescribethePainting {
         }
         return res;
     }
+
+    // S3
+    // time = O(nlogn), space = O(n)
+    public List<List<Long>> splitPainting3(int[][] segments) {
+        List<List<Long>> res = new ArrayList<>();
+        TreeMap<Long, Long> pos2diff = new TreeMap<>();
+
+        for (int[] seg : segments) {
+            pos2diff.put((long)seg[0], pos2diff.getOrDefault((long)seg[0], 0L) + (long)seg[2]);
+            pos2diff.put((long)seg[1], pos2diff.getOrDefault((long)seg[1], 0L) - (long)seg[2]);
+        }
+
+        long sum = 0;
+        long start = -1, end = -1;
+        for (long x : pos2diff.keySet()) {
+            long pos = x, diff = pos2diff.get(x);
+            if (start == -1) start = pos;
+            else {
+                end = pos;
+                res.add(Arrays.asList(start, end, sum));
+                start = end;
+            }
+            sum += diff;
+            if (sum == 0) start = -1;
+        }
+        return res;
+    }
 }
+/**
+ * each segment was painted with a "unique" color
+ * 每一个起点和终点都会引起色彩的变化
+ * sum == 0 => 色彩集合为0，不用记录
+ * 暴力扫描线
+ */

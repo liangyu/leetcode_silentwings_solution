@@ -17,10 +17,20 @@ public class LC1942_TheNumberoftheSmallestUnoccupiedChair {
      *
      * Input: times = [[1,4],[2,3],[4,6]], targetFriend = 1
      * Output: 1
+     *
+     * Constraints:
+     *
+     * n == times.length
+     * 2 <= n <= 10^4
+     * times[i].length == 2
+     * 1 <= arrivali < leavingi <= 10^5
+     * 0 <= targetFriend <= n - 1
+     * Each arrivali time is distinct.
      * @param times
      * @param targetFriend
      * @return
      */
+    // S1: TreeSet + HashMap
     // time = O(nlogn), space = O(n)
     public int smallestChair(int[][] times, int targetFriend) {
         // corner case
@@ -52,4 +62,43 @@ public class LC1942_TheNumberoftheSmallestUnoccupiedChair {
         }
         return -1;
     }
+
+    // S2: PQ
+    // time = O(nlogn), space = O(n)
+    public int smallestChair2(int[][] times, int targetFriend) {
+        // corner case
+        if (times == null || times.length == 0 || times[0] == null || times[0].length == 0) return -1;
+
+        PriorityQueue<Integer> empty = new PriorityQueue<>();
+        PriorityQueue<int[]> used = new PriorityQueue<>((o1, o2) -> o1[0] - o2[0]);
+
+        for (int i = 0; i < 10000; i++) empty.offer(i);
+
+        int[][] time = new int[times.length][3];
+        for (int i = 0; i < times.length; i++) {
+            time[i][0] = times[i][0];
+            time[i][1] = times[i][1];
+            time[i][2] = i;
+        }
+        Arrays.sort(time, (o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o1[1] - o2[1]); // {start, end, personId}
+
+        for (int[] t : time) {
+            int start = t[0];
+            int end = t[1];
+            int person = t[2];
+
+            while (!used.isEmpty() && used.peek()[0] <= start) empty.offer(used.poll()[1]);
+
+            int chair = empty.poll();
+            if (person == targetFriend) return chair;
+            used.offer(new int[]{end, chair});
+        }
+        return 0;
+    }
 }
+/**
+ * 模拟的过程
+ * PQ_empty: [0，1，2，3，...10000]
+ * 优先分配id小的 -> 放到pq里
+ * PQ_used: [{returnTime, ID}, {}, {}]
+ */

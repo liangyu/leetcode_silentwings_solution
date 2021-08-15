@@ -69,4 +69,27 @@ public class LC300_LongestIncreasingSubsequence {
         }
         return start;
     }
+
+    // S2.2: BS (prefer!)
+    // time = O(nlogn), space = O(n)
+    public int lengthOfLIS3(int[] nums) {
+        // corner case
+        if (nums == null || nums.length == 0) return 0;
+
+        int n = nums.length;
+        int[] buffer = new int[n];
+
+        int p = 0; // 当前LIS的长度
+        for (int i = 0; i < n; i++) {
+            int left = 0, right = p;
+            while (left < right) {
+                int mid = left + (right - left) / 2;
+                if (buffer[mid] < nums[i]) left = mid + 1;
+                else right = mid;
+            }
+            if (left == p) p++;
+            buffer[left] = nums[i];
+        }
+        return p;
+    }
 }

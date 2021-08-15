@@ -15,68 +15,123 @@ public class LC315_CountofSmallerNumbersAfterSelf {
      * @param nums
      * @return
      */
-    // time = O(nlogn), space = O(n)
+    // S1: merge sort + bs
+    // time = O(nlogn * logn), space = O(n)
+    private int[] sorted;
+    private int[] ans;
     public List<Integer> countSmaller(int[] nums) {
         List<Integer> res = new ArrayList<>();
         // corner case
         if (nums == null || nums.length == 0) return res;
 
         int n = nums.length;
-        int[] sorted = nums.clone();
-        int[] ans = new int[n];
-        helper(nums, sorted, 0, n - 1, ans);
+        sorted = nums.clone();
+        ans = new int[n];
+
+        helper(nums, 0, n - 1);
+
         for (int num : ans) res.add(num);
         return res;
     }
 
-    private void helper(int[] nums, int[] sorted, int a, int b, int[] ans) {
-        if (a >= b) return;
+    private void helper(int[] nums, int left, int right) {
+        if (left >= right) return;
 
-        int mid = a + (b - a) / 2;
-        helper(nums, sorted, a, mid, ans);
-        helper(nums, sorted, mid + 1, b, ans);
+        int mid = left + (right - left) / 2;
+        helper(nums, left, mid);
+        helper(nums, mid + 1, right);
 
-        for (int i = a; i <= mid; i++) {
-            int idx = findIndex(sorted, mid + 1, b, nums[i]);
-            ans[i] += idx - (mid + 1);
-        }
-//        Arrays.sort(sorted, a, b + 1);
-
-        // merge sort
-        int[] temp = new int[b - a + 1];
-        int i = a, j = mid + 1, p = 0;
-        while (i <= mid && j <= b) {
-            if (sorted[i] <= sorted[j]) {
-                temp[p] = sorted[i];
-                i++;
-            } else {
-                temp[p] = sorted[j];
-                j++;
-            }
-        }
-        while (i <= mid) {
-            temp[p] = sorted[i];
-            i++;
-            p++;
-        }
-        while (j <= b) {
-            temp[p] = sorted[j];
-            j++;
-            p++;
+        for (int i = left; i <= mid; i++) {
+            int idx = lowerBound(sorted, mid + 1, right, nums[i]);
+            ans[i] += idx - (mid + 1) + 1;
         }
 
-        for (i = 0; i < b - a + 1; i++) {
-            sorted[a + i] = temp[i];
+        int[] temp = new int[right - left + 1];
+        int i = left, j = mid + 1, p = 0;
+        while (i <= mid && j <= right) {
+            if (sorted[i] <= sorted[j]) temp[p++] = sorted[i++];
+            else temp[p++] = sorted[j++];
+        }
+
+        while (i <= mid) temp[p++] = sorted[i++];
+        while (j <= right) temp[p++] = sorted[j++];
+
+        for (i = 0; i < right - left + 1; i++) {
+            sorted[i + left] = temp[i];
         }
     }
 
-    private int findIndex(int[] sorted, int left, int right, int target) {
+    private int lowerBound(int[] sorted, int left, int right, int target) {
         while (left < right) {
-            int mid = left + (right - left) / 2;
-            if (sorted[mid] < target) left = mid + 1;
-            else right = mid;
+            int mid = right - (right - left) / 2;
+            if (sorted[mid] < target) left = mid;
+            else right = mid - 1;
         }
-        return left;
+        return sorted[left] < target ? left : left - 1;
+    }
+
+    // S2: divide & conquer + merge sort
+    // time = O(nlogn), space = O(n)
+    private int[] index;
+    private int[] answer;
+    public List<Integer> countSmaller2(int[] nums) {
+        List<Integer> res = new ArrayList<>();
+        // corner case
+        if (nums == null || nums.length == 0) return res;
+
+        int n = nums.length;
+        answer = new int[n];
+        index = new int[n];
+        for (int i = 0; i < n; i++) index[i] = i;
+
+        partition(nums, 0, n - 1);
+
+        for (int num : answer) res.add(num);
+        return res;
+    }
+
+    private void partition(int[] nums, int a, int b) {
+        if (a >= b) return;
+
+        int m = a + (b - a) / 2;
+        partition(nums, a, m);
+        partition(nums, m + 1, b);
+
+        int i = a, j = m + 1;
+        while (i <= m && j <= b) {
+            if (nums[i] <= nums[j]) answer[index[i++]] += j - (m + 1);
+            else j++;
+        }
+        while (i <= m) answer[index[i++]] += j - (m + 1);
+
+        i = a;
+        j = m + 1;
+        int p = 0;
+        int[] temp = new int[b - a + 1];
+        int[] tempIdx = new int[b - a + 1];
+
+        while (i <= m && j <= b) {
+            if (nums[i] <= nums[j]) {
+                temp[p] = nums[i];
+                tempIdx[p++] = index[i++];
+            } else {
+                temp[p] = nums[j];
+                tempIdx[p++] = index[j++];
+            }
+        }
+        while (i <= m) {
+            temp[p] = nums[i];
+            tempIdx[p++] = index[i++];
+        }
+        while (j <= b) {
+            temp[p] = nums[j];
+            tempIdx[p++] = index[j++];
+        }
+
+        for (i = 0; i < temp.length; i++) {
+            nums[i + a] = temp[i];
+            index[i + a] = tempIdx[i];
+        }
     }
 }
 /**

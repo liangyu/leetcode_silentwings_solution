@@ -48,12 +48,10 @@ public class LC877_StoneGame {
 
         dp[a][b] = Math.max(presum[b] - presum[a - 1] - solve(piles, dp, presum, a + 1, b), presum[b] - presum[a - 1] - solve(piles, dp, presum, a, b - 1));
         return dp[a][b];
-
     }
 
     //  S2: dp
-    // S1: recursion
-    // time = O(2^n), space = O(n^2)
+    // time = O(n^2), space = O(n^2)
     public boolean stoneGame2(int[] piles) {
         // corner case
         if (piles == null || piles.length == 0) return true;

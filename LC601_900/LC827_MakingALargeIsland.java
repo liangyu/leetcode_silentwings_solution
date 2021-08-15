@@ -48,7 +48,7 @@ public class LC827_MakingALargeIsland {
                         int ii = i + dir[0];
                         int jj = j + dir[1];
                         if (ii >= 0 && ii < n && jj >= 0 && jj < n) {
-                            index = grid[ii][jj];
+                            index = grid[ii][jj]; // 因为grid[i][j]只有0或者1，为了区别开index,index必须从2开始！
                             if (index > 1 && set.add(index)) {
                                 cur += map.get(index);
                             }
@@ -63,7 +63,7 @@ public class LC827_MakingALargeIsland {
 
     private int dfs(int[][] grid, int i, int j, int index) {
         int n = grid.length, area = 0;
-        grid[i][j] = index;
+        grid[i][j] = index; // coloring the island with index!
         for (int[] dir : DIRECTIONS) {
             int ii = i + dir[0];
             int jj = j + dir[1];
