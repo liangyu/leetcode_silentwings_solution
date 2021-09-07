@@ -46,4 +46,30 @@ public class LC1229_MeetingScheduler {
         }
         return new ArrayList<>();
     }
+
+    // S2: Sweep Line
+    // time = O((m + n) * log(m + n)), space = O(m + n)
+    public List<Integer> minAvailableDuration2(int[][] slots1, int[][] slots2, int duration) {
+        List<int[]> list = new ArrayList<>();
+        for (int[] x : slots1) {
+            list.add(new int[]{x[0], 1});
+            list.add(new int[]{x[1], -1});
+        }
+        for (int[] x : slots2) {
+            list.add(new int[]{x[0], 1});
+            list.add(new int[]{x[1], -1});
+        }
+
+        Collections.sort(list, (o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o1[1] - o2[1]);
+
+        int count = 0, start = -1;
+        for (int[] x : list) {
+            count += x[1];
+            if (x[1] == 1 && count == 2) start = x[0];
+            else if (x[1] == -1 && count == 1 && x[0] - start >= duration) {
+                return Arrays.asList(start, start + duration);
+            }
+        }
+        return new ArrayList<>();
+    }
 }

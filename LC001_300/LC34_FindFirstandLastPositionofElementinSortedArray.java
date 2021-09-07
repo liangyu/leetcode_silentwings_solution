@@ -23,6 +23,7 @@ public class LC34_FindFirstandLastPositionofElementinSortedArray {
      * @param target
      * @return
      */
+    // S1: BS
     // time = O(logn), space = O(1)
     public int[] searchRange(int[] nums, int target) {
         int[] res = new int[2];
@@ -55,6 +56,37 @@ public class LC34_FindFirstandLastPositionofElementinSortedArray {
         if (nums[end] == target) res[1] = end; // last pos -> check end 1st
         else if (nums[start] == target) res[1] = start;
         else res[1] = -1;
+
+        return res;
+    }
+
+    // S2: BS
+    // time = O(logn), space = O(1)
+    public int[] searchRange2(int[] nums, int target) {
+        // corner case
+        if (nums == null || nums.length == 0) return new int[]{-1, -1};
+
+        int n = nums.length;
+        int[] res = new int[2];
+
+        // find first pos
+        int left = 0, right = n - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] < target) left = mid + 1;
+            else right = mid;
+        }
+        res[0] = (nums[left] == target ? left : -1);
+
+        // find last pos
+        left = 0;
+        right = n - 1;
+        while (left < right) {
+            int mid = right - (right - left) / 2;
+            if (nums[mid] <= target) left = mid;
+            else right = mid - 1;
+        }
+        res[1] = (nums[left] == target ? left : -1);
 
         return res;
     }

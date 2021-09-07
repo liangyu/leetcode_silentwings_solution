@@ -44,7 +44,7 @@ public class LC1838_FrequencyoftheMostFrequentElement {
     }
 
     // S1.2: Two Pointers 第二种写法
-    // time = O(n), space = O(n)
+    // time = O(nlogn), space = O(1)
     public int maxFrequency2(int[] nums, int k) {
         // corner case
         if (nums == null || nums.length == 0 || k <= 0) return 0;
@@ -66,6 +66,8 @@ public class LC1838_FrequencyoftheMostFrequentElement {
 }
 /**
  * [1, 2, (3), 4]
+ * 操作后最终得到的最高频率元素一定是数组中既有的元素
+ * 元素前面紧邻的元素变成该元素 -> 滑窗
  *  x x [j x x i-1 i i+1] x x
  *  nums[i] => [j:i], count
  *  nums[i + 1] => [jj: i + 1], count += (i - j + 1) * (nums[i + 1] - nums[i])

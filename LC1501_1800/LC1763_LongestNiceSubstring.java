@@ -20,7 +20,9 @@ public class LC1763_LongestNiceSubstring {
      * @param s
      * @return
      */
-    public static String longestNiceSubstring(String s) {
+    // S1: DFS
+    // time = O(n^2), space = O(n)
+    public String longestNiceSubstring(String s) {
         // corner case
         if (s == null || s.length() == 0) return "";
 
@@ -34,5 +36,61 @@ public class LC1763_LongestNiceSubstring {
             return sub1.length() >= sub2.length() ? sub1 : sub2;
         }
         return s;
+    }
+
+    // S2: Two Pointers
+    // time = O(26n) = O(n), space = O(1)
+    public String longestNiceSubstring2(String s) {
+        // corner case
+        if (s == null || s.length() == 0) return "";
+
+        int maxLen = -1, start = -1;
+        for (int m = 1; m <= 26; m++) {
+            int[] res = helper(s.toCharArray(), m); // [len, start]
+            if (res[0] > maxLen) {
+                maxLen = res[0];
+                start = res[1];
+            } else {
+                if (maxLen == res[0] && res[1] < start) start = res[1]; // earliest occurrence
+            }
+        }
+        return maxLen != -1 ? s.substring(start, start + maxLen) : "";
+    }
+
+    private int[] helper(char[] s, int k) {
+        HashMap<Character, Integer> map = new HashMap<>();
+        HashMap<Character, Integer> copy = new HashMap<>();
+
+        int n = s.length, j = 0;
+        int start = -1, len = -1;
+        for (int i = 0; i < n; i++) {
+            while (j < n && (map.size() < k || map.size() == k && map.containsKey(Character.toLowerCase(s[j])))) {
+                // 26 -> all transform to lowercase, at the same time keep an original copy
+                map.put(Character.toLowerCase(s[j]), map.getOrDefault(Character.toLowerCase(s[j]), 0) + 1);
+                copy.put(s[j], copy.getOrDefault(s[j], 0) + 1);
+                j++;
+            }
+            if (map.size() < k) break; // not sufficient
+            // check if the window is valid
+            boolean flag = true;
+            for (char key : map.keySet()) {
+                if (!copy.containsKey(key) || !copy.containsKey(Character.toUpperCase(key))) { // check if the val is 0
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) {
+                if (j - i > len) {
+                    len = j - i;
+                    start = i;
+                }
+            }
+            // shrink i at the left end
+            map.put(Character.toLowerCase(s[i]), map.get(Character.toLowerCase(s[i])) - 1);
+            if (map.get(Character.toLowerCase(s[i])) == 0) map.remove(Character.toLowerCase(s[i]));
+            copy.put(s[i], copy.get(s[i]) - 1);
+            if (copy.get(s[i]) == 0) copy.remove(s[i]);
+        }
+        return new int[]{len ,start};
     }
 }

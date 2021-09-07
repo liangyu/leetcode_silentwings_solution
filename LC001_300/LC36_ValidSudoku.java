@@ -34,6 +34,7 @@ public class LC36_ValidSudoku {
      * @param board
      * @return
      */
+    // S1: DFS
     // time = O(1), space = O(1)   // 9 * 9 -> O(1)
     public boolean isValidSudoku(char[][] board) {
         // corner case
@@ -68,6 +69,45 @@ public class LC36_ValidSudoku {
             for (int j = (c / 3) * 3; j < (c / 3 + 1) * 3; j++) {
                 if (i == r && j == c) continue;;
                 if (board[i][j] == board[r][c]) return false;
+            }
+        }
+        return true;
+    }
+
+    // S1.2: DFS
+    // time = O(1), space = O(1)
+    public boolean isValidSudoku2(char[][] board) {
+        // corner case
+        if (board == null || board.length == 0 || board[0] == null || board[0].length == 0) {
+            return false;
+        }
+
+        int m = board.length, n = board[0].length;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] == '.') continue;
+                if (!helper(board, i, j)) return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean helper(char[][] board, int i, int j) {
+        for (int row = 0; row < 9; row++) {
+            if (i == row) continue; // 不能是自己，去重！！！
+            if (board[row][j] == board[i][j]) return false;
+        }
+
+        for (int col = 0; col < 9; col++) {
+            if (j == col) continue;
+            if (board[i][col] == board[i][j]) return false;
+        }
+
+        int x = i / 3 * 3, y = j / 3 * 3;
+        for (int p = 0; p < 3; p++) {
+            for (int q = 0; q < 3; q++) {
+                if (x + p == i && y + q == j) continue;
+                if (board[x + p][y + q] == board[i][j]) return false;
             }
         }
         return true;

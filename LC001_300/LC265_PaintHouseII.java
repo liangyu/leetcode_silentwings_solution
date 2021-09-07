@@ -89,6 +89,47 @@ public class LC265_PaintHouseII {
         }
         return res;
     }
+
+    // S3: DP
+    // time = O(n * k), space = O(n * k)
+    public int minCostII3(int[][] costs) {
+        // corner case
+        if (costs == null || costs.length == 0 || costs[0] == null || costs[0].length == 0) return 0;
+
+        int n = costs.length, k = costs[0].length;
+        int[][] dp = new int[n + 1][k];
+
+
+        int id1 = 0, id2 = 0;
+
+        for (int i = 1; i <= n; i++) {
+            int min1 = Integer.MAX_VALUE, min2 = Integer.MAX_VALUE;
+            for (int j = 0; j < k; j++) {
+                if (dp[i - 1][j] < min1) {
+                    min2 = min1;
+                    id2 = id1;
+                    min1 = dp[i - 1][j];
+                    id1 = j;
+                } else if (dp[i - 1][j] < min2) {
+                    min2 = dp[i - 1][j];
+                    id2 = j;
+                }
+            }
+
+            for (int j = 0; j < k; j++) {
+                dp[i][j] = costs[i - 1][j];
+                if (j != id1) {
+                    dp[i][j] += min1;
+                } else dp[i][j] += (min2 == Integer.MAX_VALUE ? 0 : min2);
+            }
+        }
+
+        int res = Integer.MAX_VALUE;
+        for (int j = 0; j < k; j++) {
+            res = Math.min(res, dp[n][j]);
+        }
+        return res;
+    }
 }
 /**
  * i-1, 0

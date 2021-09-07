@@ -27,3 +27,13 @@ public class LC96_UniqueBinarySearchTrees {
         return dp[n];
     }
 }
+/**
+ * 先确定root是哪个
+ * 1，2，3，...,n
+ *       k
+ *     /   \
+ *  1~k-1   k+1~n
+ * 递归解法
+ * => 从下往上，越往下能选择的点越来越少，最后有可能一个点，只能构成一个数 => dp
+ * dp[n] = 0;
+ */

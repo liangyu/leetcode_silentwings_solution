@@ -24,6 +24,7 @@ public class LC162_FindPeakElement {
      * @param nums
      * @return
      */
+    // S1: BS
     // time = O(logn), space = O(1)
     public int findPeakElement(int[] nums) {
         // corner case
@@ -40,9 +41,23 @@ public class LC162_FindPeakElement {
             else end = mid;
         }
         return nums[start] > nums[end] ? start : end;
-        // if (nums[start] > nums[end]) return start;
-        // if (nums[start] < nums[end]) return end;
-        // return -1;
-        // nums[i] ！= nums[i + 1] -> 不可能存在平台 -> return nums[start] > nums[end] ? start : end;
+    }
+
+    // S2: BS
+    // time = O(logn), space = O(1)
+    public int findPeakElement2(int[] nums) {
+        // corner case
+        if (nums == null || nums.length == 0) return -1;
+
+        int left = 0, right = nums.length - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] < nums[mid + 1]) left = mid + 1;
+            else right = mid;
+        }
+        return left;
     }
 }
+/**
+ * 每相邻元素不相等 => 斜率肯定不为0 -> 要么左边上，要么右边上
+ */

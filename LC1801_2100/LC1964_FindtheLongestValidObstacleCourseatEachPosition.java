@@ -68,19 +68,35 @@ public class LC1964_FindtheLongestValidObstacleCourseatEachPosition {
         return res;
     }
 
-    private int helper(List<Integer> buffer, int t) {
+    // find 1st pos > target (note the difference from LC300 that is >=)
+    // because here is not strictly increasing, it is equal or larger!!!
+    // 所以，如果出现22，应该要加到最后一个2后面，因为允许重复，可以往后延伸
+    private int helper(List<Integer> buffer, int target) {
         if (buffer.size() == 0) return 0;
         int left = 0, right = buffer.size() - 1;
         while (left < right) {
             int mid = left + (right - left) / 2;
-            if (buffer.get(mid) <= t) left = mid + 1;
+            if (buffer.get(mid) <= target) left = mid + 1;
             else right = mid;
         }
-        return buffer.get(left) <= t ? left + 1 : left;
+        return buffer.get(left) > target ? left : left + 1;
     }
 }
 /**
  * ref: LC300 -> strictly increasing => b.s needs to find the 1st pos >= target
+ * ref: LC300, LC354, LC1713
  * while for this problem, it can be increasing or equal => b.s. needs to find the 1st pos strictly > target
  * 要仔细体会下两者的差别！
+ * 找一个最长的非递减序列！
+ * LIS：longest increasing subsequence
+ * nums:[x x x x x x x] 9 5  -> 在序列里找到第一个 >= 5的位置
+ * arr:  2 4 7 9
+ * if (nums[i] > arr.back()) {
+ *     arr.push_back(nums[i])
+ *     ret.push_back(arr.size());
+ * } else {
+ *     auto iter = upper_bound(arr.begin(), arr.end());
+ *     ret.push_back(iter - arr.begin());
+ *     *iter = nums[i];
+ * }
  */

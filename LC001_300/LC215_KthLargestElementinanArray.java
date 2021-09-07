@@ -93,7 +93,7 @@ public class LC215_KthLargestElementinanArray {
         return quickselect(nums, a, i - 1, k - (b - i + 1));
     }
 
-    // S3: quick select
+    // S3: Binary Search
     // time = O(n * logC), space = O(1)
     public int findKthLargest3(int[] nums, int k) {
         int left = Integer.MIN_VALUE / 2, right = Integer.MAX_VALUE / 2;
@@ -137,9 +137,8 @@ public class LC215_KthLargestElementinanArray {
  * 作用是什么呢？看有多少个元素small, equal or large
  * s s s o o o l l l
  *  a     b      c
- * if (c >= k) => find k-th largest in [l]
+ * if (c >= k) => find k-th largest in [L]
  * else if (b + c >= k) => k-th largest is pivot
  * else => k-(b+c)th largest in [s]
  * recursion
- *
  */

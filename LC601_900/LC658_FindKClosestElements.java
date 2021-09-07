@@ -56,17 +56,19 @@ public class LC658_FindKClosestElements {
     // S2: k + 1 size window (最优解！！！）
     // time = O(logn), space = O(1)
     public List<Integer> findClosestElements2(int[] arr, int k, int x) {
-        int lo = 0, hi = arr.length - k;
-
-        while (lo < hi) {
-            int mid = lo + (hi - lo) / 2;
-
-            if (x - arr[mid] > arr[mid + k] - x) lo = mid + 1;
-            else hi = mid;
-        }
-
         List<Integer> res = new ArrayList<>();
-        for (int i = lo; i < lo + k; i++) {
+        // corner case
+        if (arr == null || arr.length == 0 || k <= 0) return res;
+
+        int n = arr.length;
+        int left = 0, right = n - k;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (x - arr[mid] > arr[mid + k] - x) {
+                left = mid + 1; // 左端点太远，向右收缩
+            } else right = mid; // 此时mid是个有效解
+        }
+        for (int i = left; i < left + k; i++) {
             res.add(arr[i]);
         }
         return res;

@@ -112,7 +112,8 @@ public class LC4_MedianofTwoSortedArrays {
     }
 }
 /**
- * The kth element of n sorted list
+ * The kth element of n sorted list -> 外排序
+ * 每次都取n个list里的第一个，然后在这n个数里面挑一个最小的，把它拿出来，然后后面的补上，以此类推...
  * time = nlog(n * total nums)
  * 用B.S. => array与List最大差别就是array可以快速定位
  *
@@ -130,4 +131,9 @@ public class LC4_MedianofTwoSortedArrays {
  * X X0 X
  * [Y Y0] YY
  * if X0 > Y0 -> Y0不可能是第K个
+ * 本题不是typical的二分解法，一般二分通常是：
+ * 1. index 索引二分，给一个数组不断二分
+ * 2. 值二分，最低值和最高值，不断二分看继续向上还是向下走
+ * 这里不是找一个确切的位置，这里是一个不断删除的做法，不是很好归类
+ * 像这种类似递归的做法就更难想了。
  */

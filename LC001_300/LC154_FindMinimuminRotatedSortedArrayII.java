@@ -21,6 +21,7 @@ public class LC154_FindMinimuminRotatedSortedArrayII {
      * @param nums
      * @return
      */
+    // S1: BS
     // time = O(logn), space = O(1)
     public int findMin(int[] nums) {
         // corner case
@@ -46,4 +47,26 @@ public class LC154_FindMinimuminRotatedSortedArrayII {
         if (nums[start] < nums[end]) return nums[start];
         return nums[end];
     }
+
+    // S1.2: BS
+    // time = O(logn), space = O(1)
+    public int findMin2(int[] nums) {
+        // corner case
+        if (nums == null || nums.length == 0)  return -1;
+
+        int left = 0, right = nums.length - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] > nums[right]) left = mid + 1;
+            else if (nums[mid] < nums[right]) right = mid;
+            else right--;
+        }
+        return nums[left];
+    }
 }
+/**
+ * == 的时候没有办法判断是在左区间还是右区间
+ * 根据LC153，加上相等的时候right--即可，把重复的删掉即可，不影响
+ * [2，2，2，2，2，0，1，2]
+ * [2,2,3,4,2,2,2,2,2]
+ */

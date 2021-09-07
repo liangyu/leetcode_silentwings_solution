@@ -78,4 +78,76 @@ public class LC347_TopKFrequentElements {
         for (int i = 0; i < k; i++) res[i] = pq.poll()[1];
         return res;
     }
+
+    // S3: BS
+    // time = O(nlogn), space = O(n)
+    public int[] topKFrequent3(int[] nums, int k) {
+        // corner case
+        if (nums == null || nums.length == 0 || k <= 0) return new int[0];
+
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int x : nums) map.put(x, map.getOrDefault(x, 0) + 1);
+
+        int left = 0, right = nums.length; // 猜freq => freq最小是0，最大就是数组长度nums.length
+        while (left < right) { // O(logn)
+            int mid = right - (right - left) / 2;
+            if (countFreqGreaterOrEqual(map, mid) >= k) left = mid;
+            else right = mid - 1;
+        }
+
+        int f = left, idx = 0;
+        int[] res = new int[k];
+        for (int key : map.keySet()) {
+            if (map.get(key) >= f) res[idx++] = key;
+        }
+        return res;
+    }
+
+    private int countFreqGreaterOrEqual(HashMap<Integer, Integer> map, int f) {
+        int count = 0;
+        for (int key : map.keySet()) {
+            if (map.get(key) >= f) count++;
+        }
+        return count;
+    }
+
+    // S4: Quick Select
+    // time = O(n), space = O(n)  worst case O(n^2)
+    public int[] topKFrequent4(int[] nums, int k) {
+        // corner case
+        if (nums == null || nums.length == 0 || k <= 0) return new int[0];
+
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int x : nums) map.put(x, map.getOrDefault(x, 0) + 1);
+
+        List<int[]> arr = new ArrayList<>();
+        for (int key : map.keySet()) arr.add(new int[]{key, map.get(key)});
+
+        int f = quickselect(arr, 0, arr.size() - 1, k);
+        int idx = 0;
+        int[] res = new int[k];
+        for (int key : map.keySet()) {
+            if (map.get(key) >= f) res[idx++] = key;
+        }
+        return res;
+    }
+
+    private int quickselect(List<int[]> arr, int a, int b, int k) {
+        int pivot = arr.get(a + (b - a) / 2)[1];
+        int i = a, j = b, t = a;
+        while (t <= j) {
+            if (arr.get(t)[1] < pivot) swap(arr, t++, i++);
+            else if (arr.get(t)[1] > pivot) swap(arr, t, j--);
+            else t++;
+        }
+        if (b - j >= k) return quickselect(arr, j + 1, b, k);
+        else if (b - i + 1 >= k) return pivot;
+        else return quickselect(arr, a, i -1, k - (b - i + 1));
+    }
+
+    private void swap(List<int[]> nums, int i, int j) {
+        int[] temp = nums.get(i);
+        nums.set(i, nums.get(j));
+        nums.set(j, temp);
+    }
 }

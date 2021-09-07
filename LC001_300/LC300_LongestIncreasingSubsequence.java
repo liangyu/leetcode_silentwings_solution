@@ -21,53 +21,55 @@ public class LC300_LongestIncreasingSubsequence {
      */
     // S1: DP
     // time = O(n^2), space = O(n)
-    public int lengthOfLIS1(int[] nums) {
+    public int lengthOfLIS(int[] nums) {
         // corner case
         if (nums == null || nums.length == 0) return 0;
 
-        int len = nums.length;
-        int[] dp = new int[len]; // dp[i]: [0, i] len of LIS
+        int n = nums.length;
+        int[] dp = new int[n];
         Arrays.fill(dp, 1);
-        int max = 1;
 
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < n; i++) {
             for (int j = 0; j < i; j++) {
                 if (nums[j] < nums[i]) {
                     dp[i] = Math.max(dp[i], dp[j] + 1);
                 }
             }
-            max = Math.max(max, dp[i]);
         }
-        return max;
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            res = Math.max(res, dp[i]);
+        }
+        return res;
     }
 
     // S2: BS (最优解)
     // time = O(nlogn), space = O(n)
-    public int lengthOfLIS(int[] nums) {
+    public int lengthOfLIS2(int[] nums) {
         // corner case
-        if (nums == null || nums.length == 0) {
-            return 0;
-        }
+        if (nums == null || nums.length == 0) return 0;
 
+        int n = nums.length;
         List<Integer> buffer = new ArrayList<>();
-        int len = nums.length;
-        for (int i = 0; i < len; i++) {  // --> O(n)
-            int idx = getIdx(buffer, nums[i]);
-            if (idx == buffer.size()) buffer.add(nums[i]);
-            else buffer.set(idx, nums[i]);
+
+        for (int x : nums) {
+            int idx = upperBound(buffer, x);
+            if (idx == buffer.size()) buffer.add(x);
+            else buffer.set(idx, x);
         }
         return buffer.size();
     }
-
-    private int getIdx(List<Integer> buffer, int target) {
-        int start = 0, end = buffer.size() - 1;
-        while (start <= end) { // --> O(logn)
-            int mid = start + (end - start) / 2;
-            if (buffer.get(mid) == target) return mid;
-            else if (buffer.get(mid) < target) start = mid + 1;
-            else end = mid - 1;
+    // find the 1st pos >= target
+    private int upperBound(List<Integer> buffer, int target) {
+        // corner case
+        if (buffer.size() == 0) return 0;
+        int left = 0, right = buffer.size() - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (buffer.get(mid) < target) left = mid + 1;
+            else right = mid;
         }
-        return start;
+        return buffer.get(left) >= target ? left : left + 1;
     }
 
     // S2.2: BS (prefer!)
@@ -93,3 +95,17 @@ public class LC300_LongestIncreasingSubsequence {
         return p;
     }
 }
+/**
+ * dp 第二类dp基本型 O(n^2)
+ * 无后效性: 看到i的时候，脑子里就只有0~i，其他都不用过，i 后面的东西不影响你的dp[i]
+ * dp[i]: the length of longest increasing subsequence for nums[0:i] ending with nums[i]
+ * nums[i]肯定是老大，那老二是谁呢？哪个的手下最多，就挑谁是老二。
+ *
+ * S2: BS， 有点贪心的思想
+ * 1 2 9 10    4
+ * 1 2 4 5 6 7 8
+ * 4不会影响当前结果，但是它有个用处，如果以后出现比4大但是比9小的数字的话
+ * 希望现在LIS尽量小
+ * 利用现在的元素取尽量小
+ * 维护一个递增的序列，如果有新的数，不能让LIS更长的话，那我就用它来降低，使LIS变得更矮
+ */

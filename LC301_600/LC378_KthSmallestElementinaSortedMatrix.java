@@ -69,6 +69,36 @@ public class LC378_KthSmallestElementinaSortedMatrix {
         }
         return count;
     }
+
+    // S3: Quick Select
+    // time = O(n), space = O(n)
+    public int kthSmallest3(int[][] matrix, int k) {
+        int n = matrix.length;
+        return quickselect(matrix, 0, n * n - 1, k);
+    }
+
+    private int quickselect(int[][] matrix, int a, int b, int k) {
+        int n = matrix.length;
+        int m = a + (b - a) / 2;
+        int pivot = matrix[m / n][m % n];
+        int i = a, j = b, t = a;
+        while (t <= j) {
+            if (matrix[t / n][t % n] < pivot) swap(matrix, t++, i++);
+            else if (matrix[t / n][t % n] > pivot) swap(matrix, t, j--);
+            else t++;
+        }
+
+        if (i - a >= k) return quickselect(matrix, a, i - 1, k);
+        if (j - a + 1 >= k) return pivot;
+        return quickselect(matrix, j + 1, b, k - (j - a + 1));
+    }
+
+    private void swap(int[][] matrix, int i, int j) {
+        int n = matrix.length;
+        int temp = matrix[i / n][i % n];
+        matrix[i / n][i % n] = matrix[j / n][j % n];
+        matrix[j / n][j % n] = temp;
+    }
 }
 /**
  * 1弹出后考虑5和10 => 弹出后把右边和下面的两个值加入pq

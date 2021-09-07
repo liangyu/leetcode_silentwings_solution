@@ -23,6 +23,7 @@ public class LC29_DivideTwoIntegers {
      * @param divisor
      * @return
      */
+    // S1
     // time = O(logn), space = O(1)
     public int divide(int dividend, int divisor) {
         long a = (long)dividend;
@@ -66,5 +67,13 @@ public class LC29_DivideTwoIntegers {
  * 2048&*b
  * 扣掉一个尽可能大的数的整数倍，尽量减去大头，一直减下去减到没
  * INT_MIN -> 取绝对值就会溢出，先转化成long,再取绝对值就没问题
+ *
+ * 本题的基本思想就是将divisor不断用左移的方法乘以2来逼近dividend，
+ * 然后将dividend减去倍乘之后的divisor，再重复这个过程直至被除数小于除数。
+ * 记录这个过程中divisor“倍乘”的总次数，即为答案。
+ * 特别注意：
+ * 注意可能的负号。提前将被除数和除数取绝对值，符号最后留给商。
+ * 对于整形取绝对值，常设的陷阱就是对于INT_MIN，取反之后就会溢出。为了处理起来简单，把变量统统转换为long long类型。
+ * Overflow的意思就是结果>INT_MAX
  */
 

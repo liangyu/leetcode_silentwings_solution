@@ -63,24 +63,30 @@ public class LC261_GraphValidTree {
 
     // S2: Union Find
     // time = O(nlogn), space = O(n)  n: number of nodes
+    private int[] parent;
     public boolean validTree2(int n, int[][] edges) {
         // corner case
         if (edges == null || edges.length != n - 1) return false;
 
-        int[] roots = new int[n];
-        Arrays.fill(roots, -1);
+        parent = new int[n];
+        for (int i = 0; i < n; i++) parent[i] = i;
 
         for (int[] edge : edges) {
-            int x = find(roots, edge[0]);
-            int y = find(roots, edge[1]);
-            if (x == y) return false;
-            roots[x] = y;
+            if (findParent(edge[0]) == findParent(edge[1])) return false;
+            union(edge[0], edge[1]);
         }
         return true;
     }
 
-    private int find(int[] roots, int i) {
-        while (roots[i] != -1) i = roots[i];
-        return i;
+    private int findParent(int x) {
+        if (parent[x] != x) parent[x] = findParent(parent[x]);
+        return parent[x];
+    }
+
+    private void union(int x, int y) {
+        x = parent[x];
+        y = parent[y];
+        if (x < y) parent[y] = x;
+        else parent[x] = y;
     }
 }

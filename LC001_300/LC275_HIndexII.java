@@ -24,6 +24,7 @@ public class LC275_HIndexII {
      * @param citations
      * @return
      */
+    // S1: BS
     // time = O(logn), space = O(1)
     public int hIndex(int[] citations) {
         // corner case
@@ -37,6 +38,28 @@ public class LC275_HIndexII {
             else if (citations[mid] < n - mid) left = mid + 1;
             else right = mid - 1;
         }
-        return n - left;
+        return citations[left] >= n - left ? n - left : 0;
+    }
+
+    // S2: BS
+    // time = O(logn), space = O(1)
+    public int hIndex2(int[] citations) {
+        // corner case
+        if (citations == null || citations.length == 0) return 0;
+
+        int n = citations.length;
+        int left = 0, right = n - 1;
+
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (citations[mid] < n - mid) left = mid + 1;
+            else right = mid;
+        }
+        return citations[left] >= n - left ? n - left : 0;
     }
 }
+/**
+ * h: h papers, h citations/paper
+ * 二分
+ * n - mid 既代表了从后往前数有多少篇文章，又代表了这些文章至少要有n - mid次引用
+ */

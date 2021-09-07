@@ -26,6 +26,7 @@ public class LC153_FindMinimuminRotatedSortedArray {
      * @param nums
      * @return
      */
+    // S1: BS
     // time = o(logn), space = O(1)
     public int findMin(int[] nums) {
         // corner case
@@ -46,4 +47,22 @@ public class LC153_FindMinimuminRotatedSortedArray {
         if (nums[start] < nums[end]) return nums[start];
         return nums[end];
     }
+
+    // S1.2: BS
+    // time = o(logn), space = O(1)
+    public int findMin2(int[] nums) {
+        // corner case
+        if (nums == null || nums.length == 0)  return -1;
+
+        int left = 0, right = nums.length - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] > nums[right]) left = mid + 1;
+            else right = mid;
+        }
+        return nums[left];
+    }
 }
+/**
+ * 通过mid与right的比较就可以判断在左还是右区间
+ */

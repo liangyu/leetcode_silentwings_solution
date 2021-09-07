@@ -39,7 +39,8 @@ public class LC1580_PutBoxesIntotheWarehouseII {
             if (i > j) continue;
             if (box > Math.max(warehouse[i], warehouse[j])) continue;
             // move left: 右边太小放不进去，只能放左边；左右两边都比箱子大，但左边比右边小
-            if (warehouse[j] < box || (warehouse[i] >= box && warehouse[i] < warehouse[j])) i++;
+            // if (warehouse[j] < box || (warehouse[i] >= box && warehouse[i] < warehouse[j])) i++;
+            if (warehouse[j] < box) i++; // 由于排过序了，后面的箱子只会比它更小，因此无论选i还是j，后面的箱子都能放！
             else j--;
             count++;
         }
