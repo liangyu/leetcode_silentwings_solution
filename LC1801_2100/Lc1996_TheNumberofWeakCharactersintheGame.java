@@ -1,6 +1,6 @@
 package LC1801_2100;
 import java.util.*;
-public class Lc1996_TheNumberofWeakCharactersintheGame {
+public class LC1996_TheNumberofWeakCharactersintheGame {
     /**
      * You are playing a game that contains multiple characters, and each of the characters has two main properties:
      * attack and defense. You are given a 2D integer array properties where properties[i] = [attacki, defensei]
