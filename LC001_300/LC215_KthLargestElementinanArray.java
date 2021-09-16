@@ -99,7 +99,7 @@ public class LC215_KthLargestElementinanArray {
         int left = Integer.MIN_VALUE / 2, right = Integer.MAX_VALUE / 2;
         while (left < right) { // left = 0, right = 1  最多分32次，就一定能找到任何整数 => logC
             int mid = right - (right - left) / 2;
-            if (count(nums, mid) >= k) left = mid; // mid might be the answer
+            if (count(nums, mid) >= k) left = mid; // mid might be the answer，因为mid可能有重复
             else right = mid - 1;
         }
         return left;

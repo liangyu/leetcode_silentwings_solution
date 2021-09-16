@@ -1,7 +1,4 @@
 package LC1801_2100;
-
-import java.math.BigInteger;
-
 public class LC1922_CountGoodNumbers {
     /**
      * A digit string is good if the digits (0-indexed) at even indices are even and the digits at odd indices are

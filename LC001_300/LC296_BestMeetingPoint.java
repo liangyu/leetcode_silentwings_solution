@@ -21,7 +21,7 @@ public class LC296_BestMeetingPoint {
      * @param grid
      * @return
      */
-    // time = O(m * n), space = O(m * n)
+    // time = O(m * n), space = O(m + n)
     public int minTotalDistance(int[][] grid) {
         // corner case
         if (grid == null || grid.length == 0 || grid[0] == null || grid[0].length == 0) return 0;
@@ -51,4 +51,49 @@ public class LC296_BestMeetingPoint {
         }
         return sum;
     }
+
+    // S2
+    // time = O(m * n + log(m * n)), space = O(m + n)
+    public int minTotalDistance2(int[][] grid) {
+        List<Integer> x = new ArrayList<>();
+        List<Integer> y = new ArrayList<>();
+
+        int m = grid.length, n = grid[0].length;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    x.add(i);
+                    y.add(j);
+                }
+            }
+        }
+        Collections.sort(x);
+        Collections.sort(y);
+        int r = x.get(x.size() / 2), c = y.get(y.size() / 2);
+
+        int res = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    res += Math.abs(i - r) + Math.abs(j - c);
+                }
+            }
+        }
+        return res;
+    }
 }
+/**
+ * min |x1-x|+|y1-y| + |x2-x|+|y2-y| + ... +|xn-x|+|yn-y|
+ * => x = argmin |x1-x| + |x2-x| + ... +|xn-x|
+ *      = median of {xi}
+ *    y = argmin |y1-y| + |y2-y| + ... +|yn-y|
+ * follow-up 1: min w1*|x1-x| + w2*|x2-x| + ... +wn*|xn-x|
+ * x = weighted median of {xi}
+ * 前面的权重之和 > 后面的权重之和，那么这个点就是拐点 => O(1)可以解出来
+ * follow-up 2:
+ * totalD = |x1-x| + |x2-x| + ... + |xn-x|
+ * x = x1, x2, x3, ..., xn
+ * d = ?   ?   ?        ？
+ * 第一步老老实实算一遍，然后呢你每一栋一格，对前面的来说多了一格，对后面的来说每个少了这么一格 => totalD上净减 => 减掉net gain
+ * 每次query都是O(1) => O(n)
+ */

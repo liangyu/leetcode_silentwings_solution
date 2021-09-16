@@ -20,15 +20,16 @@ public class LC413_ArithmeticSlices {
      * @return
      */
     // time = O(n), space = O(1)
-    public int numberOfArithmeticSlices(int[] A) {
+    public int numberOfArithmeticSlices(int[] nums) {
         // corner case
-        if (A == null || A.length == 0) return 0;
+        if (nums == null || nums.length == 0) return 0;
 
-        int[] dp = new int[A.length];
+        int n = nums.length;
+        int[] dp = new int[n];
+
         int res = 0;
-
-        for (int i = 2; i < A.length; i++) {
-            if (A[i] - A[i - 1] == A[i - 1] - A[i - 2]) {
+        for (int i = 2; i < n; i++) {
+            if (nums[i] - nums[i - 1] == nums[i - 1] - nums[i - 2]) {
                 dp[i] = dp[i - 1] + 1;
                 res += dp[i];
             }

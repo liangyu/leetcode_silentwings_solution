@@ -25,6 +25,7 @@ public class LC1901_FindaPeakElementII {
      * @param mat
      * @return
      */
+    // S1: BS
     // time = O(nlogm), space = O(1)
     public int[] findPeakGrid(int[][] mat) {
         // corner case
@@ -38,6 +39,7 @@ public class LC1901_FindaPeakElementII {
             if (mat[mid][idx] < mat[mid + 1][idx]) left = mid + 1;
             else right = mid;
         }
+        idx = findPeak(mat[left]);
         return new int[]{left, idx};
     }
 

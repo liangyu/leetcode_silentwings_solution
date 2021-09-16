@@ -60,7 +60,7 @@ public class LC81_SearchinRotatedSortedArrayII {
         while (left < right) {
             int mid = left + (right - left) / 2;
             if (nums[mid] == target) return true;
-            if (nums[mid] >= nums[0] && target >= nums[0] || nums[mid] < nums[0] && target < nums[0]) {
+            if (nums[mid] >= nums[0] && target >= nums[0] || nums[mid] < nums[0] && target < nums[0]) { // 注意：这里是>= nums[0]!
                 if (nums[mid] < target) left = mid + 1;
                 else right = mid;
             } else if (nums[mid] >= nums[0]) left = mid + 1;

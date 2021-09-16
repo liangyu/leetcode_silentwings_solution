@@ -38,46 +38,43 @@ public class LC1889_MinimumSpaceWastedFromPackaging {
      * @param boxes
      * @return
      */
-    // time = O(nlogn + mklog(nk)), space = O(n)
+    // time = O(nlogn + m * (klogk + mlogn)), space = O(n)
     public int minWastedSpace(int[] packages, int[][] boxes) {
-        // corner case
-        if (packages == null || packages.length == 0 || boxes == null || boxes.length == 0) return 0;
-
-        Arrays.sort(packages); // O(nlogn)
         int n = packages.length;
+        Arrays.sort(packages); // O(nlogn)
 
+        long M = (long)(1e9 + 7);
         long[] presum = new long[n + 1];
-        for (int i = 1; i <= n; i++) presum[i] = presum[i - 1] + packages[i - 1];
+        for (int i = 1; i <= n; i++) presum[i] = presum[i - 1] + packages[i - 1]; // O(n)
 
-        long res = Long.MAX_VALUE, M = (long)(1e9 + 7);
+        long res = Long.MAX_VALUE;
         for (int[] box : boxes) { // O(m)
-            Arrays.sort(box); // O(klogk)
             int m = box.length;
-            if (packages[n - 1] > box[m - 1]) continue;
-            long cur = 0;
-            int prev = 0;
-            for (int size : box) {  // O(k)
-                if (size < packages[0]) continue;
-                int next = upBound(packages, size); // O(logn)
-                long sum = presum[next + 1] - presum[prev];
-                long l = next - prev + 1;
-                long add = l * size - sum;
-                prev = next + 1;
-                cur += add;
+            Arrays.sort(box); // O(klogk)
+            long waste = 0;
+            int prev = -1;
+            for (int i = 0; i < m; i++) { // O(m)
+                int idx = upperBound(packages, box[i]); // find 1st package > box[i] // O(logn)
+                if (idx == 0) continue;
+                int j = idx - 1;
+                waste += (long)(j - prev) * box[i] - (presum[j + 1] - presum[prev + 1]);
+                prev = j;
+                if (prev == n - 1) break;
             }
-            res = Math.min(res, cur);
+            if (prev != n - 1) continue;
+            res = Math.min(res, waste);
         }
         return res == Long.MAX_VALUE ? -1 : (int)(res % M);
     }
 
-    private int upBound(int[] packages, int target) {
-        int left = 0, right = packages.length - 1;
-        while (left <= right) {
+    private int upperBound(int[] nums, int target) {
+        int left = 0, right = nums.length - 1;
+        while (left < right) {
             int mid = left + (right - left) / 2;
-            if (packages[mid] > target) right = mid - 1;
-            else left = mid + 1;
+            if (nums[mid] <= target) left = mid + 1;
+            else right = mid;
         }
-        return right;
+        return nums[left] > target ? left : left + 1;
     }
 }
 /**
@@ -87,7 +84,7 @@ public class LC1889_MinimumSpaceWastedFromPackaging {
  * y y y y
  * i
  * 固定一个box的指针，然后移动package的指针
- * => O(n + k) * m = O(nm + mk) ~ 10^10 -> TLE
+ * => O(n + k) * m = O(nm + mk) ~ 10^10 + 10^5 -> TLE
  *
  * B.S. 找最后一个小于等于box i的 j => O(logn * k) * m = logn * km = TlogT (T ~ 10^5)
  */

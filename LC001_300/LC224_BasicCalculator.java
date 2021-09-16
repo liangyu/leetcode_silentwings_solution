@@ -48,3 +48,9 @@ public class LC224_BasicCalculator {
         return res;
     }
 }
+/**
+ * 压栈
+ * -3 => +(-3)
+ * 每个数都有正负号
+ * 所有单项式都是做加法操作
+ */
