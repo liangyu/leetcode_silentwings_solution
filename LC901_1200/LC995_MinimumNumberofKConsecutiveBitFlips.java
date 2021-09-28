@@ -70,7 +70,7 @@ public class LC995_MinimumNumberofKConsecutiveBitFlips {
  * 突破口：最优策略就是个贪心法
  * 1 1 1 1 1 1 1 1 [0 0 ] -> return -1 每次都要4个做变换
  *
- * => O(nk)
+ * => O(nk) 遍历每个元素，如果是0，那么从左往右数k个都作flip，滑窗再往右走一下
  * 不需要每个元素都flip，只要首尾flip
  * 1 1 [0 x x 1] x x x x x   i ~ i+k-1
  *      s     e e + 1

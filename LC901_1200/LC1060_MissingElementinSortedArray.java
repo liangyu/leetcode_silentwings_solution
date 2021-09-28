@@ -27,7 +27,7 @@ public class LC1060_MissingElementinSortedArray {
         int left = nums[0], right = nums[n - 1] + k;
         while (left < right) {
             int mid = right - (right - left) / 2;
-            int M = mid - nums[0];
+            int M = mid - nums[0]; // nums[0] ~ mid之间的元素个数
             int T = lowerBound(nums, mid) + 1; // idx + 1 => 个数，0-index
             if (M - T < k) left = mid;
             else right = mid - 1;

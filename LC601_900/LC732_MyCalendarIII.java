@@ -26,18 +26,19 @@ public class LC732_MyCalendarIII {
      * At most 400 calls will be made to book.
      */
     // time = O(nlogn), space = O(n)
-    private List<int[]> events;
+    private TreeSet<int[]> diff; // 自动排序，但是会自动去重，所以加上一个idx累加来区分两个值相同的端点加入到set里
+    private int idx = 0;
     public LC732_MyCalendarIII() {
-        events = new ArrayList<>();
+        diff = new TreeSet<>((o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : (o1[1] != o2[1] ? o1[1] - o2[1] : o1[2] - o2[2]));
     }
 
     public int book(int start, int end) {
-        events.add(new int[]{start, 1});
-        events.add(new int[]{end, -1});
-        Collections.sort(events, ((o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o1[1] - o2[1]));
+        diff.add(new int[]{start, 1, idx++});
+        diff.add(new int[]{end, -1, idx++});
+        // System.out.println(diff.size() + " " + idx);
 
         int count = 0, res = 0;
-        for (int[] x : events) {
+        for (int[] x : diff) {
             count += x[1];
             res = Math.max(res, count);
         }

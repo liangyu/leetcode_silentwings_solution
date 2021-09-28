@@ -22,7 +22,7 @@ public class LC1011_CapacityToShipPackagesWithinDDays {
      * @param D
      * @return
      */
-    // time = O(n), space = O(1)
+    // time = O(nlogn), space = O(1)
     public int shipWithinDays(int[] weights, int D) {
         // corner case
         if (weights == null || weights.length == 0) return 0;

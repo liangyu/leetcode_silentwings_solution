@@ -29,7 +29,7 @@ public class LC1648_SellDiminishingValuedColoredBalls {
      * @return
      */
     // S1: Math + Greedy
-    // time = O(n), space = O(logn)
+    // time = O(nlogn), space = O(logn)
     public int maxProfit(int[] inventory, int orders) {
         // corner case
         if (inventory == null || inventory.length == 0) return 0;
@@ -133,6 +133,37 @@ public class LC1648_SellDiminishingValuedColoredBalls {
         }
         return res;
     }
+
+    // S2.2: BS
+    // time = O(nlogM), space = O(1)    M: 10^9
+    public int maxProfit3(int[] inventory, int orders) {
+        // corner case
+        if (inventory == null || inventory.length == 0 || orders <= 0) return 0;
+
+        long left = 1, right = (int) 1e9;
+        while (left < right) {
+            long mid = left + (right - left) / 2;
+            if (helper(inventory, mid) > orders) left = mid + 1;
+            else right = mid;
+        }
+
+        long res = 0;
+        long M = (long)(1e9 + 7);
+        for (int i : inventory) {
+            if (i > left) {
+                res += (left + 1 + i) * (i - left) / 2; // 等差数列求和[left+1:i],卖完这些后价格边为left
+                orders -= i - left;
+            }
+        }
+        res += left * orders;
+        return (int)(res % M);
+    }
+
+    private long helper(int[] nums, long t) {
+        long sum = 0;
+        for (int num : nums) sum += Math.max(num - t, 0);
+        return sum;
+    }
 }
 /**
  * 先吃肥的 -> 排序
@@ -155,6 +186,7 @@ public class LC1648_SellDiminishingValuedColoredBalls {
  * 0 0 0 0 0   +1*5
  * 每次都把最多的砍成跟第二多的相同
  * 注意砍到哪就可以了
+ *
  * S2: BS
  * 每一轮取多少球都固定
  * 猜最终我们要恰好到达orders的时候，分值会降到多少
@@ -166,4 +198,9 @@ public class LC1648_SellDiminishingValuedColoredBalls {
  * 扫描一遍整个数组，我们就能把总球数求出来，与orders比较一下。
  * 如果大于orders，说明取的球太多了，k要提升一下。反之，k就要下降一点。
  * 确定了k之后，我们还要手工计算一下零头的数量是多少，他们每个球贡献的分数是k-1.
+ *
+ * 我们可以二分查找 最后一次卖出时，球的价格 x。
+ * 最后的答案由两部分组成：
+ * 对于所有数量 > x 的颜色，其肯定会减小到 x，因此用等差数列求和公式求和即可。
+ * 如果执行完第 1 步，仍有剩余的 orders，则这些 orders 一定会以价格 x 卖出。
  */

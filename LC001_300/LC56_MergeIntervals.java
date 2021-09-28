@@ -16,6 +16,7 @@ public class LC56_MergeIntervals {
      * @param intervals
      * @return
      */
+    // S1
     // time = O(nlogn), space = O(n)
     public int[][] merge(int[][] intervals) {
         // corner case
@@ -44,4 +45,50 @@ public class LC56_MergeIntervals {
         }
         return ans;
     }
+
+    // S2: sweep line
+    // time = O(nlogn), space = O(n)
+    public int[][] merge2(int[][] intervals) {
+        List<int[]> diff = new ArrayList<>();
+        for (int[] x : intervals) {
+            diff.add(new int[]{x[0], 1});
+            diff.add(new int[]{x[1], -1});
+        }
+
+        Collections.sort(diff, (o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o2[1] - o1[1]); // 先+1再-1使计数器不会出现0而中断！
+
+        int count = 0, start = -1, end = -1;
+        List<int[]> res = new ArrayList<>();
+        for (int[] x : diff) {
+            if (x[1] == 1) {
+                count++;
+                if (count == 1) start = x[0];
+            }
+            else {
+                count--; // count 0 -> 1就表示新的merge interval; 1 -> 0，merge interval结束
+                if (count == 0) {
+                    end = x[0];
+                    res.add(new int[]{start, end});
+                }
+            }
+        }
+        int[][] ans = new int[res.size()][2];
+        for (int i = 0; i < res.size(); i++) {
+            ans[i] = res.get(i);
+        }
+        return ans;
+    }
 }
+/**
+ * 扫描线的解法
+ * int[][] time(start/end), label(1,-1)
+ * 0_____4
+ *    2____6
+ * {0,1},
+ * {4,-1},
+ * {2,1},
+ * {6,-1}
+ * sort
+ * 用计数器去累加，表示在此时此刻，如果你做下扫描线的话，你会和几个区间重合
+ * 0~6 count计数器从0开始
+ */

@@ -85,9 +85,10 @@ public class LC1674_MinimumMovestoMakeArrayComplementary {
  * 1 move: [a+b+1,limit+b]
  * 2 move: [limit+b+1,2*limit]
  *
- * 1 move: [a+1,a+b-1]
+ * 1 move: [a+1,a+b-1] 较大元素替换掉
  * 2 move: [2,a]
  *
+ * 把所有段的曲线都加起来，得到一个总的曲线f(x)
  * 真正有用的是仅有的几个拐点 => 并不需要所有的10^5 * 10^5 => 差分
  * y = 2
  * default diff = 0

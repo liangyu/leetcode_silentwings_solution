@@ -81,8 +81,10 @@ public class LC798_SmallestRotationwithHighestScore {
     }
 }
 /**
+ *    A[i]
  * 0 1 2 3 4 5 6
  * x x x x 2 x x
+ * A[i]-1  i
  * 1110011
  * A[i] <= i
  * 0: +1
@@ -107,8 +109,8 @@ public class LC798_SmallestRotationwithHighestScore {
  * i+1+N-1-(A[i]-1) = i+1+N-A[i]: 000...
  *
  * diff[0] += 0
- * diff[i+1] +=1
- * diff[i+1+N-A[i] -=1
+ * diff[i+1] += 1
+ * diff[i+1+N-A[i] -= 1
  *
  * ref: LC1674
  */

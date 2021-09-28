@@ -29,6 +29,7 @@ public class LC307_RangeSumQueryMutable {
      * At most 3 * 10^4 calls will be made to update and sumRange.
      * @param nums
      */
+    // time = O(logn), space = O(n)
     private SegTreeNode root;
     private int[] nums;
     public LC307_RangeSumQueryMutable(int[] nums) {
@@ -49,51 +50,54 @@ public class LC307_RangeSumQueryMutable {
     private class SegTreeNode {
         private SegTreeNode left, right;
         int start, end;
-        int info; // rangeSum
+        int info; // 区间和
         public SegTreeNode(int start, int end) {
             this.start = start;
             this.end = end;
         }
     }
 
-    private void init(SegTreeNode node, int a, int b) { // recursion
-        // base case - single point
+    private void init(SegTreeNode node, int a, int b) { // 满二叉树
+        // base case -> single point
         if (a == b) {
             node.info = nums[a];
             return;
         }
+
         int mid = (a + b) / 2;
-        if (node.left == null) { // 要开必须左右一起开
+        if (node.left == null) { // 要开一起开，不会出现某个结点只有单个子节点的情况，这里不需要，但留着做模板！
             node.left = new SegTreeNode(a, mid);
             node.right = new SegTreeNode(mid + 1, b);
         }
         init(node.left, a, mid);
         init(node.right, mid + 1, b);
+        // info
         node.info = node.left.info + node.right.info;
     }
 
-    private void updateSingle(SegTreeNode node, int idx, int val) {
-        if (idx < node.start || idx > node.end) return;
-        if (node.start == node.end) {
+    private void updateSingle(SegTreeNode node, int idx, int val) { // 单点更新
+        if (idx < node.start || idx > node.end) return; // 不在区间内，直接return
+        if (node.start == node.end) { // 本身就是要找的单点
             node.info = val;
             return;
         }
-
+        // 拆分 -> recursion
         updateSingle(node.left, idx, val);
         updateSingle(node.right, idx, val);
-        node.info = node.left.info + node.right.info; // 记得要更新当前node的info，左右已经更新
+        // update info
+        node.info = node.left.info + node.right.info;
     }
 
-    private int queryRange(SegTreeNode node, int a, int b) {
+    private int queryRange(SegTreeNode node, int a, int b) { // 本题信息就是区间和
         if (b < node.start || a > node.end) return 0;
-        if (a <= node.start && node.end <= b) return node.info;
-
+        if (a <= node.start && node.end <= b) return node.info; // 结点本身是query的一个子集的话，直接返回info
+        // recursion
         return queryRange(node.left, a, b) + queryRange(node.right, a, b);
     }
 }
 /**
  * Segment Tree
- * quary是动态的，支持单点修改
+ * query是动态的，支持单点修改
  * 线段树：本质就是二叉树，每个节点代表一段区间，从根节点开始代表一个最大的区间
  *                        [0,9]
  *            [0,4]                    [5,9]

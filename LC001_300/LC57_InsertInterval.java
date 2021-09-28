@@ -47,4 +47,40 @@ public class LC57_InsertInterval {
         }
         return ans;
     }
+
+    // S2: sweep line
+    // time = O(nlogn), space = O(n)
+    public int[][] insert2(int[][] intervals, int[] newInterval) {
+        List<int[]> diff = new ArrayList<>(); //
+        for (int[] interval : intervals) {
+            diff.add(new int[]{interval[0], 1});
+            diff.add(new int[]{interval[1], -1});
+        }
+        diff.add(new int[]{newInterval[0], 1});
+        diff.add(new int[]{newInterval[1], -1});
+
+        Collections.sort(diff, (o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o2[1] - o1[1]);
+
+        int count = 0, start = -1, end = -1;
+        List<int[]> res = new ArrayList<>();
+        for (int[] x : diff) {
+            count += x[1];
+            if (x[1] == 1 && count == 1) {
+                start = x[0];
+            } else if (x[1] == -1 && count == 0) {
+                end = x[0];
+                res.add(new int[]{start, end});
+            }
+        }
+
+        int[][] ans = new int[res.size()][2];
+        for (int i = 0; i < res.size(); i++) ans[i] = res.get(i);
+        return ans;
+    }
 }
+/**
+ * 扫描线算法
+ * count计数器表明当前有多少个区间重合
+ * 只要count > 1，说明在一个interval里，重合的
+ * 遇到相切点，breaking tie,要先+1，再-1，保证count > 1
+ */

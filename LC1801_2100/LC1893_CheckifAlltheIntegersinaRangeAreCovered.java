@@ -23,6 +23,7 @@ public class LC1893_CheckifAlltheIntegersinaRangeAreCovered {
      * @param right
      * @return
      */
+    // S1: Sort
     // time = O(nlogn), space = O(1)
     public boolean isCovered(int[][] ranges, int left, int right) {
         // corner case
@@ -34,5 +35,25 @@ public class LC1893_CheckifAlltheIntegersinaRangeAreCovered {
             if (left > right) return true;
         }
         return false;
+    }
+
+    // S2: Diff Array
+    // time = O(n), space = O(1)
+    public boolean isCovered2(int[][] ranges, int left, int right) {
+        // corner case
+        if (ranges == null || ranges.length == 0 || ranges[0] == null || ranges[0].length == 0) return false;
+
+        int[] diff = new int[52];
+        for (int[] range : ranges) {
+            diff[range[0]]++;
+            diff[range[1] + 1]--;
+        }
+
+        int sum = 0;
+        for (int i = 0; i <= right; i++) {
+            sum += diff[i];
+            if (sum == 0 && i >= left) return false;
+        }
+        return true;
     }
 }

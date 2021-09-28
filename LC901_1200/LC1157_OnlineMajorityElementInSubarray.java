@@ -28,6 +28,7 @@ public class LC1157_OnlineMajorityElementInSubarray {
      * At most 10^4 calls will be made to query.
      * @param arr
      */
+    // S1：Greedy + B.S.
     HashMap<Integer, List<Integer>> map; // val -> {pos}
     List<int[]> nums;
     public LC1157_OnlineMajorityElementInSubarray(int[] arr) {
@@ -113,7 +114,7 @@ public class LC1157_OnlineMajorityElementInSubarray {
     private class SegTreeNode {
         private SegTreeNode left, right;
         int start, end;
-        int val, freqDiff; // rangeSum
+        int val, freqDiff;
         public SegTreeNode(int start, int end) {
             this.start = start;
             this.end = end;

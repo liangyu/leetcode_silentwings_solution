@@ -38,7 +38,7 @@ public class LC1539_KthMissingPositiveNumber {
     }
 
     // S2: BS
-    // time = O(logn), space = O(1)
+    // time = O(logn * logn), space = O(1)
     public int findKthPositive2(int[] arr, int k) {
         // corner case
         if (arr == null || arr.length == 0 || k < 0) return 0;
@@ -49,7 +49,7 @@ public class LC1539_KthMissingPositiveNumber {
             int mid = right - (right - left) / 2;
             int M = mid - 1;
             int T = lowerBound(arr, mid) + 1;
-            if (M - T < k) left = mid;
+            if (M - T <= k - 1) left = mid;
             else right = mid - 1;
         }
         return left;
@@ -65,3 +65,16 @@ public class LC1539_KthMissingPositiveNumber {
         return nums[left] < target ? left : left - 1;
     }
 }
+/**
+ * 二分搜索。和1060.Missing-Element-in-Sorted-Array一样的思路。
+ * 假设我们猜测mid是否是答案。
+ * 考察[1,mid-1]这段连续自然数区间，可知道这段区间的自然数有M个，并且有T个存在于数组中(即查找数组里有多少个小于mid的元素个数，利用lower_bound)
+ * 所以，在[1,mid-1]这段连续自然数区间内有missing number = M-T个。
+ * 理论上我们希望这段区间应该有missing number共k-1个，于是就可以帮助判定mid是否偏大和偏小。
+ * if (missing <= k-1)
+ *      left = mid;
+ * else
+ *      right = mid-1;
+ * 特别注意，当missing==k-1的时候，mid可能并不是最终答案，因为mid可能也存在于数组中，所以mid可以再往大猜(即left=mid)。
+ * 因此这个分支在上面的代码里与missing<k-1合并。
+ */
