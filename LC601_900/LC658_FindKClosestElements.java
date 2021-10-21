@@ -85,4 +85,8 @@ public class LC658_FindKClosestElements {
  *      这样就可以砍掉一半的空间，最后肯定有个收敛值，肯定有解
  * => 选window的起始点
  * 搜索的位置是k-closest subarray的左端点在哪
+ * 注意：left可行解的范围在[0, n - k]的范围内
+ * 为什么初始范围是0~arr.size()-k，既然取得是k+1大小的窗口，难道不会越界吗？
+ * 越界的情况只有可能是mid==arr.size()-k，即初始范围的右端点。但是实际上如果因为mid是向小取整，
+ * 上面的情况只会发生在left==right==arr.size()-k的时候，这时循环条件不满足，已经退出了。
  */

@@ -25,6 +25,7 @@ public class LC1905_CountSubIslands {
      * @param grid2
      * @return
      */
+    // S1: dfs
     // time = O(m * n), space = O(m * n)
     private static final int[][] DIRECTIONS = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
     public int countSubIslands(int[][] grid1, int[][] grid2) {
@@ -52,4 +53,46 @@ public class LC1905_CountSubIslands {
         }
         return res & grid1[i][j];
     }
+
+    // S2: bfs
+    // time = O(m * n), space = O(m * n)
+    private int res = 0;
+    private int[][] directions = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    public int countSubIslands2(int[][] grid1, int[][] grid2) {
+        int m = grid1.length, n = grid1[0].length;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid2[i][j] == 1) bfs(grid1, grid2, i, j);
+            }
+        }
+        return res;
+    }
+
+    private void bfs(int[][] grid1, int[][] grid2, int i, int j) {
+        int m = grid1.length, n = grid1[0].length;
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[]{i, j});
+        grid2[i][j] = -1;
+
+        int flag = 1;
+        while (!queue.isEmpty()) {
+            int[] cur = queue.poll();
+            int x = cur[0], y = cur[1];
+            if (grid1[x][y] != 1) flag = 0;
+
+            for (int[] dir : directions) {
+                int a = x + dir[0];
+                int b = y + dir[1];
+                if (a < 0 || a >= m || b < 0 || b >= n) continue;
+                if (grid2[a][b] != 1) continue;
+                grid2[a][b] = -1;
+                queue.offer(new int[]{a, b});
+            }
+        }
+        if (flag == 1) res++;
+    }
 }
+/**
+ * 本题的思路其实很简单，就是在grid2里面bfs搜索每一个联通的island。
+ * 如果island的每一个格子在grid1里面都对应着1，那么这个island就是一个sub island。
+ */

@@ -21,7 +21,7 @@ public class LC296_BestMeetingPoint {
      * @param grid
      * @return
      */
-    // time = O(m * n), space = O(m + n)
+    // time = O(m * n), space = O(m * n)
     public int minTotalDistance(int[][] grid) {
         // corner case
         if (grid == null || grid.length == 0 || grid[0] == null || grid[0].length == 0) return 0;
@@ -53,7 +53,7 @@ public class LC296_BestMeetingPoint {
     }
 
     // S2
-    // time = O(m * n + log(m * n)), space = O(m + n)
+    // time = O(m * n * log(m * n)), space = O(m * n)
     public int minTotalDistance2(int[][] grid) {
         List<Integer> x = new ArrayList<>();
         List<Integer> y = new ArrayList<>();

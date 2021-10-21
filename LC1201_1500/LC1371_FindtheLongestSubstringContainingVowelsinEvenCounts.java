@@ -72,4 +72,7 @@ public class LC1371_FindtheLongestSubstringContainingVowelsinEvenCounts {
  * Map[00]  => 3 - (-1) = 4   => 虚拟的在最前面插入-1,否则是永远取不到 -1 x x x x x]这样的区间的
  * 这与前缀和类似，在第一个元素之前加一个元素
  * Map[0] = -1
+ * 本题要求区间内五个元音字母的频次都是偶数，所以我们可以用5个bit组成的二进制数来编码，来代表preFreq[j]里五个字母频次的奇偶性。
+ * 比如说我们遍历到j时，preFreq[j]对应的key=00100，就表示前j个元素里，字母i出现了奇数次而其他元音字母出现了偶数次。
+ * 此时我们只要查看Map里是否之前曾经出现过这个相同的key。
  */

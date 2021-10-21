@@ -55,7 +55,6 @@ public class LC1406_StoneGameIII {
         else return "Tie";
     }
 }
-}
 /**
  * dp[i]: the max score the player can get when there are i piles already taken
  * x {x x x x x}    stone[1]

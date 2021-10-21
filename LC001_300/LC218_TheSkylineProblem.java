@@ -140,21 +140,17 @@ public class LC218_TheSkylineProblem {
             heights.add(new int[]{b[0], - b[2]});
             heights.add(new int[]{b[1], b[2]});
         }
-        Collections.sort(heights, (a, b) -> (a[0] == b[0]) ? a[1] - b[1] : a[0] - b[0]);
-        TreeMap<Integer, Integer> map = new TreeMap<>(Collections.reverseOrder());
-        map.put(0,1);
+        Collections.sort(heights, (o1, o2) -> o1[0]!= o2[0] ? o1[0] - o2[0] : o1[1] - o2[1]);
+        TreeMap<Integer, Integer> map = new TreeMap<>((o1, o2) -> o2 - o1);
+        map.put(0, 1); // 1 <= heighti <= 2^31 - 1,右下角也要取到，所以要添加一个高度为0，个数为1的点。
         int prev = 0;
 
         for (int[] h: heights) {
             if (h[1] < 0) {
                 map.put(-h[1], map.getOrDefault(-h[1], 0) + 1);
             } else {
-                int cnt = map.get(h[1]);
-                if (cnt == 1) {
-                    map.remove(h[1]);
-                } else {
-                    map.put(h[1], cnt - 1);
-                }
+                map.put(h[1], map.get(h[1]) - 1);
+                if (map.get(h[1]) == 0) map.remove(h[1]);
             }
             int cur = map.firstKey();
             if (prev != cur) {

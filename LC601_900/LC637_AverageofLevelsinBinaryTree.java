@@ -28,7 +28,7 @@ public class LC637_AverageofLevelsinBinaryTree {
 
         while (!queue.isEmpty()) {
             int size = queue.size();
-            double levelSum = 0;
+            double levelSum = 0; // 注意这里要用double, 用int到后面再转很可能会越界！！！
             for (int i = 0; i < size; i++) {
                 TreeNode cur = queue.poll();
                 levelSum += cur.val;
@@ -39,9 +39,7 @@ public class LC637_AverageofLevelsinBinaryTree {
         }
         return res;
     }
-
-    private class TreeNode {
-        private int val;
-        private TreeNode left, right;
-    }
 }
+/**
+ * 大部分tree的题都用dfs来做，只有少数涉及到层级遍历的，我们用bfs。
+ */

@@ -99,3 +99,12 @@ public class LC126_WordLadderII {
         return nexts;
     }
 }
+/**
+ * A, {B, D}, {C}
+ * 记录下前面是通过什么走到C的，用一个HashMap记录下
+ * prev[C] = {B, D}
+ * prev[B] = {A}
+ * prev[D] = {A}
+ * 所有元素，不管后面加什么，所有元素都是从beginWord开始
+ * 根据哈希表肯定可以倒推
+ */

@@ -60,4 +60,6 @@ public class LC407_TrappingRainWaterII {
 }
 /**
  * 优化：优先队列可以只放边界，常规队列专门放小于海平面的格子，在内陆做常规BFS
+ * 找一个每时每刻最矮的堤岸 => pq (minHeap)
+ * bfs + pq
  */

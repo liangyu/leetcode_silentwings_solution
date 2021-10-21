@@ -52,4 +52,38 @@ public class LC694_NumberofDistinctIslands {
         dfs(grid, i, j - 1, path, 'l');
         path.append('b'); // 别忘了每次换方向要记录拐点的位置
     }
+
+    // S1.2: dfs
+    // time = O(m * n), space = O(m * n)
+    private int[][] directions = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    public int numDistinctIslands2(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        HashSet<String> set = new HashSet<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    StringBuilder path = new StringBuilder();
+                    dfs2(grid, i, j, path, -1); // start has no direction, set as -1
+                    set.add(path.toString());
+                }
+            }
+        }
+        return set.size();
+    }
+
+    private void dfs2(int[][] grid, int i, int j, StringBuilder path, int dir) {
+        int m = grid.length, n = grid[0].length;
+        // base case
+        if (i < 0 || i >= m || j < 0 || j >= n || grid[i][j] == 0) return;
+
+        grid[i][j] = 0;
+        path.append(dir);
+        for (int k = 0; k < 4; k++) {
+            dfs2(grid, i + directions[k][0], j + directions[k][1], path, k);
+        }
+        path.append(4); // setback -> turn back
+    }
 }
+/**
+ * "down"->"left" is not same as "down"->deadend->"back"->"left".
+ */

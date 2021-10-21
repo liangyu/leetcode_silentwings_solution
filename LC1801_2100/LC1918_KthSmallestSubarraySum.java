@@ -20,6 +20,7 @@ public class LC1918_KthSmallestSubarraySum {
      * @param k
      * @return
      */
+    // S1: BS
     // time = O(nlogn), space = O(1)
     public int kthSmallestSubarraySum(int[] nums, int k) {
         // corner case
@@ -47,4 +48,76 @@ public class LC1918_KthSmallestSubarraySum {
         }
         return count;
     }
+
+    // S2: BS
+    // time = O(nlogn), space = O(n)
+    public int kthSmallestSubarraySum2(int[] nums, int k) {
+        // corner case
+        if (nums == null || nums.length == 0 || k <= 0) return 0;
+
+        int n = nums.length;
+        int[] presum = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            presum[i + 1] = presum[i] + nums[i];
+        }
+
+        int left = 0, right = Integer.MAX_VALUE;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            int count = countSmallerOrEqual(presum, mid); // # of diff value <= mid
+            if (count < k) left = mid + 1; // mid 太小
+            else right = mid;
+        }
+        return left;
+    }
+
+    private int countSmallerOrEqual(int[] presum, int mid) { // presum都是递增的 O(n)
+        int res = 0, j = 0, n = presum.length;
+        for (int i = 0; i < n; i++) {
+            while (j < n && presum[j] - presum[i] <= mid) j++; // j是单调排的
+            res += j - (i + 1);
+        }
+        return res;
+    }
+
+//    private int countSmallerOrEqual(int[] presum, int mid) { // presum都是递增的 O(nlogn) -> 太高
+//        int n = presum.length, res = 0;
+//        for (int i = 0; i < n; i++) {
+//            int idx = upperBound(presum, mid + presum[i]);
+//            res += idx - i;
+//        }
+//        return res;
+//    }
+
+//    private int upperBound(int[] nums, int t) {
+//        int left = 0, right = nums.length - 1;
+//        while (left < right) {
+//            int mid = right - (right - left) / 2;
+//            if (nums[mid] <= t) left = mid;
+//            else right = mid - 1;
+//        }
+//        return nums[left] <= t ? left : left - 1;
+//    }
 }
+/**
+ * ref: LC719
+ * subarray sum -> presum 前缀和数组的差
+ * sum[i:j] = presum[j] - presum[i - 1]
+ * find kth smallest pair diff
+ * 凡是看见第k小，尝试用二分搜值
+ * D =>
+ * while (left < right) {
+ *      if (countSmallerOrEqual(D)) < k) {  // 连D本身加进去都不足k个 => D本身肯定不是第k个 -> 猜小了，猜一个更大的
+ *          left = D + 1; // guess > D;
+ *      } else {  // countSmallerOrEqual(D) >= k
+ *          right = D; // guess <= D
+ *      }
+ * }
+ * left == right
+ * x x x x k x x x x x x
+ *         ^
+ * 假设很多可行解，其实找的是最小的一个可行解
+ * {i, j}
+ * presum[j] - presum[i] <= D
+ * presum[j] <= D + presum[i]  => j是有上界的  upperBound
+ */

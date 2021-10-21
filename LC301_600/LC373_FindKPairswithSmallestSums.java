@@ -23,48 +23,47 @@ public class LC373_FindKPairswithSmallestSums {
      * @return
      */
     // S1: BS (MLE!)
+    // time = O(nlogn), space = O(n)
     public List<List<Integer>> kSmallestPairs(int[] nums1, int[] nums2, int k) {
-        List<List<Integer>> res = new ArrayList<>();
-
         int m = nums1.length, n = nums2.length;
-        int[][] matrix = new int[m][n];
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                matrix[i][j] = nums1[i] + nums2[j];
-            }
-        }
+        long left = nums1[0] + nums2[0], right = nums1[m - 1] + nums2[n - 1];
 
-        int left = matrix[0][0], right = matrix[m - 1][n - 1];
         while (left < right) {
-            int mid = left + (right - left) / 2;
-            if (helper(matrix, mid) < k) left = mid + 1;
+            long mid = left + (right - left) / 2;
+            long count = countSmallerOrEqual(nums1, nums2, mid); // # of pairs whose sum <= mid
+            if (count < k) left = mid + 1;
             else right = mid;
         }
 
-        int val = left;
-        // 左下 -> 右上
-        int i = m - 1, j = 0;
-        while (i >= 0 && j < n) {
-            if (matrix[i][j] <= val) {
-                for (int s = 0; s <= i; s++) {
-                    res.add(Arrays.asList(nums1[s], nums2[j])); // 一列都放入res
-                }
-                j++; // move to the right
-            } else i--;
+        long sum = left;
+        List<List<Integer>> res1 = new ArrayList<>();
+        List<List<Integer>> res2 = new ArrayList<>();
+        for (int i = 0; i < m; i++) {
+            int j = 0;
+            while (j < n && nums1[i] + nums2[j] <= sum) {
+                if (nums1[i] + nums2[j] < sum) res1.add(Arrays.asList(nums1[i], nums2[j]));
+                else res2.add(Arrays.asList(nums1[i], nums2[j]));
+                j++;
+            }
         }
-        Collections.sort(res, (o1, o2) -> (o1.get(0) + o1.get(1)) - (o2.get(0) + o2.get(1)));
-        while (res.size() > k) res.remove(res.size() - 1);
-        return res;
+
+        int t = Math.min(res2.size(), k - res1.size());
+        for (int i = 0; i < t; i++) {
+            res1.add(res2.get(i));
+        }
+        return res1;
     }
 
-    private int helper(int[][] matrix, int val) {
-        int m = matrix.length, n = matrix[0].length;
-        int i = m - 1, j = 0, count = 0;
-        while (i >= 0 && j < n) {
-            if (matrix[i][j] <= val) {
-                count += i + 1;
-                j++;
-            } else i--;
+    private long countSmallerOrEqual(int[] nums1, int[] nums2, long t) {
+        // nums1[i] + nums2[j] <= t
+        int m = nums1.length, n = nums2.length;
+        int j = n - 1;
+        long count = 0;
+
+        for (int i = 0; i < m; i++) {
+            while (j >= 0 && nums1[i] + nums2[j] > t) j--;
+            // nums2[0:j] are ok
+            count += j + 1;
         }
         return count;
     }

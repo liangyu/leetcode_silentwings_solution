@@ -37,11 +37,12 @@ public class LC1263_MinimumMovestoMoveaBoxtoTheirTargetLocation {
      * @param grid
      * @return
      */
+    // time = O(m * n), space = O(m * n)
+    private int[][] dir = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
     public int minPushBox(char[][] grid) {
         int m = grid.length, n = grid[0].length;
+        Deque<int[]> deque = new LinkedList<>();
         int bx = 0, by = 0, px = 0, py = 0, tx = 0, ty = 0;
-
-        // init
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 if (grid[i][j] == 'S') {
@@ -62,8 +63,7 @@ public class LC1263_MinimumMovestoMoveaBoxtoTheirTargetLocation {
             }
         }
 
-        Deque<Node> deque = new LinkedList<>();
-        deque.offerLast(new Node(bx, by, px, py));
+        deque.offer(new int[]{bx, by, px, py});
         int[][][][] memo = new int[21][21][21][21]; // 20^4 = 160000 space allowed
         // init memo can't be 0, need to choose a state standing for unvisited
         for (int i = 0; i < 21; i++) {
@@ -77,14 +77,12 @@ public class LC1263_MinimumMovestoMoveaBoxtoTheirTargetLocation {
         }
         memo[bx][by][px][py] = 0;
 
-        int[][] dir = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-
         while (!deque.isEmpty()) {
-            Node cur = deque.pollFirst();
-            bx = cur.bx;
-            by = cur.by;
-            px = cur.px;
-            py = cur.py;
+            int[] cur = deque.pollFirst();
+            bx = cur[0];
+            by = cur[1];
+            px = cur[2];
+            py = cur[3];
             if (bx == tx && by == ty) return memo[bx][by][px][py];
 
             // case 1: person can move around, but keep the box untouched
@@ -95,43 +93,34 @@ public class LC1263_MinimumMovestoMoveaBoxtoTheirTargetLocation {
                 if (grid[x][y] != '.') continue; // can't go through the wall
                 if (x == bx && y == by) continue; // person and box can't be overlapped
                 if (memo[bx][by][x][y] >= 0) continue; // has been visited
-                memo[bx][by][x][y] = memo[bx][by][px][py]; // level keep the same
-                deque.offerFirst(new Node(bx, by, x, y)); // put at the head of deque
+                memo[bx][by][x][y] = memo[bx][by][px][py]; // 状态不变：箱子没有动，人到处跑
+                deque.offerFirst(new int[]{bx, by, x, y}); // put at the head of deque
             }
 
             // case 2:  push the box
             // person and box are neighbors?
             if (Math.abs(px - bx) + Math.abs(py - by) == 1) { // neighboring
                 for (int k = 0; k < 4; k++) {
-                    if (px + dir[k][0] == bx && py + dir[k][1] == by) {
+                    if (px + dir[k][0] == bx && py + dir[k][1] == by) { // 走一步和箱子重合
                         // only succeed once out of 4 directions
                         int bx2 = bx + dir[k][0];
                         int by2 = by + dir[k][1];
                         if (bx2 < 0 || bx2 >= m || by2 < 0 || by2 >= n) continue;
                         if (grid[bx2][by2] != '.') continue;
-                        if (memo[bx2][by2][bx][by] >= 0) continue; // person move to the box position in last step
+                        if (memo[bx2][by2][bx][by] >= 0) continue; // 人跑到了盒子的老坐标上
                         memo[bx2][by2][bx][by] = memo[bx][by][px][py] + 1; // push once
-                        deque.offerLast(new Node(bx2, by2, bx, by)); // put at the tail of the deque
+                        deque.offerLast(new int[]{bx2, by2, bx, by}); // put at the tail of the deque
                     }
                 }
             }
         }
         return -1;
     }
-
-    private class Node {
-        private int bx, by, px, py;
-        public Node(int bx, int by, int px, int py) {
-            this.bx = bx;
-            this.by = by;
-            this.px = px;
-            this.py = py;
-        }
-    }
 }
 /**
  * 迷宫特别小 -> 20 x 20
  * 没有人，让盒子自己走 -> bfs
+ * 把盒子和人放在一起看成一个4维的状态
  * level 0: [bx, by, px, py] -> 当做一个状态
  * [bx, by, px+1, py] [bx, by, px, py+1] -> 光是人走，没有推动盒子
  * level 1: [bx-1,by,px-1,py] 人要在盒子下面，把不可能的状态都剪掉

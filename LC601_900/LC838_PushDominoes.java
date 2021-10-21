@@ -84,4 +84,62 @@ public class LC838_PushDominoes {
         }
         return String.valueOf(chars);
     }
+
+    // S1.2: BFS
+    // time = O(n), space = O(n)
+    public String pushDominoes2(String dominoes) {
+        // corner case
+        if (dominoes == null || dominoes.length() == 0) return "";
+
+        int n = dominoes.length();
+        char[] chars = dominoes.toCharArray();
+        Queue<int[]> queue = new LinkedList<>();
+        int[] res = new int[n];
+        Arrays.fill(res, -2); // 0,1,2都已经表示三种状态了，这里要表示原始未动，得用第4个数-2
+        for (int i = 0; i < n; i++) {
+            if (chars[i] == 'L') {
+                queue.offer(new int[]{i, -1});
+                res[i] = -1;
+            }
+            else if (chars[i] == 'R') {
+                queue.offer(new int[]{i, 1});
+                res[i] = 1;
+            }
+        }
+
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            HashMap<Integer, Integer> map = new HashMap<>(); // 每一层单独记录新出发的骨牌状态
+            while (size-- > 0) {
+                int[] cur = queue.poll();
+                int pos = cur[0], dir = cur[1];
+                if (dir == 1 && pos + 1 < n && res[pos + 1] == -2) {
+                    map.put(pos + 1, map.getOrDefault(pos + 1, 0) + 1);
+                } else if (dir == -1 && pos - 1 >= 0 && res[pos - 1] == -2) {
+                    map.put(pos - 1, map.getOrDefault(pos - 1, 0) - 1);
+                }
+            }
+            for (int key : map.keySet()) {
+                queue.offer(new int[]{key, map.get(key)});
+                res[key] = map.get(key);
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            if (res[i] == -1) sb.append('L');
+            else if (res[i] == 1) sb.append('R');
+            else sb.append('.');
+        }
+        return sb.toString();
+    }
 }
+/**
+ * 根据题意，我们按照回合的顺序进行BFS模拟。队列的初始，放入所有被推导的骨牌。
+ * 在一个回合里，我们弹出所有在上一回合被推倒的骨牌。
+ * 如果是个刚被往左推倒的骨牌，会在此回合影响它左边的骨牌（如果未被推倒的话），使其有左倾的趋势；
+ * 同理，对于刚被往右推倒的骨牌，会在此回合影响它右边的骨牌（如果未被推倒的话），使其有右倾的趋势。
+ * 注意，有些骨牌可能会在此回合里既被左倾也被右倾，那么它就最终的状态是站立。
+ * 这一回合结束时，我们要将所有在本回合被推倒的骨牌加入队列中。
+ * 最终所有骨牌会在BFS的过程中被加入队列确认状态。
+ */

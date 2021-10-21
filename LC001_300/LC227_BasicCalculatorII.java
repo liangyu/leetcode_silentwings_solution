@@ -90,4 +90,48 @@ public class LC227_BasicCalculatorII {
         res += prev;
         return res;
     }
+
+    // S3: List
+    // time = O(n), space = O(n)
+    public int calculate3(String s) {
+        // corner case
+        if (s == null || s.length() == 0) return 0;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append('+'); // 补上一个+号，这样可以保证字符串都是从运算符开始的！
+        for (char c : s.toCharArray()) {
+            if (c != ' ') sb.append(c);
+        }
+        s = sb.toString();
+        int n = s.length();
+        List<Integer> res = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            if (s.charAt(i) == '+' || s.charAt(i) == '-') {
+                int j = i + 1;
+                while (j < n && Character.isDigit(s.charAt(j))) j++;
+                int num = Integer.parseInt(s.substring(i + 1, j));
+                if (s.charAt(i) == '+') res.add(num);
+                else res.add(-num);
+                i = j - 1;
+            } else if (s.charAt(i) == '*' || s.charAt(i) == '/') {
+                int j = i + 1;
+                while (j < n && Character.isDigit(s.charAt(j))) j++;
+                int num = Integer.parseInt(s.substring(i + 1, j));
+                int k = res.size();
+                if (s.charAt(i) == '*') res.set(k - 1, res.get(k - 1) * num);
+                else res.set(k - 1, res.get(k - 1) / num);
+                i = j - 1;
+            }
+        }
+        int sum = 0;
+        for (int x : res) sum += x;
+        return sum;
+    }
 }
+/**
+ * stack
+ * +3, -2, +4, *5, -6, -1, +2/2
+ * 字符串第一个前面可以人工加一个+号
+ * 有括号就递归
+ */

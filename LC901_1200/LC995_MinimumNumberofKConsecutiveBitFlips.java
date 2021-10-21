@@ -26,15 +26,15 @@ public class LC995_MinimumNumberofKConsecutiveBitFlips {
         if (nums == null || nums.length == 0) return 0;
 
         int n = nums.length;
-        int[] diff = new int[n + 1]; // 扩展一位，使diff[i + k]--不会越界！
+        int[] diff = new int[n + 1]; // 扩展一位，虽然i + k - 1不越界，但是还要使diff[i + k]--不会越界！
 
-        int flips = 0;
+        int flips = 0; // 通过累加差分数组可以得到当前位置需要翻转的次数,flip来表示累加值
         int count = 0;
         for (int i = 0; i < n; i++) {
-            flips += diff[i];
+            flips += diff[i]; // 第i位要翻转多少次
             if (nums[i] + flips % 2 == 1) continue; // 判断奇偶性
             if (i + k - 1 >= n) return -1;
-            flips++;
+            flips++; // 第i位为0，多做一次flip，对区间[i: i+k-1]都会产生影响
             diff[i + k]--;
             count++;
         }

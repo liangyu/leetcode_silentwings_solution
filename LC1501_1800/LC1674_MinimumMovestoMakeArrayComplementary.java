@@ -23,6 +23,7 @@ public class LC1674_MinimumMovestoMakeArrayComplementary {
      * @param limit
      * @return
      */
+    // S1: diff array
     // time = O(max(n, C)), space = O(C)  C: limit
     public int minMoves(int[] nums, int limit) {
         // corner case
@@ -49,6 +50,7 @@ public class LC1674_MinimumMovestoMakeArrayComplementary {
         return res;
     }
 
+    // S2: TreeMap
     // time = O(nlogn), space = O(n)   当limit比较大的时候，就只能用这种做法
     public int minMoves2(int[] nums, int limit) {
         // corner case
@@ -102,5 +104,4 @@ public class LC1674_MinimumMovestoMakeArrayComplementary {
  * 这里diff是根据limit来开，如果limit非常大，比如1e9该怎么做？
  * 事实上如果limit非常大，也可以做，因为大多数diff[x]都是0 => 只需要存那些非0的diff[x]，不用每个x都遍历，只要从小到大遍历是拐点的x
  * => 不用开数组了，开一个HashMap，只存那些有拐点的x，但考虑要排序 => 用TreeMap,遍历key-val
- *
  */

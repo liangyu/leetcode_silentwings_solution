@@ -30,11 +30,11 @@ public class LC1293_ShortestPathinaGridwithObstaclesElimination {
      * @param k
      * @return
      */
-    // time = O(m * n * k), space = O(m * n * k)
-    private static final int[][] DIRECTIONS = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    // time = O(m * n * min(k, m + n), space = O(m * n * min(k, m + n)
+    private int[][] directions = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
     public int shortestPath(int[][] grid, int k) {
         int m = grid.length, n = grid[0].length;
-        if (m == 1 && n == 1) return 0;
+        if (k >= m + n - 3) return m + n - 2; // 如果k >= m + n - 3，那么最短路径一定是m + n - 2
 
         boolean[][][] visited = new boolean[m][n][k + 1];
         Queue<int[]> queue = new LinkedList<>();
@@ -46,21 +46,21 @@ public class LC1293_ShortestPathinaGridwithObstaclesElimination {
             int size = queue.size();
             while (size-- > 0) {
                 int[] cur = queue.poll();
-                int i = cur[0], j = cur[1], r = cur[2];
-                if (i == m - 1 && j == n - 1) return step;
-                for (int[] dir : DIRECTIONS) {
-                    int ii = i + dir[0];
-                    int jj = j + dir[1];
-                    if (ii < 0 || ii >= m || jj < 0 || jj >= n) continue;
-                    if (grid[ii][jj] == 1) {
+                int x = cur[0], y = cur[1], r = cur[2];
+                if (x == m - 1 && y == n - 1) return step;
+                for (int t = 0; t < 4; t++) {
+                    int i = x + directions[t][0];
+                    int j = y + directions[t][1];
+                    if (i < 0 || i >= m || j < 0 || j >= n) continue;
+                    if (grid[i][j] == 1) {
                         if (r == k) continue;
-                        if (visited[ii][jj][r + 1]) continue;
-                        visited[ii][jj][r + 1] = true;
-                        queue.offer(new int[]{ii, jj, r + 1});
+                        if (visited[i][j][r + 1]) continue;
+                        visited[i][j][r + 1] = true;
+                        queue.offer(new int[]{i, j, r + 1});
                     } else {
-                        if (visited[ii][jj][r]) continue;
-                        visited[ii][jj][r] = true;
-                        queue.offer(new int[]{ii, jj, r});
+                        if (visited[i][j][r]) continue;
+                        visited[i][j][r] = true;
+                        queue.offer(new int[]{i, j, r});
                     }
                 }
             }
@@ -87,4 +87,7 @@ public class LC1293_ShortestPathinaGridwithObstaclesElimination {
  * step: (i,j,k)
  * step+1: (i,j+1,k) or (i,j+1,k+1)
  * 本题可以上下左右移动，无后效性，所以不能使用DP来做。
+ * bfs多了一维状态，ijk
+ * 假设网格中都是0，没有障碍物，每次只能走四个方向，那么最短路径一定是m+n-2。
+ * 如果k>=m+n-3，那么最短路径一定是m+n-2。不需要BFS，浪费性能。 如果k<m+n-3，才需要BFS。
  */

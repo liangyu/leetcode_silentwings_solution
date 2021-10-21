@@ -61,3 +61,6 @@ public class LC130_SurroundedRegions {
         }
     }
 }
+/**
+ * 直接在沿海地带找，有O的话肯定不会被X包围，反着来
+ */

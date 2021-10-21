@@ -1,0 +1,63 @@
+package LC301_600;
+import java.util.*;
+public class LC496_NextGreaterElementI {
+    /**
+     * The next greater element of some element x in an array is the first greater element that is to the right of x in
+     * the same array.
+     *
+     * You are given two distinct 0-indexed integer arrays nums1 and nums2, where nums1 is a subset of nums2.
+     *
+     * For each 0 <= i < nums1.length, find the index j such that nums1[i] == nums2[j] and determine the next greater
+     * element of nums2[j] in nums2. If there is no next greater element, then the answer for this query is -1.
+     *
+     * Return an array ans of length nums1.length such that ans[i] is the next greater element as described above.
+     *
+     * Input: nums1 = [4,1,2], nums2 = [1,3,4,2]
+     * Output: [-1,3,-1]
+     *
+     * Constraints:
+     *
+     * 1 <= nums1.length <= nums2.length <= 1000
+     * 0 <= nums1[i], nums2[i] <= 10^4
+     * All integers in nums1 and nums2 are unique.
+     * All the integers of nums1 also appear in nums2.
+     *
+     *
+     * Follow up: Could you find an O(nums1.length + nums2.length) solution?
+     * @param nums1
+     * @param nums2
+     * @return
+     */
+    // time = O(n), space = O(n)
+    public int[] nextGreaterElement(int[] nums1, int[] nums2) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        Stack<Integer> stack = new Stack<>();
+
+        for (int x : nums2) {
+            if (stack.isEmpty() || !stack.isEmpty() && x <= stack.peek()) stack.push(x);
+            else {
+                while (!stack.isEmpty() && stack.peek() < x) map.put(stack.pop(), x);
+                stack.push(x);
+            }
+        }
+        int[] res = new int[nums1.length];
+        for (int i = 0; i < nums1.length; i++) {
+            res[i] = map.getOrDefault(nums1[i], -1);
+        }
+        return res;
+    }
+}
+/**
+ * 如何用单调栈来解题
+ * 其实一个数组就可以了。
+ * 每个元素都可以找或者找不到
+ * naive解法: O(n^2)
+ * 5 4 3 2 1 4  -> 5 4 4 3 2 1 6 -> 6 7 -> 7
+ * 保持单调递减
+ * follow-up: next prev greater element
+ * 1 2 3 4 5 2 x
+ * 5 4 3 2 1 4
+ * next smaller element
+ * prev smaller element
+ * 每个元素最多只会遍历2次
+ */

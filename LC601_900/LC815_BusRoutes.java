@@ -28,6 +28,7 @@ public class LC815_BusRoutes {
      * @param target
      * @return
      */
+    // time = O(n^2), space = O(n^2)
     public int numBusesToDestination(int[][] routes, int source, int target) {
         if (source == target) return 0;
         HashMap<Integer, List<Integer>> map = new HashMap<>(); // stop2bus

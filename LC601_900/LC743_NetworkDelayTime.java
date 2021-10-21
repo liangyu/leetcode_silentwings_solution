@@ -60,7 +60,7 @@ public class LC743_NetworkDelayTime {
         return res;
     }
 
-    // S2:
+    // S2: Dijkstra 2
     // time = O(n^2), space = O(n + E)
     public int networkDelayTime2(int[][] times, int n, int k) {
         HashMap<Integer, List<int[]>> map = new HashMap<>();
@@ -100,7 +100,7 @@ public class LC743_NetworkDelayTime {
         return res == Integer.MAX_VALUE ? -1 : res;
     }
 
-    // S3:Floyd
+    // S3:Floyd 不要求边权为正 -> 相当于一个背包
     // time = O(n^3), space = O(n^2)
     public int networkDelayTime3(int[][] times, int n, int k) {
         int[][] dp = new int[n + 1][n + 1]; // dp[i][j]: the shortest dist between i and j

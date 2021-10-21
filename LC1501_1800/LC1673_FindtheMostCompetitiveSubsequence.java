@@ -57,6 +57,9 @@ public class LC1673_FindtheMostCompetitiveSubsequence {
 }
 
 /**
- *   1 3 5 7 9 6        单调栈，maintain k-size
- *   1 3 5 (7 9) 6      递增序列 -> 最多扔 n - k 个元素，超过的话只能老老实实放在栈顶上
+ * ref: LC402
+ * 逐个比较
+ * 1 3 5 7 9 6        单调栈，maintain k-size
+ * 1 3 5 (7 9) 6      递增序列 -> 最多扔 n - k 个元素，超过的话只能老老实实放在栈顶上
+ * 后面比较大，只能扔后面
  */
