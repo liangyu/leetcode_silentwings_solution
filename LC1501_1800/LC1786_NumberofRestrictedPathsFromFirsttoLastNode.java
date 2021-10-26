@@ -37,49 +37,58 @@ public class LC1786_NumberofRestrictedPathsFromFirsttoLastNode {
      * @param edges
      * @return
      */
-
+    // time = O(ElogE) = O(mlogm), space = O(n)
     public int countRestrictedPaths(int n, int[][] edges) {
-        int[] dist = new int[20001];
-        HashMap<Integer, List<Pair>> map = new HashMap<>();
-        boolean[] visited = new boolean[20001];
-
-        for (int[] e : edges) { // 构建邻接表
-            int a = e[0] - 1;
-            int b = e[1] - 1; // 0-based index
-            map.putIfAbsent(a, new ArrayList<>());
-            map.putIfAbsent(b, new ArrayList<>());
-            map.get(a).add(new Pair(b, e[2]));
-            map.get(b).add(new Pair(a, e[2]));
+        List<int[]>[] graph = new List[n];
+        int[] dist = new int[n];
+        for (int i = 0; i < n; i++) graph[i] = new ArrayList<>();
+        for (int[] edge : edges) {
+            int a = edge[0] - 1, b = edge[1] - 1;
+            graph[a].add(new int[]{b, edge[2]});
+            graph[b].add(new int[]{a, edge[2]});
         }
-
-        // Dijkstra: BFS + PQ
-        PriorityQueue<Pair> pq = new PriorityQueue<Pair>();
-        pq.offer(new Pair(0, n - 1));
+        PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] - o2[0]);
+        pq.offer(new int[]{0, n - 1}); // dist: distance from node x to end, so we should start from end, then the dist = 0
+        boolean[] visited = new boolean[n];
 
         while (!pq.isEmpty()) {
-            Pair p = pq.poll();
-            int cur = p.y;
-            if (visited[cur]) continue;
-            dist[cur] = p.x; // shortest dist from any point to the starting point
-            visited[cur] = true;
+            int[] cur = pq.poll();
+            int d = cur[0], node = cur[1];
+            if (visited[node]) continue;
+            visited[node] = true;
+            dist[node] = d;
 
-            for (Pair pair : map.get(cur)) {
-                if (visited[pair.x]) continue;
-                pq.offer(new Pair(p.x + len, pair.x));
+            for (int[] x : graph[node]) {
+                int next = x[0], weight = x[1];
+                if (visited[next]) continue;
+                pq.offer(new int[]{weight + dist[node], next});
             }
         }
+
+        long[] pathNum = new long[n];
+        Arrays.fill(pathNum, -1);
+
+        long res = dfs(0, n, pathNum, graph, dist);
+        return (int) res;
     }
 
-    private class Pair {
-        private int x;
-        private int y;
-        public Pair(int x, int y) {
-            this.x = x;
-            this.y = y;
+    private long dfs(int cur, int n, long[] pathNum, List<int[]>[] graph, int[] dist) {
+        // base case
+        if (cur == n - 1) return 1;
+        if (pathNum[cur] != -1) return pathNum[cur];
+
+        long sum = 0;
+        long M = (long)(1e9 + 7);
+        for (int[] x : graph[cur]) {
+            int next = x[0], weight = x[1];
+            if (dist[next] >= dist[cur]) continue;
+            sum += dfs(next, n, pathNum, graph, dist);
+            sum %= M;
         }
+        pathNum[cur] = sum;
+        return sum;
     }
 }
-
 /**
  * Dijkstra: single source, non-negative weight -> 单源，到起点的最短距离
  * Elog(E)

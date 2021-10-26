@@ -53,13 +53,10 @@ public class LC1879_MinimumXORSumofTwoArrays {
     public int minimumXORSum2(int[] nums1, int[] nums2) {
         int n = nums1.length;
         int[] dp = new int[1 << n];
-        Arrays.fill(dp, Integer.MAX_VALUE / 2);
-        int[] dp2 = new int[1 << n];
         dp[0] = 0;
 
-
         for (int j = 0; j < n; j++) {
-            dp2 = dp.clone();
+            int[] dp2 = dp.clone();
             for (int state = 0; state < (1 << n); state++) {
                 dp[state] = Integer.MAX_VALUE / 2;
                 for (int i = 0; i < n; i++) { // 先把bit 1挑出来，遍历nums1里所有的元素
@@ -72,7 +69,7 @@ public class LC1879_MinimumXORSumofTwoArrays {
         return dp[(1 << n) - 1];
     }
 
-    // S2.2: DP 优化
+    // S2.2: DP + Gospher's hack
     // time = O(n^2 * 2^n), space = O(2^n)
     public int minimumXORSum3(int[] nums1, int[] nums2) {
         int n = nums1.length;
@@ -131,6 +128,7 @@ public class LC1879_MinimumXORSumofTwoArrays {
 /**
  * ref: LC1820 -> 不带权的二分匹配，最多能连通多少对 => 匈牙利算法 (dfs 更简单, bfs 效率更高)
  * 如果有权重 -> 带权的二分匹配，用的是KM算法 -> 配对出来的值最小
+ * 1 <= n <= 14  -> 用状态压缩
  * 我们这里用基于状态压缩的DP和Dijkstra来做，左右数量相等。
  * ref: LC1066
  *

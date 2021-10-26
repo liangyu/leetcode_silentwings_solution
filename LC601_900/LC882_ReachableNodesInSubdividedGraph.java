@@ -35,7 +35,7 @@ public class LC882_ReachableNodesInSubdividedGraph {
      * @param n
      * @return
      */
-    // time = O(mlogn), space = O(m)  m: the length of edges
+    // time = O(mlogn), space = O(n)  m: the length of edges
     public int reachableNodes(int[][] edges, int maxMoves, int n) {
         HashMap<Integer, List<int[]>> map = new HashMap<>(); // {nextNode, weight}
         for (int[] edge : edges) { // O(m)

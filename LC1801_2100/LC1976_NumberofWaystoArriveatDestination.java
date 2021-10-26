@@ -30,6 +30,7 @@ public class LC1976_NumberofWaystoArriveatDestination {
      * @param roads
      * @return
      */
+    // time = O(n^3), space = O(n^2)
     private long M = (long)(1e9 + 7);
     private long[] dist;
     private long[] memo;
@@ -105,10 +106,10 @@ public class LC1976_NumberofWaystoArriveatDestination {
  * 最短路径长度是多少 -> Dijkstra的裸题
  * 这里问多少条
  * 大框架，求最短路径
- * Dijkstra: single souce, non-negative weight
+ * Dijkstra: single source, non-negative weight
  * 最短距离知道了，只考虑总长度为7的那些路径
  * 倒着看
  * T- ti = T[Ai]
  * Dijkstra + dfs + memo
- * 找倒数第二站，递归思想
+ * 找倒数第二站，看相邻点，递归思想
  */
