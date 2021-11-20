@@ -26,14 +26,14 @@ public class LC442_FindAllDuplicatesinanArray {
         if (nums == null || nums.length == 0) return res;
 
         int n = nums.length;
-        for (int i = 0; i < n; i++) nums[i]--;
         for (int i = 0; i < n; i++) {
-            while (nums[i] != i  && nums[i] < n && nums[i] != nums[nums[i]]) {
-                swap(nums, i, nums[i]);
+            while (nums[i] != i + 1 && nums[i] != nums[nums[i] - 1]) {
+                swap(nums, i, nums[i] - 1);
             }
         }
+
         for (int i = 0; i < n; i++) {
-            if (nums[i] != i) res.add(nums[i] + 1);
+            if (nums[i] != i + 1) res.add(nums[i]);
         }
         return res;
     }
@@ -45,9 +45,17 @@ public class LC442_FindAllDuplicatesinanArray {
     }
 }
 /**
+ * ref: LC41
  * 满足用index sorting的条件：
  * 1. 值域：1 ~ n;
  * 2. 数组长度: n;
  * Missing, duplicate
+ * [4,3,2,7,8,2,3,1]
+ * [7,3,2,4,8,2,3,1]
+ * [3,3,2,4,8,2,7,1]
+ * [2,3,3,4,8,2,7,1]
+ * [3,2,3,4,8,2,7,1]
+ * [3,2,3,4,1,2,7,8]
+ * [1,2,3,4,3,2,7,8] => 3,2
  * 尽量把元素重新排序，尽量让每个index位置上放与index相同的value，如果元素是从0到n-1,我们就用0-index，如果是从1 ~ n,那我们就1-index
  */

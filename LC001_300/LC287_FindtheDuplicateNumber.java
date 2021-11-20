@@ -32,14 +32,16 @@ public class LC287_FindtheDuplicateNumber {
         // corner case
         if (nums == null || nums.length == 0) return 0;
 
-        int left = 0, right = nums.length - 1;
-        while (left <= right) {
+        int n = nums.length;
+        int left = 0, right = n - 1;
+        while (left < right) {
             int mid = left + (right - left) / 2;
             int count = 0;
-            for (int i = 0; i < nums.length; i++) {
-                if (nums[i] <= mid) count++;
+            for (int x : nums) {
+                if (x <= mid) count++;
             }
-            if (count > mid) right = mid - 1;
+
+            if (count > mid) right = mid;
             else left = mid + 1;
         }
         return left;
@@ -63,4 +65,35 @@ public class LC287_FindtheDuplicateNumber {
         }
         return slow;
     }
+
+    // S3: indexing sort
+    public int findDuplicate3(int[] nums) {
+        // corner case
+        if (nums == null || nums.length == 0) return 0;
+
+        int n = nums.length;
+        for (int i = 0; i < n; i++) {
+            while (nums[i] != i + 1 && nums[i] != nums[nums[i] - 1]) {
+                swap(nums, i, nums[i] - 1);
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (nums[i] != i + 1) return nums[i];
+        }
+        return -1;
+    }
+
+    private void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
 }
+/**
+ * indexing sort
+ * ref: LC41, LC442, LC448
+ * 可能repeating number不止repeating 1 次
+ * B.S.
+ * if the duplicated number = k => count(<= k) > k
+ * 0 -> 1 -> 3 -> 2 -> 4 -> 2
+ */

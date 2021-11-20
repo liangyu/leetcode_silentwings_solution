@@ -49,12 +49,27 @@ public class LC40_CombinationSumII {
         if (idx == candidates.length || sum > target) return;
 
         for (int i = idx; i < candidates.length; i++) {
-            if (i != idx && candidates[i] == candidates[i - 1]) continue;
-            else {
-                path.add(candidates[i]);
-                dfs(candidates, target, i + 1, sum + candidates[i], path, res);
-                path.remove(path.size() - 1);
-            }
+            if (i > idx && candidates[i] == candidates[i - 1]) continue;
+            path.add(candidates[i]);
+            dfs(candidates, target, i + 1, sum + candidates[i], path, res);
+            path.remove(path.size() - 1);
         }
     }
 }
+/**
+ * target = 4
+ * 3  [1 1]  3 + 1
+ *           3 + 1
+ * target = 5
+ * 3 [1 1 1] 2    3 + 1 + 1 = 5
+ * 先排个序，把1挪到一起去，只取最前面的
+ * 如果取2个的话，约定只取前2个
+ * 如果取多个，我们永远只取靠前的那些，不会跳着取
+ * 肯定不会有重复
+ * target = 8
+ * 4 [3 3 2 1 1 1]
+ * for (int i = idx; i < candidates.size(); i++) {
+ *     if (i > idx && candidates[i] == candidates[i - 1]) continue;
+ * }
+ *
+ */

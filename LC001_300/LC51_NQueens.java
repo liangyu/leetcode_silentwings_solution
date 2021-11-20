@@ -19,6 +19,7 @@ public class LC51_NQueens {
      * @param n
      * @return
      */
+    // S1: DFS
     // time = O(n!), space = O(n)
     public List<List<String>> solveNQueens(int n) {
         List<List<String>> res = new ArrayList<>();
@@ -61,4 +62,72 @@ public class LC51_NQueens {
         }
         res.add(list);
     }
+
+    // S2: DFS
+    // time = O(n!), space = O(n)
+    public List<List<String>> solveNQueens2(int n) {
+        List<List<String>> res = new ArrayList<>();
+        char[][] board = new char[n][n];
+        for (int i = 0; i < n; i++) Arrays.fill(board[i], '.');
+        dfs(board, 0, res);
+        return res;
+    }
+
+    private void dfs(char[][] board, int i, List<List<String>> res) {
+        int n = board.length;
+        if (i == n) {
+            addSol(board, res);
+            return;
+        }
+
+        for (int j = 0; j < n; j++) {
+            if (isValid(board, i, j)) {
+                board[i][j] = 'Q';
+                dfs(board, i + 1, res);
+                board[i][j] = '.';
+            }
+        }
+    }
+
+    private boolean isValid(char[][] board, int row, int col) {
+        int n = board.length;
+        for (int i = 0; i < row; i++) {
+            if (board[i][col] == 'Q') return false;
+        }
+
+        for (int j = 0; j < col; j++) {
+            if (board[row][j] == 'Q') return false;
+        }
+
+        int k = 1;
+        while (row - k >= 0 && col - k >= 0) {
+            if (board[row - k][col - k] == 'Q') return false;
+            k++;
+        }
+
+        k = 1;
+        while (row - k >= 0 && col + k < n) {
+            if (board[row - k][col + k] == 'Q') return false;
+            k++;
+        }
+        return true;
+    }
+
+    private void addSol(char[][] board, List<List<String>> res) {
+        int n = board.length;
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            list.add(String.valueOf(board[i]));
+        }
+        res.add(list);
+    }
 }
+/**
+ * N个皇后，每行只能选一个
+ * 选哪一个，搜索列，递归深度在行
+ * 一旦固定了第一行皇后的位置，会对后面的行产生约束
+ * 继续递归
+ * 典型的深度优先搜索
+ * 理论上时间复杂度是O(n^n)
+ * 可以剪枝的可能性非常大，效率还是很高的
+ */

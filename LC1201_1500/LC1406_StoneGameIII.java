@@ -45,7 +45,7 @@ public class LC1406_StoneGameIII {
         for (int i = n - 1; i >= 0; i--) {
             int temp = 0;
             for (int k = 1; k <= 3; k++) {
-                if (i + k > n) break;
+                if (i + k - 1 >= n) break;
                 temp += stoneValue[i + k - 1];
                 dp[i] = Math.max(dp[i], temp + presum[n] - presum[i + k] - dp[i + k]);
             }

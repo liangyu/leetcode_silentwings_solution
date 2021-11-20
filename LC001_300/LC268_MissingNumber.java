@@ -21,14 +21,17 @@ public class LC268_MissingNumber {
      */
     // S1: XOR
     // time = O(n), space = O(1)
+    // time = O(n), space = O(1)
     public int missingNumber(int[] nums) {
         // corner case
         if (nums == null || nums.length == 0) return -1;
 
-        int res = nums.length;
-        for (int i = 0; i < nums.length; i++) {
-            res ^= i ^ nums[i];
+        int n = nums.length, res = 0;
+        for (int i = 0; i <= n; i++) {
+            res ^= i;
         }
+
+        for (int x : nums) res ^= x;
         return res;
     }
 
@@ -42,8 +45,37 @@ public class LC268_MissingNumber {
         }
         return expectedSum - actualSum;
     }
+
+    // S3: indexing sort
+    // time = O(n), space = O(n)
+    public int missingNumber3(int[] nums) {
+        int n = nums.length;
+        int[] arr = new int[n + 1];
+        arr[n] = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) arr[i] = nums[i];
+        for (int i = 0; i <= n; i++) {
+            while (arr[i] != i && arr[i] <= n && arr[i] != arr[arr[i]]) { // 基本满足这3个条件来套用indexing sort模板
+                swap(arr, i, arr[i]);
+            }
+        }
+
+        for (int i = 0; i <= n; i++) {
+            if (arr[i] != i) return i;
+        }
+        return -1;
+    }
+
+    private void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
 }
 /**
+ * 有一个更优雅的做法。nums[i]包含了0~N的所有数（除了一个missing number，假设是x）。我们将其亦或起来。
+ * 同时将这个结果再与0~N都亦或一遍。
+ * 这样，除了x，其他的数字都被xor了两遍而被消除。
+ * 剩下的结果就是x。
  * missing =4∧(0∧0)∧(1∧1)∧(2∧3)∧(3∧4)
  * =(4∧4)∧(0∧0)∧(1∧1)∧(3∧3)∧2
  * =0∧0∧0∧0∧2

@@ -68,7 +68,6 @@ public class LC1563_StoneGameV {
     }
 
     private int solve(int[][] dp, int[] presum, int i, int j) {
-        int n = dp.length;
         if (dp[i][j] != 0) return dp[i][j];
         if (i == j) return 0;
 

@@ -39,45 +39,46 @@ public class LC399_EvaluateDivision {
     public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
         HashMap<String, List<Pair>> map = new HashMap<>();
         for (int i = 0; i < equations.size(); i++) {
-            map.putIfAbsent(equations.get(i).get(0), new ArrayList<>());
-            map.get(equations.get(i).get(0)).add(new Pair(equations.get(i).get(1), values[i]));
-            map.putIfAbsent(equations.get(i).get(1), new ArrayList<>());
-            map.get(equations.get(i).get(1)).add(new Pair(equations.get(i).get(0), 1.0 / values[i]));
+            String a = equations.get(i).get(0);
+            String b = equations.get(i).get(1);
+            double c = values[i];
+            map.putIfAbsent(a, new ArrayList<>());
+            map.putIfAbsent(b, new ArrayList<>());
+            map.get(a).add(new Pair(b, c));
+            map.get(b).add(new Pair(a, 1.0 / c));
         }
 
-        List<Double> res = new ArrayList<>();
+        double[] res = new double[queries.size()];
+
         for (int i = 0; i < queries.size(); i++) {
-            if (!map.containsKey(queries.get(i).get(0)) || !map.containsKey(queries.get(i).get(1))) {
-                res.add(-1.0);
+            String a = queries.get(i).get(0);
+            String b = queries.get(i).get(1);
+            if (!map.containsKey(a) || !map.containsKey(b)) {
+                res[i] = -1;
                 continue;
             }
             HashSet<String> visited = new HashSet<>();
-            visited.add(queries.get(i).get(0));
-            res.add(dfs(queries.get(i).get(0), queries.get(i).get(1), map, visited));
+            visited.add(a);
+            res[i] = dfs(a, b, map, visited);
         }
-        double[] ans = new double[res.size()];
-        int k = 0;
-        for (double x : res) ans[k++] = x;
-        return ans;
+        return res;
     }
 
     private double dfs(String A, String B, HashMap<String, List<Pair>> map, HashSet<String> visited) {
-        if (A.equals(B)) return 1.0; // 注意：string比较相等要用equals!!!
+        if (A.equals(B)) return 1.0;  // 注意：string比较相等要用equals!!!
 
-        if (map.containsKey(A)) {
-            for (int i = 0; i < map.get(A).size(); i++) {
-                String C = map.get(A).get(i).str;
-                if (visited.contains(C)) continue; // 注意：去重！！！
-                visited.add(C);
-                double val1 = map.get(A).get(i).val;
-                // check if C and B has distance
-                double val2 = dfs(C, B, map, visited);
-                // visited.remove(C); // 注意这里其实不需要回溯！！！
-                // A -> B -> C -> D 如果所有C的path都没找到的话，也就没必要再走C了。
-                if (val2 != -1) return val1 * val2;
-            }
+        for (int i = 0; i < map.getOrDefault(A, new ArrayList<>()).size(); i++) {
+            String C = map.get(A).get(i).str;
+            if (visited.contains(C)) continue;
+            visited.add(C); // 注意：去重！！！
+            double val1 = map.get(A).get(i).val;
+            // check if C and B has distance
+            double val2 = dfs(C, B, map, visited);
+            // visited.remove(C); // 注意这里其实不需要回溯！！！因为visited是针对一个具体的{A,B} pair来形成的
+            // A -> B -> C -> D 如果所有C的path都没找到的话，也就没必要再走C了。
+            if (val2 != -1) return val1 * val2;
         }
-        return -1;
+        return -1; // can't find
     }
 
     private class Pair {

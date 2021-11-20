@@ -29,42 +29,39 @@ public class LC1136_ParallelCourses {
     // S1: BFS (Prefer!!!)
     // time = O(V + E) = O(n), space = O(V + E) = O(n)
     public int minimumSemesters(int n, int[][] relations) {
-        // corner case
-        if (relations == null || relations.length == 0 || relations[0] == null || relations[0].length == 0 || n <= 0) {
-            return -1;
-        }
-
+        List<Integer>[] graph = new List[n + 1];
+        for (int i = 1; i <= n; i++) graph[i] = new ArrayList<>();
         int[] indegree = new int[n + 1];
-        List<List<Integer>> graph = new ArrayList<>();
-
-        for (int i = 0; i <= n; i++) {
-            graph.add(new ArrayList<>());
-        }
-
         for (int[] r : relations) {
-            graph.get(r[0]).add(r[1]);
+            graph[r[0]].add(r[1]);
             indegree[r[1]]++;
         }
 
         Queue<Integer> queue = new LinkedList<>();
+        int count = 0;
         for (int i = 1; i <= n; i++) {
-            if (indegree[i] == 0) queue.offer(i);
+            if (indegree[i] == 0) {
+                queue.offer(i);
+                count++;
+            }
         }
 
-        int minLen = 0, courses = 0;
+        int step = 0;
         while (!queue.isEmpty()) {
             int size = queue.size();
             while (size-- > 0) {
                 int cur = queue.poll();
-                courses++;
-                for (int next : graph.get(cur)) {
+                for (int next : graph[cur]) {
                     indegree[next]--;
-                    if (indegree[next] == 0) queue.offer(next);
+                    if (indegree[next] == 0) {
+                        queue.offer(next);
+                        count++;
+                    }
                 }
             }
-            minLen++;
+            step++;
         }
-        return courses == n ? minLen : -1;
+        return count == n ? step : -1;
     }
 
     // S2: DFS
@@ -108,3 +105,8 @@ public class LC1136_ParallelCourses {
         return false;
     }
 }
+/**
+ * 有向无环图
+ * 先修入度为0的课
+ * 常规的拓扑排序。在BFS的过程中，将层级遍历的“层数”记录下来，就是答案。
+ */

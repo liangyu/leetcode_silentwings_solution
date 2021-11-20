@@ -36,97 +36,97 @@ public class LC1928_MinimumCosttoReachDestinationinTime {
      * @param passingFees
      * @return
      */
-    // S1
-    // time = O(V + ElogE) = O(nlogn), space = O(V + E) = O(n)
+    // S1: Dijkstra
+    // time = O(V + ElogE) = O(m + n + nlogn), space = O(V + E) = O(n * maxTime)
     public int minCost(int maxTime, int[][] edges, int[] passingFees) {
         int n = passingFees.length;
-        HashMap<Integer, List<int[]>> map = new HashMap<>();
-        for (int[] edge : edges) {
-            map.putIfAbsent(edge[0], new ArrayList<>());
-            map.putIfAbsent(edge[1], new ArrayList<>());
-            map.get(edge[0]).add(new int[]{edge[1], edge[2]}); // [endpoint, time]
-            map.get(edge[1]).add(new int[]{edge[0], edge[2]});
+        List<int[]>[] graph = new List[n];
+        for (int i = 0; i < n; i++) graph[i] = new ArrayList<>(); // O(n)
+        for (int[] edge : edges) { // O(m)
+            graph[edge[0]].add(new int[]{edge[1], edge[2]});
+            graph[edge[1]].add(new int[]{edge[0], edge[2]});
         }
 
-        int[] minTime = new int[n];
-        Arrays.fill(minTime, Integer.MAX_VALUE);
+        int[] earlistTime = new int[n];
+        Arrays.fill(earlistTime, Integer.MAX_VALUE);
 
-        PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[1] - o2[1]); // [node, cost, time]
-        pq.offer(new int[]{0, passingFees[0], 0});
+        PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[2] - o2[2]); // {city, time, cost}
+        pq.offer(new int[]{0, 0, passingFees[0]});
 
         while (!pq.isEmpty()) {
             int[] cur = pq.poll();
-            if (cur[2] >= minTime[cur[0]]) continue;
-            minTime[cur[0]] = cur[2];
+            int city = cur[0], time = cur[1], cost = cur[2];
+            if (time >= earlistTime[city]) continue;
+            earlistTime[city] = time;
 
-            if (cur[0] == n - 1) return cur[1];
+            if (city == n - 1) return cur[2];
 
-            if (map.containsKey(cur[0])) {
-                for (int[] next : map.get(cur[0])) {
-                    int time = cur[2] + next[1];
-                    int cost = cur[1] + passingFees[next[0]];
+            for (int[] x : graph[city]) {
+                int next = x[0], deltaT = x[1];
+                int newTime = time + deltaT;
+                int newCost = cost + passingFees[next];
 
-                    if (time > maxTime || time > minTime[next[0]]) continue;
-                    pq.offer(new int[]{next[0], cost, time});
-                }
+                if (newTime > maxTime) continue;
+                if (newTime > earlistTime[next]) continue;
+                pq.offer(new int[]{next, newTime, newCost});
             }
         }
         return -1;
     }
 
     // S2: BFS
-    // time =
+    // time = O((n + m) * maxTime), space = O(n * maxTime)
     public int minCost2(int maxTime, int[][] edges, int[] passingFees) {
         int n = passingFees.length;
-        // dp[c][t]: the min cost to reach c at time t
-        int[] earliestTime = new int[n + 1];
-
-        int[][] dp = new int[n][maxTime + 1];
-        for (int i = 0; i < n; i++) Arrays.fill(dp[i], Integer.MAX_VALUE / 2);
-
-        HashMap<Integer, List<int[]>> map = new HashMap<>();
-        for (int[] edge : edges) {
-            map.putIfAbsent(edge[0], new ArrayList<>());
-            map.putIfAbsent(edge[1], new ArrayList<>());
-            map.get(edge[0]).add(new int[]{edge[1], edge[2]});
-            map.get(edge[1]).add(new int[]{edge[0], edge[2]});
+        List<int[]>[] graph = new List[n];
+        for (int i = 0; i < n; i++) graph[i] = new ArrayList<>(); // O(n)
+        for (int[] edge : edges) { // O(m)
+            graph[edge[0]].add(new int[]{edge[1], edge[2]});
+            graph[edge[1]].add(new int[]{edge[0], edge[2]});
         }
+
+        int[] earliestTime = new int[n];
+        Arrays.fill(earliestTime, Integer.MAX_VALUE);
+
+        int[][] dp = new int[n][maxTime + 1]; // dp[c][t] = fee
+        for (int i = 0; i < n; i++) Arrays.fill(dp[i], Integer.MAX_VALUE);
+        dp[0][0] = passingFees[0];
 
         Queue<int[]> queue = new LinkedList<>();
         queue.offer(new int[]{0, 0});
-        dp[0][0] = passingFees[0];
 
         while (!queue.isEmpty()) {
             int[] cur = queue.poll();
             int city = cur[0], time = cur[1], fee = dp[city][time];
-            if (map.containsKey(city)) {
-                for (int[] key : map.get(city)) {
-                    int next = key[0], deltaT = key[1];
-                    int newTime = time + deltaT;
-                    int newFee = fee + passingFees[next];
-                    if (newTime > maxTime) continue;
-                    if (newTime > earliestTime[next] && newFee > dp[next][earliestTime[next]]) continue;
-                    if (newFee < dp[next][newTime]) {
-                        dp[next][newTime] = newFee;
-                        queue.offer(new int[]{next, newTime});
-                        earliestTime[next] = Math.min(earliestTime[next], newTime);
-                    }
+
+            for (int[] x : graph[city]) {
+                int next = x[0], deltaT = x[1];
+                int newTime = time + deltaT;
+                int newFee = fee + passingFees[next];
+
+                if (newTime > maxTime) continue;
+                if (newTime > earliestTime[next] && newFee > dp[next][earliestTime[next]]) continue;
+
+                if (newFee < dp[next][newTime]) {
+                    dp[next][newTime] = newFee;
+                    queue.offer(new int[]{next, newTime});
+                    earliestTime[next] = Math.min(newTime, earliestTime[next]);
                 }
             }
         }
 
-        int res = Integer.MAX_VALUE / 2;
+        int res = Integer.MAX_VALUE;
         for (int t = 0; t <= maxTime; t++) {
             res = Math.min(res, dp[n - 1][t]);
         }
-        return res == Integer.MAX_VALUE / 2 ? -1 : res;
+        return res == Integer.MAX_VALUE? -1 : res;
     }
 }
 /**
  * S
  * C: time 10, fee 20
  *    time 20, fee 10
- * D
+ * D  time 30, fee 30 -> 终止，不划算 -> 剪枝 => 记录到达城市的最小时间
  * 并没有直接的方案去判断谁优谁劣 -> 遍历图的时候，对于每个城市要记录它的费用和时间
  * 从起点状态到终点状态，都要记录三元量：city, time, fee
  * {city, fee}

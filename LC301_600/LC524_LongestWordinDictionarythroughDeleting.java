@@ -98,6 +98,7 @@ public class LC524_LongestWordinDictionarythroughDeleting {
     }
 }
 /**
+ * ref: LC792
  * greedy + state machine 有限状态机
  * (m + n) * k -> O(n * k)
  * next[i][ch]: the position of the first ch to the right of i

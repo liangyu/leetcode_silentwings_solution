@@ -20,38 +20,39 @@ public class LC329_LongestIncreasingPathinaMatrix {
      * @return
      */
     // time = O(m * n), space = O(m * n)
-    private static final int[][] DIRECTIONS = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    private int[][] directions = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    int[][] memo;
     public int longestIncreasingPath(int[][] matrix) {
-        // corner case
-        if (matrix == null || matrix.length == 0 || matrix[0] == null || matrix[0].length == 0) return 0;
-
         int m = matrix.length, n = matrix[0].length;
+        memo = new int[m][n];
         int res = 0;
-        int[][] mem = new int[m][n];
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                int max = dfs(matrix, null, i, j, mem);
-                res = Math.max(max, res);
+                res = Math.max(res, dfs(matrix, i, j));
             }
         }
         return res;
     }
 
-    private int dfs(int[][] matrix, Integer preVal, int i, int j, int[][] mem) {
+    private int dfs(int[][] matrix, int i, int j) {
         int m = matrix.length, n = matrix[0].length;
-        // base case - fail
-        if (i < 0 || i >= m || j < 0 || j >= n || preVal != null && matrix[i][j] <= preVal) return 0;
+        if (memo[i][j] != 0) return memo[i][j];
 
-        if (mem[i][j] != 0) return mem[i][j];
-
-        preVal = matrix[i][j];
-        int max = 0;
-        for (int[] dir : DIRECTIONS) {
-            int ii = i + dir[0];
-            int jj = j + dir[1];
-            max = Math.max(max, dfs(matrix, preVal, ii, jj, mem));
+        int res = 0;
+        for (int[] dir : directions) {
+            int x = i + dir[0];
+            int y = j + dir[1];
+            if (x < 0 || x >= m || y < 0 || y >= n) continue;
+            if (matrix[x][y] <= matrix[i][j]) continue;
+            res = Math.max(res, dfs(matrix, x, y));
         }
-        mem[i][j] = max + 1;
-        return mem[i][j];
+        memo[i][j] = res + 1;
+        return res + 1;
     }
 }
+/**
+ * dfs(C) => 1 + (dfs(A), dfs(D))
+ * dfs(A) = 1 + max(dfs(B1), dfs(B2))
+ * 我们从任意点A开始递归寻找各条递增路径，最终返回的时候记录从A为起点时的最长路径长度。
+ * 将此结果记忆化，这样当对其他点进行DFS的时候，如果递归调用到dfs(A)就直接返回结果。
+ */

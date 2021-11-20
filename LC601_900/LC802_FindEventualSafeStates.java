@@ -33,23 +33,20 @@ public class LC802_FindEventualSafeStates {
     // time = O(V + E), space = O(V)
     public List<Integer> eventualSafeNodes(int[][] graph) {
         List<Integer> res = new ArrayList<>();
-        // corner case
-        if (graph == null || graph.length == 0) return res;
-
         int n = graph.length;
-        int[] outDegree = new int[n];
-        List<List<Integer>> prev = new ArrayList<>(); // 要判断前驱结点
-        for (int i = 0; i < n; i++) prev.add(new ArrayList<>());
+        int[] outdegree = new int[n];
+        List<Integer>[] prev = new List[n];
+        for (int i = 0; i < n; i++) prev[i] = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             for (int j : graph[i]) {
-                prev.get(j).add(i);
-                outDegree[i]++; // 注意这里是出度！
+                prev[j].add(i);
+                outdegree[i]++;
             }
         }
 
         Queue<Integer> queue = new LinkedList<>();
         for (int i = 0; i < n; i++) {
-            if (outDegree[i] == 0) {
+            if (outdegree[i] == 0) {
                 queue.offer(i);
                 res.add(i);
             }
@@ -57,14 +54,15 @@ public class LC802_FindEventualSafeStates {
 
         while (!queue.isEmpty()) {
             int cur = queue.poll();
-            for (int next : prev.get(cur)) { // each node and edge will be visited only once!
-                outDegree[next]--;
-                if (outDegree[next] == 0) {
-                    queue.offer(next);
-                    res.add(next);
+            for (int x : prev[cur]) {
+                outdegree[x]--;
+                if (outdegree[x] == 0) {
+                    queue.offer(x);
+                    res.add(x);
                 }
             }
         }
+        // order被打乱，需要重新sort
         Collections.sort(res);
         return res;
     }
@@ -82,6 +80,7 @@ public class LC802_FindEventualSafeStates {
         for (int i = 0; i < n; i++) {
             if (!dfs(graph, status, i)) res.add(i);
         }
+        // graph[i] is sorted in a strictly increasing order => 这里不需要再sort了
         return res;
     }
 
@@ -103,4 +102,7 @@ public class LC802_FindEventualSafeStates {
  * 1: first-time visit
  * 2: permanently visit
  * 对无向图的话，最好的做法是用union find来判断是否有环！
+ * S2: bfs
+ * 拓扑排序的应用。最容易判定safe的节点，是那些出度为0的节点。将这些点剪除之后，接下来出度为0的节点，肯定还是safe的节点。
+ * 以此BFS不断推进，如果还有剩下的节点，那么他们肯定出度都不为0，即是互相成环的，可以终止程序。
  */

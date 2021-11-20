@@ -17,6 +17,7 @@ public class LC559_MaximumDepthofNaryTree {
      * @param root
      * @return
      */
+    // S1: DFS
     // time = O(n), space = O(n)
     public int maxDepth(Node root) {
         // corner case
@@ -29,7 +30,7 @@ public class LC559_MaximumDepthofNaryTree {
         return res + 1;
     }
 
-    // iteration -> BFS
+    // S2: iteration -> BFS
     // time = O(n), space = O(n)
     public int maxDepth2(Node root) {
         // corner case

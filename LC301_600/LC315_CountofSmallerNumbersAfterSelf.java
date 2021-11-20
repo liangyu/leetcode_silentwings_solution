@@ -133,6 +133,61 @@ public class LC315_CountofSmallerNumbersAfterSelf {
             index[i + a] = tempIdx[i];
         }
     }
+
+    // S3: red-black tree (TLE!!!)
+    // time = O(nlogn), space = O(n)
+    public List<Integer> countSmaller3(int[] nums) {
+        List<Integer> res = new LinkedList<>();
+        // corner case
+        if (nums == null || nums.length == 0) return res;
+
+        int n = nums.length;
+        TreeNode root = new TreeNode(nums[n - 1]);
+        res.add(0);
+        for (int i = n - 2; i >= 0; i--) {
+            res.add(0, helper(root, nums[i]));
+        }
+        return res;
+    }
+
+    private int helper(TreeNode root, int t) {
+        TreeNode cur = root;
+        int count = 0;
+        while (cur != null) {
+            if (cur.val < t) {
+                count += cur.leftSize + cur.selfCount;
+                if (cur.right == null) {
+                    cur.right = new TreeNode(t);
+                    break;
+                }
+                cur = cur.right;
+            } else if (cur.val > t) {
+                cur.leftSize++;
+                if (cur.left == null) {
+                    cur.left = new TreeNode(t);
+                    break;
+                }
+                cur = cur.left;
+            } else {
+                cur.selfCount++;
+                count+= cur.leftSize;
+                break;
+            }
+        }
+        return count;
+    }
+
+    private class TreeNode {
+        private int val;
+        private int leftSize;
+        private int selfCount;
+        private TreeNode left, right;
+        public TreeNode(int val) {
+            this.val = val;
+            this.leftSize = 0;
+            this.selfCount = 1;
+        }
+    }
 }
 /**
  * ref: LC1649: 翻译过来就是count smaller number before self 与该题几乎一致

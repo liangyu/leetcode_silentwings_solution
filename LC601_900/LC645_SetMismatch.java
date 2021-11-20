@@ -20,6 +20,7 @@ public class LC645_SetMismatch {
      * @param nums
      * @return
      */
+    // S1
     // time = O(n), space = O(1)
     public int[] findErrorNums(int[] nums) {
         int[] res = new int[2];
@@ -40,4 +41,42 @@ public class LC645_SetMismatch {
         }
         return res;
     }
+
+    // S2: indexing sort
+    // time = O(n), space = O(1)
+    public int[] findErrorNums2(int[] nums) {
+        int[] res = new int[2];
+        // corner case
+        if (nums == null || nums.length == 0) return res;
+
+        int n = nums.length;
+        for (int i = 0; i < n; i++) {
+            while (nums[i] != i + 1 && nums[i] != nums[nums[i] - 1]) {
+                swap(nums, i, nums[i] - 1);
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (nums[i] != i + 1) {
+                res[0] = nums[i];
+                res[1] = i + 1;
+                break;
+            }
+        }
+        return res;
+    }
+
+    private void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
 }
+/**
+ * indexing sort
+ * ref: LC442
+ * idx 1 2 3 4 5
+ * val[1 4 4 3 5]
+ *     1 3 4 4 5
+ *     1 4 3 4 5
+ */
+

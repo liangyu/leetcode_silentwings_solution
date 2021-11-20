@@ -35,49 +35,38 @@ public class LC1462_CourseScheduleIV {
     // S1: Topological Sort
     // time = O(V + E), space = O(V + E)
     public List<Boolean> checkIfPrerequisite(int numCourses, int[][] prerequisites, int[][] queries) {
-        List<Boolean> res = new ArrayList<>();
+        List<Integer>[] graph = new List[numCourses];
+        HashSet<Integer>[] preSet = new HashSet[numCourses];
+        for (int i = 0; i < numCourses; i++) {
+            graph[i] = new ArrayList<>();
+            preSet[i] = new HashSet<>();
+        }
+        int[] indegree = new int[numCourses];
+        for (int[] p : prerequisites) {
+            graph[p[0]].add(p[1]);
+            indegree[p[1]]++;
+        }
 
-        // step 1: build graph
-        int[] indegree= new int[numCourses];
-        List<List<Integer>> graph = buildGraph(numCourses, prerequisites, indegree); // O(n + k)
-
-        // step2 : topological sort
         Queue<Integer> queue = new LinkedList<>();
-        HashMap<Integer, HashSet<Integer>> map = new HashMap<>(); // prerequisites mapping
-        for (int i = 0; i < numCourses; i++) { // O(n)
-            map.putIfAbsent(i, new HashSet<>());
+        for (int i = 0; i < numCourses; i++) {
+            preSet[i].add(i);
             if (indegree[i] == 0) queue.offer(i);
         }
 
         while (!queue.isEmpty()) {
             int cur = queue.poll();
-            for (int next : graph.get(cur)) {
-                map.get(next).add(cur);
-                for (int pre : map.get(cur)) {
-                    map.get(next).add(pre); // 父系的所有先修课程也是孩子的所有先修课程，所以需要在这里全盘继承下去
+            for (int next : graph[cur]) {
+                for (int x : preSet[cur]) {
+                    preSet[next].add(x);
                 }
                 indegree[next]--;
                 if (indegree[next] == 0) queue.offer(next);
             }
         }
 
-        // step 3: validate queries
-        for (int[] q : queries) { // O(k)
-            if (map.get(q[1]).contains(q[0])) res.add(true);
-            else res.add(false);
-        }
-        return res;
-    }
-
-    private List<List<Integer>> buildGraph(int n, int[][] prerequisites, int[] indegree) {
-        List<List<Integer>> res = new ArrayList<>();
-        for (int i = 0; i < n; i++) { // O(n)
-            res.add(new ArrayList<>());
-        }
-
-        for (int[] p : prerequisites) { // O(k)
-            res.get(p[0]).add(p[1]);
-            indegree[p[1]]++;
+        List<Boolean> res = new ArrayList<>();
+        for (int[] q : queries) {
+            res.add(preSet[q[1]].contains(q[0]));
         }
         return res;
     }
@@ -107,4 +96,7 @@ public class LC1462_CourseScheduleIV {
  * 对于每个点，把其所有先修课的结点都先记录下来 -> 时间复杂度不会太高
  * This problem is about check if 2 vertices are connected in directed graph. Floyd-Warshall O(n^3) is an algorithm that
  * will output the minium distance of any vertices. We can modified it to output if any vertices is connected or not.
+ * 考虑到n<=100，即使将每个节点的所有先修课程都记录下来，时间复杂度o(n^2)也是可以接受的。
+ * 于是本题就是常规的拓扑排序算法，需要特别处理的是：每次从cur拓展到下一个next节点时，要把cur的所有先修课程都复制一遍给next。
+ * 至于数据结构，显然用集合来实现去重和查询query都很方便。
  */

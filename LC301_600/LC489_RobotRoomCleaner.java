@@ -2,15 +2,19 @@ package LC301_600;
 import java.util.*;
 public class LC489_RobotRoomCleaner {
     /**
-     * Given a robot cleaner in a room modeled as a grid.
+     * You are controlling a robot that is located somewhere in a room. The room is modeled as an m x n binary grid
+     * where 0 represents a wall and 1 represents an empty slot.
      *
-     * Each cell in the grid can be empty or blocked.
+     * The robot starts at an unknown location in the root that is guaranteed to be empty, and you do not have access to
+     * the grid, but you can move the robot using the given API Robot.
      *
-     * The robot cleaner with 4 given APIs can move forward, turn left or turn right. Each turn it made is 90 degrees.
+     * You are tasked to use the robot to clean the entire room (i.e., clean every empty cell in the room). The robot
+     * with the four given APIs can move forward, turn left, or turn right. Each turn is 90 degrees.
      *
-     * When it tries to move into a blocked cell, its bumper sensor detects the obstacle and it stays on the current cell.
+     * When the robot tries to move into a wall cell, its bumper sensor detects the obstacle, and it stays on the
+     * current cell.
      *
-     * Design an algorithm to clean the entire room using only the 4 given APIs shown below.
+     * Design an algorithm to clean the entire room using the following APIs:
      *
      * interface Robot {
      *   // returns true if next cell is open and robot moves into the cell.
@@ -25,27 +29,24 @@ public class LC489_RobotRoomCleaner {
      *   // Clean the current cell.
      *   void clean();
      * }
+     * Note that the initial direction of the robot will be facing up. You can assume all four edges of the grid are all
+     * surrounded by a wall.
      *
-     * Input:
-     * room = [
-     *   [1,1,1,1,1,0,1,1],
-     *   [1,1,1,1,1,0,1,1],
-     *   [1,0,1,1,1,1,1,1],
-     *   [0,0,0,1,0,0,0,0],
-     *   [1,1,1,1,1,1,1,1]
-     * ],
-     * row = 1,
-     * col = 3
+     * Input: room = [[1,1,1,1,1,0,1,1],[1,1,1,1,1,0,1,1],[1,0,1,1,1,1,1,1],[0,0,0,1,0,0,0,0],[1,1,1,1,1,1,1,1]],
+     * row = 1, col = 3
+     * Output: Robot cleaned all rooms.
      *
-     * Notes:
+     * Constraints:
      *
-     * The input is only given to initialize the room and the robot's position internally. You must solve this problem
-     * "blindfolded". In other words, you must control the robot using only the mentioned 4 APIs, without knowing the
-     * room layout and the initial robot's position.
-     * The robot's initial position will always be in an accessible cell.
-     * The initial direction of the robot will be facing up.
-     * All accessible cells are connected, which means the all cells marked as 1 will be accessible by the robot.
-     * Assume all four edges of the grid are all surrounded by wall.
+     * m == room.length
+     * n == room[i].length
+     * 1 <= m <= 100
+     * 1 <= n <= 200
+     * room[i][j] is either 0 or 1.
+     * 0 <= row < m
+     * 0 <= col < n
+     * room[row][col] == 1
+     * All the empty cells can be visited from the starting position.
      * @param robot
      */
     // time = O(n - m), space = O(n - m)
@@ -96,14 +97,20 @@ public class LC489_RobotRoomCleaner {
         public void clean();
     }
 }
-
 /**
- * DFS(x, y, north) -> turn right, move => dfs(i0, j0, east)
- *                                      => turn 180, move, adjust dir => (x, y, south) => move
- *                                      => dfs(i1, j1, south)
- *                                      => ...
- *                                      => dfs(i2, j2, west)
- *                                      => ...
- *                                      => dfs(i3, j3, north)
- *                                      => return to (x, y, north) // backtracking
+ * 本题看上去是一个常规的DFS，但是难点在于机器人的运动是第一视角，DFS的回溯过程必须靠“手工”实现。
+ * 假设当前我们访问了dfs(x,y,north)，表示当前位置是(x,y)，朝向是北。
+ * 如果我们想递归访问它的东边的节点(i,j)，你需要依次做如下的事情：
+ * 1. 向右转，使得朝向东边，
+ * 2. 前进
+ * 3. 递归调用dfs(i,j,east)
+ * 4. 180度转弯
+ * 5. 前进
+ * 6. 180度转弯
+ * =====
+ * 8. 向右转，使得朝向南边
+ * 9. 前进
+ * 10. 递归调用dfs(i,j,south)
+ * 11. ...
+ * 可见我们完成一次dfs之后，必须手工完成掉头、退回、调整方向，才能进行另一次平行的dfs尝试。
  */

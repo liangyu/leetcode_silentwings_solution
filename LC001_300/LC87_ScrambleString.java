@@ -70,4 +70,41 @@ public class LC87_ScrambleString {
         map.put(key, false);
         return false;
     }
+
+    // S2: DP
+    // time = O(n^4), space = O(n^3)
+    public boolean isScramble2(String s1, String s2) {
+        char[] t1 = s1.toCharArray();
+        char[] t2 = s2.toCharArray();
+        int m = t1.length, n = t2.length;
+        if (m != n) return false;
+
+        boolean[][][] dp = new boolean[n][n][n + 1];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                dp[i][j][1] = t1[i] == t2[j];
+            }
+        }
+
+        for (int k = 2; k <= n; k++) {
+            for (int i = 0; i <= n - k; i++) { // start position of s1 [i...i+k-1]
+                for (int j = 0; j <= n - k; j++) { // start position of s2 [j...j+k-1]
+                    dp[i][j][k] = false;
+                    for (int w = 1; w <= k - 1; w++) { // length, where to split
+                        if (dp[i][j][w] && dp[i + w][j + w][k - w] || dp[i][j + k - w][w] && dp[i + w][j][k - w]) {
+                            dp[i][j][k] = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return dp[0][0][n];
+    }
 }
+/**
+ * 基本的思想就是：在S1上找到一个切割点，左边长度为i, 右边长为len - i。 有2种情况表明它们是IsScramble
+ * (1). S1的左边和S2的左边是IsScramble， S1的右边和S2的右边是IsScramble
+ * (2). S1的左边和S2的右边是IsScramble， S1的右边和S2的左边是IsScramble （实际上是交换了S1的左右子树）
+ * 我们可以在递归中加适当的剪枝：在进入递归前，先把2个字符串排序，再比较，如果不相同，则直接退出掉。
+ */

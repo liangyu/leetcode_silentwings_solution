@@ -25,8 +25,8 @@ public class LC1723_FindMinimumTimetoFinishAllJobs {
     // time = O(k * 3^n)，space = O(k * 2^n)
     public int minimumTimeRequired(int[] jobs, int k) {
         int n = jobs.length;
-        int[][] dp = new int[k + 1][(int)Math.pow(2, n)];
-        int[] time = new int[(int)Math.pow(2, n)];
+        int[][] dp = new int[k + 1][1 << n];
+        int[] time = new int[1 << n];
 
         for (int state = 0; state < (1 << n); state++) {
             int sum = 0;
@@ -56,8 +56,8 @@ public class LC1723_FindMinimumTimetoFinishAllJobs {
     // time = O(2^n), space = O(2^n)
     public int minimumTimeRequired2(int[] jobs, int k) {
         int n = jobs.length;
-        int[] time = new int[(int)Math.pow(2, n)];
-        int[][] memo = new int[(int)Math.pow(2, n)][k];
+        int[] time = new int[1 << n];
+        int[][] memo = new int[1 << n][k];
         for (int state = 0; state < (1 << n); state++) { // O(2^n)
             int sum = 0;
             for (int i = 0; i < n; i++) { // O(n)
@@ -97,41 +97,50 @@ public class LC1723_FindMinimumTimetoFinishAllJobs {
     // S3: BS + Tranditional DFS
     // time = O(nlogn + logS * k^n), space = O(k + n)
     public int minimumTimeRequired3(int[] jobs, int k) {
-        int n = jobs.length, sum = 0;
-        for (int job : jobs) sum += job;
+        int n = jobs.length;
+        Arrays.sort(jobs);
+        int i = 0, j = n - 1;
+        while (i < j) {
+            int temp = jobs[i];
+            jobs[i++] = jobs[j];
+            jobs[j--] = temp;
+        }
 
-        Arrays.sort(jobs); // O(nlogn)
+        int left = 1, right = 0;
+        for (int job : jobs) right += job;
 
-        int left = 1, right = sum;
-        while (left < right) { // O(logS)
+        while (left < right) {
             int[] workers = new int[k];
             int mid = left + (right - left) / 2;
-            if (!dfs(workers, jobs, mid, n - 1, k)) left = mid + 1;
-            else right = mid;
+            if (dfs(workers, mid, 0, jobs)) right = mid;
+            else left = mid + 1;
         }
         return left;
     }
 
-    private boolean dfs(int[] workers, int[] jobs, int th, int i, int k) {  // 处理第i件任务  O(k^n)
+    private boolean dfs(int[] workers, int th, int i, int[] jobs) {
+        int k = workers.length;
         // base case
-        if (i < 0) return true;
+        if (i == jobs.length) return true;
 
         boolean flag = false;
-        for (int j = 0; j < k; j++) { // O(k)
+        for (int j = 0; j < k; j++) {
             if (workers[j] + jobs[i] > th) continue;
-            if (workers[j] == 0) {
-                if (flag) continue; // 非常高效的剪枝，优化了k倍。
-                else flag = true;
+
+            if (workers[j] == 0) { // free worker
+                if (flag) continue; // jobs[i] has been assigned to one free worker once in dfs, no need to do again
+                flag = true; // assign it to the current worker and set the flag as true to avoid doing it repeatedly
             }
             workers[j] += jobs[i];
-            if (dfs(workers, jobs, th, i - 1, k)) return true;
-            workers[j] -= jobs[i]; // backtracking
+            if (dfs(workers, th, i + 1, jobs)) return true;
+            workers[j] -= jobs[i]; // setback
         }
         return false;
     }
 }
 /**
  * NP问题 -> 暴搜
+ * 2^12 = 4096 => 12位的01 bit
  * 状态压缩dp
  * dp[i][state]: the minimum possible maximum working time of any assignment if we use i workers and get jobs of state done
  * 00110101

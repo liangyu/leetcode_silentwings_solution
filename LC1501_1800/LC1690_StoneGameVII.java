@@ -38,7 +38,7 @@ public class LC1690_StoneGameVII {
         for (int i = 1; i <= n; i++) dp[i][i] = 0;
         for (int i = 1; i + 1 <= n; i++) dp[i][i + 1] = Math.max(stones[i - 1], stones[i]);
 
-        for (int len = 3; len <= n; len++) { // 先解决小区间问题，再解决大区间问题
+        for (int len = 3; len <= n; len++) { // 先解决小区间问题，再解决大区间问题 => len可以从2开始，主要len = 1 必须单独考虑，为0！
             for (int i = 1; i + len - 1 <= n; i++) {
                 int j = i + len - 1;
                 // update dp[i][j]

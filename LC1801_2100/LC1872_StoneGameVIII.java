@@ -40,7 +40,7 @@ public class LC1872_StoneGameVIII {
         int[] dp = new int[n + 1];
         dp[1] = 0;
         dp[2] = presum[n] - dp[1];
-        for (int i = 3; i <= n; i++) {
+        for (int i = 3; i <= n; i++) { // 注意：这里i从3开始，2是不行的，因为dp[i - 1] = 0,而这里的值可能为负，dp[2]只有一种结果，必须单独处理。
             dp[i] = Math.max(dp[i - 1], presum[n - i + 2] - dp[i - 1]);
         }
         return dp[n];

@@ -132,7 +132,7 @@ public class LC2014_LongestSubsequenceRepeatedkTimes {
  * 2 <= n < k * 8 = 16000，找一段subsequence显然天文数字
  * n < k * 8 => 循环节要重复k次，8k > n  => 循环节的长度 t < 8
  * 1. |t| <= 7  => C(16000, 7)
- *              => 26^7
+ *              => 26^7  -> 盲猜
  * 2. the number of letters whose frequency >= k is <= 7  字符种类不会超过7
  * 每一位上就没有26种选择了，只有7种选择 => 7^7 = 823543
  * 穷举循环节似乎是可行的

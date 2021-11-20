@@ -39,11 +39,10 @@ public class LC337_HouseRobberIII {
         // base case
         if (node == null) return 0;
 
-        int res = 0;
         if (flag == 1 & flag1.containsKey(node)) return flag1.get(node);
         if (flag == 0 & flag0.containsKey(node)) return flag0.get(node);
 
-
+        int res = 0;
         if (flag == 0) {
             res = dfs(node.left, 1) + dfs(node.right, 1);
         } else {
@@ -59,6 +58,7 @@ public class LC337_HouseRobberIII {
 }
 /**
  * 二叉树 99% 都可以用dfs递归的方法来解
+ * 千方百计弄个dfs，越通用越好
  * root可选可不选
  * (root, 1/0)
  *     x

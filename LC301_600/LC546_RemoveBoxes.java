@@ -58,7 +58,7 @@ public class LC546_RemoveBoxes {
 }
 /**
  * 大区间化小区间，burst balloon, merge stone
- * 区间型dp
+ * 区间型dp：区间型dp的目标是将大区间化成小区间，一个常见的突破口就是从最后一个元素入手，看它能够怎么处理掉。
  * dp[l][r]
  * 000 xxx  000  xxx 000   看最后一位
  *
@@ -69,8 +69,9 @@ public class LC546_RemoveBoxes {
  * dp[l][i0][0] + count * count
  *
  * 2. r + j0
- * dp[l][i1] + (count0 + count)^2  -> 可能接下来并不是最优
- * dp[l][j0][count] + dp[j0+1][i0]
+ * dp[l][i1] + (count0 + count)^2 + dp[j0+1][i0] -> 可能接下来并不是最优
+ * j0这组可能与j1的000拼接起来可能更优
+ * dp[l][j0][count] + dp[j0+1][i0][0]
  *
  * 3. r + j1
  * dp[l][j1][count] + [j1 + 1][i0][0]
@@ -91,4 +92,5 @@ public class LC546_RemoveBoxes {
  * 注意这k个元素并不与r直接相连，而是经过其他之前的区间消除后剩下来的
  * dp[l][r][k] 受后面跟了多少个元素的影响
  * k 事先并不知道
+ * 从上往下
  */

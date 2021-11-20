@@ -53,34 +53,28 @@ public class LC792_NumberofMatchingSubsequences {
     }
 
     // S2: TreeSet
-    // time = O(n * logm * k), space = O(m) n: length of s, m: length of words, k: average length of word
+    // time = O(n * logm * k), space = O(m)  n: length of s, m: length of words, k: average length of word
     public int numMatchingSubseq2(String s, String[] words) {
-        // corner case
-        if (s == null || s.length() == 0 || words == null || words.length == 0) return 0;
-
-        HashMap<Integer, TreeSet<Integer>> map = new HashMap<>();
+        TreeSet<Integer>[] pos = new TreeSet[26];
+        for (int i = 0; i < 26; i++) pos[i] = new TreeSet<>();
         for (int i = 0; i < s.length(); i++) {
-            int key = s.charAt(i) - 'a';
-            map.putIfAbsent(key, new TreeSet<>());
-            map.get(key).add(i);
+            pos[s.charAt(i) - 'a'].add(i);
         }
 
         int count = 0;
         for (String word : words) {
             if (word.length() > s.length()) continue;
-            if (check(word, map)) count++;
+            if (check(word, pos)) count++;
         }
         return count;
     }
 
-    private boolean check(String word, HashMap<Integer, TreeSet<Integer>> map) {
+    private boolean check(String word, TreeSet<Integer>[] pos) {
         int i = 0;
         for (char ch : word.toCharArray()) {
-            if (map.containsKey(ch - 'a')) {
-                Integer iter = map.get(ch - 'a').ceiling(i);
-                if (iter == null) return false;
-                i = iter + 1;
-            } else return false;
+            Integer idx = pos[ch - 'a'].ceiling(i);
+            if (idx == null) return false;
+            i = idx + 1;
         }
         return true;
     }
@@ -95,7 +89,7 @@ public class LC792_NumberofMatchingSubsequences {
         s = "#" + s; // s[1:m]
 
         int[][] next = new int[m + 1][26];
-        for (int k = 0; k < 26; k++) next[m][k] = -1; // init,站在最尾端向右看，什么字符都没有，即-1
+        Arrays.fill(next[m], -1); // init,站在最尾端向右看，什么字符都没有，即-1
 
         for (int i = m; i >= 1; i--) { // O(m)
             for (int k = 0; k < 26; k++) next[i - 1][k] = next[i][k];
@@ -134,7 +128,7 @@ public class LC792_NumberofMatchingSubsequences {
  * O(n*logm*k)
  *    0 1 2 3 4 5 6 7 8
  * s =  x x a b a x a c
- * S3: next[0][a] = 3
+ * S3: next[0][a] = 3   从 idx = 0 的位置向右看，第一个出现a的位置 = 3
  *     next[3][b] = 4
  *     next[4][c] = 8   -> read directly from the table    跳转非常快 -> 读n次
  *     next[8][d] = -1  没有，找不到d

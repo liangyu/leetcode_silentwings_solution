@@ -21,7 +21,7 @@ public class LC2029_StoneGameIX {
      * @param stones
      * @return
      */
-    // time = O(2^n), space = O(n)
+    // time = O(n), space = O(n)
     public boolean stoneGameIX(int[] stones) {
         // corner case
         if (stones == null || stones.length == 0) return false;
@@ -40,7 +40,7 @@ public class LC2029_StoneGameIX {
         // pick number whose remainder = 2
         if (temp[2] > 0) {
             temp[2]--;
-            if (!win(temp, 2, 1)) return true;
+            if (!win(temp, 2, 1)) return true; // 这种情况是确定的，可以不需要用if
         }
 
         return false;
@@ -49,8 +49,8 @@ public class LC2029_StoneGameIX {
     private boolean win(int[] count, int sum, int turn) {
         // base case
         if (count[0] + count[1] + count[2] == 0) { // 全部取完
-            if (turn == 1) return true;
-            return false;
+            if (turn == 1) return true; // if is Bob's round, then should return true
+            return false; // it is Alice round, and Bob wins => return false
         }
 
         if (count[0] > 0) {
@@ -74,8 +74,9 @@ public class LC2029_StoneGameIX {
  * count[0], count[1], count[2]
  * 扔给我的sum，一定不会被3整除，如果被3整除，对方扔过来之前就已经输了
  * 我做决策：以上3种
- * 1. sum + 0 -> 不会被3整除，我这一轮是安全的，把问题扔给队首，那是不是一定要选它 -> 一定选它，不选白不选，否则你不选，对方肯定选
+ * sum + 0 -> 不会被3整除，我这一轮是安全的，把问题扔给队首，那是不是一定要选它 -> 一定选它，不选白不选，否则你不选，对方肯定选
  * sum + x，只要一开局大家都抢余数为0的数，直至全部消耗完 => 2选1
+ * 1. choose count[0] whenever possible
  * 2. if sum % 3 == 1 choose count[1] otherwise fail
  *    if sum % 3 == 2 choose count[2] otherwise fail
  * 3. pass to the rival

@@ -92,7 +92,7 @@ public class LC395_LongestSubstringwithAtLeastKRepeatingCharacters {
  * 把m固定下来，我的滑窗就能固定住。
  *
  * S2: 递归的解法，时间复杂度 = O(n^2) => O(n)
- * [x x c x x c x x x]
+ * [x x c x x c x x x]  -> 不能包括c，c相当于是个"害群之马"
  * 把c作为splitter切开来 => O(n^2)
  * 分治，往下走一层
  * 走的层数可能有n层

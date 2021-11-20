@@ -94,60 +94,53 @@ public class LC269_AlienDictionary {
     // S2: BFS
     // time = O(C), space = O(1)
     public String alienOrder2(String[] words) {
-        // corner case
-        if (words == null || words.length == 0) return "";
-
         HashMap<Character, HashSet<Character>> map = new HashMap<>();
-        HashMap<Character, Integer> inDegree = new HashMap<>();
+        HashMap<Character, Integer> indegree = new HashMap<>();
 
-        // init indegree
-        for (String word : words) { // O(C)
-            for (char ch : word.toCharArray()) {
-                inDegree.putIfAbsent(ch, 0);
+        for (String word : words) {
+            for (char c : word.toCharArray()) {
+                indegree.put(c, 0); // 对真实存在的char的入度初始化为0
             }
         }
 
-        // 建图
-        for (int i = 0; i < words.length - 1; i++) { // O(n)
-            String s = words[i], t = words[i + 1];
+        for (int i = 0; i < words.length - 1; i++) {
+            String s = words[i];
+            String t = words[i + 1];
+
             if (s.length() > t.length() && s.substring(0, t.length()).equals(t)) return "";
 
-            for (int j = 0; j < Math.min(s.length(), t.length()); j++) { // O(min(k1, k2))
-                char c1 = s.charAt(j), c2 = t.charAt(j);
-                if (c1 == c2) continue;
-                if (!map.containsKey(c1) || !map.get(c1).contains(c2)) {
-                    map.putIfAbsent(c1, new HashSet<>());
-                    map.get(c1).add(c2);
-                    inDegree.put(c2, inDegree.getOrDefault(c2, 0) + 1);
+            for (int j = 0; j < Math.min(s.length(), t.length()); j++) {
+                if (s.charAt(j) == t.charAt(j)) continue;
+                // s[j] => t[j]
+                map.putIfAbsent(s.charAt(j), new HashSet<>());
+                if (!map.get(s.charAt(j)).contains(t.charAt(j))) {
+                    map.get(s.charAt(j)).add(t.charAt(j));
+                    indegree.put(t.charAt(j), indegree.getOrDefault(t.charAt(j), 0) + 1); // 只给入度非0的创建了
                 }
                 break;
             }
         }
 
-        // 遍历
+        // change queue to pq if return the smallest in normal lexicographical order
         Queue<Character> queue = new LinkedList<>();
-        for (char key : inDegree.keySet()) { // O(u)
-            if (inDegree.get(key) == 0) queue.offer(key);
+        for (char x : indegree.keySet()) {
+            if (indegree.get(x) == 0) queue.offer(x);
         }
 
-        StringBuilder res = new StringBuilder();
-        while (!queue.isEmpty()) { // O(u)
-            char cur = queue.poll(); // 当前弹出来的都是入度为0的点
-            res.append(cur);
+        StringBuilder sb = new StringBuilder();
+        while (!queue.isEmpty()) {
+            char cur = queue.poll();
+            sb.append(cur);
 
-            if (map.containsKey(cur)) {
-                for (char next : map.get(cur)) {
-                    inDegree.put(next, inDegree.get(next) - 1);
-                    if (inDegree.get(next) == 0) queue.offer(next); // 下一批要砍掉的节点，不停剥外层的洋葱
-                }
+            for (char next : map.getOrDefault(cur, new HashSet<>())) {
+                indegree.put(next, indegree.get(next) - 1);
+                if (indegree.get(next) == 0) queue.offer(next);
             }
         }
-
-        if (res.length() != inDegree.size()) return "";
-        return res.toString();
+        if (sb.length() != indegree.size()) return "";
+        return sb.toString();
     }
 }
-
 /**
  * words = ["wrt","wrf","er","ett","rftt"]
  * t < f

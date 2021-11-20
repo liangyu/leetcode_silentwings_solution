@@ -25,6 +25,7 @@ public class LC200_NumberofIslands {
      * @param grid
      * @return
      */
+    // S1: dfs
     // time = O(m * n), space = O(m * n)
     private static final int[][] DIRECTIONS = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
     public int numIslands(char[][] grid) {

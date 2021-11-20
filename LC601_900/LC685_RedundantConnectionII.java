@@ -30,48 +30,41 @@ public class LC685_RedundantConnectionII {
      * @return
      */
     // time = O(n), space = O(n)
-    HashMap<Integer, Integer> father = new HashMap<>();
+    int[] parent;
     public int[] findRedundantDirectedConnection(int[][] edges) {
-        // corner case
-        if (edges == null || edges.length == 0 || edges[0] == null || edges[0].length == 0) return new int[0];
-
+        int n = edges.length;
+        parent = new int[n + 1];
         int[] cand1 = null, cand2 = null;
         for (int[] edge : edges) {
             int a = edge[0], b = edge[1];
-            if (father.containsKey(b)) {
+            if (parent[b] != 0) {
                 cand1 = edge;
-                cand2 = new int[]{father.get(b), b};
+                cand2 = new int[]{parent[b], b};
                 break;
-            } else {
-                father.put(b, a);
-            }
+            } else parent[b] = a;
         }
+
+        for (int i = 1; i <= n; i++) parent[i] = i;
 
         // 先任意删一个，然后判断剩下的是否能成环 -> union find / dfs 搜索
         // tree -> n edges => n + 1 nodes now we have n edges with one fake edge -> we have n nodes
-        int n = edges.length;
-        for (int i = 1; i <= n; i++) {
-            father.put(i, i);
-        }
         for (int[] edge : edges) {
             if (edge == cand1) continue; // 相当于当做没有这条边存在，不参与union
-            int a = edge[0];
-            int b = edge[1];
-            if (findFather(a) != findFather(b)) {
-                father.put(b, a);
-            } else { // a, b之间本身已经连通，现在再加一条连通边就成环了
+            int a = edge[0], b = edge[1];
+            if (findParent(a) != findParent(b)) parent[b] = a;
+            else { // a, b之间本身已经连通，现在再加一条连通边就成环了
                 // cand1, cand2可能都是空 -> 就是这条边造成了环，并且肯定连接到了root上，所有结点都有一个入度，连root都有1个root =>
-                // 环里任何一条边切断都可以
+                // 整张图就是一个指向root的环，环里任何一条边切断都可以
                 if (cand2 == null) return edge;
-                else return cand2; // 跳过之后依然有环 —> cand2是罪魁祸首！
+                return cand2;
             }
         }
         return cand1; // cand1切掉之后相安无事 => 罪魁祸首就是cand1
     }
 
-    private int findFather(int x) {
-        if (father.get(x) != x) father.put(x, findFather(father.get(x)));
-        return father.get(x);
+    private int findParent(int x) {
+        if (x != parent[x]) parent[x] = findParent(parent[x]);
+        return parent[x];
     }
 }
 /**
