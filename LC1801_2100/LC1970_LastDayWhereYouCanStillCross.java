@@ -77,7 +77,7 @@ public class LC1970_LastDayWhereYouCanStillCross {
     }
 
     // S2: Union Find
-    // time =
+    // time = O(m * n * a(m * n)), space = O(m * n)
     private int[] parent;
     public int latestDayToCross2(int row, int col, int[][] cells) {
         int m = row, n = col;
@@ -159,4 +159,5 @@ public class LC1970_LastDayWhereYouCanStillCross {
  * same thing for the bottom
  * as long as any path between top and bottom is unioned
  * 设置两个虚拟结点top and bottom，看这2个结点是否能链接在一起
+ * 对于这种逐个逐个抽去一些东西，有这种题型的可以考虑"时光倒流"的解法！！！
  */

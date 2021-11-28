@@ -31,67 +31,68 @@ public class LC1632_RankTransformofaMatrix {
     private int[] parent;
     public int[][] matrixRankTransform(int[][] matrix) {
         int m = matrix.length, n = matrix[0].length;
+        parent = new int[m * n];
+        for (int i = 0; i < m * n; i++) parent[i] = i;
+
+        // step 1: build graph + union same rank
         HashMap<Integer, List<Integer>> map = new HashMap<>();
         int[] indegree = new int[m * n];
 
-        parent = new int[m * n];
-        for (int i = 0; i < m * n; i++) {
-            parent[i] = i;
-        }
-
-        // step 1: build graph
+        // deal with each row
         for (int i = 0; i < m; i++) {
             List<int[]> temp = new ArrayList<>();
             for (int j = 0; j < n; j++) {
                 temp.add(new int[]{matrix[i][j], i * n + j});
             }
-            Collections.sort(temp, (o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o1[1] - o2[1]);
+            Collections.sort(temp, (o1, o2) -> o1[0] - o2[0]);
+
             for (int j = 1; j < n; j++) {
-                if (temp.get(j)[0] == temp.get(j - 1)[0]) {
-                    if (findParent(temp.get(j - 1)[1]) != findParent(temp.get(j)[1])) {
-                        union(temp.get(j)[1], temp.get(j - 1)[1]);
-                    }
+                int[] a = temp.get(j - 1), b = temp.get(j);
+                if (a[0] == b[0]) {
+                    if (findParent(a[1]) != findParent(b[1])) union(a[1], b[1]); // 同行等值的元素合并到一个group
                 } else {
-                    map.putIfAbsent(temp.get(j - 1)[1], new ArrayList<>());
-                    map.get(temp.get(j - 1)[1]).add(temp.get(j)[1]);
-                    indegree[temp.get(j)[1]]++;
+                    map.putIfAbsent(a[1], new ArrayList<>());
+                    map.get(a[1]).add(b[1]); // a[1] -> b[1]
+                    indegree[b[1]]++; // indegree++
                 }
             }
         }
 
+        // deal with each col
         for (int j = 0; j < n; j++) {
             List<int[]> temp = new ArrayList<>();
             for (int i = 0; i < m; i++) {
                 temp.add(new int[]{matrix[i][j], i * n + j});
             }
-            Collections.sort(temp, (o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o1[1] - o2[1]);
+            Collections.sort(temp, (o1, o2) -> o1[0] - o2[0]);
+
             for (int i = 1; i < m; i++) {
-                if (temp.get(i)[0] == temp.get(i - 1)[0]) {
-                    if (findParent(temp.get(i - 1)[1]) != findParent(temp.get(i)[1])) {
-                        union(temp.get(i)[1], temp.get(i - 1)[1]);
-                    }
+                int[] a = temp.get(i - 1), b = temp.get(i);
+                if (a[0] == b[0]) {
+                    if (findParent(a[1]) != findParent(b[1])) union(a[1], b[1]); // 同列等值的元素合并到一个group
                 } else {
-                    map.putIfAbsent(temp.get(i - 1)[1], new ArrayList<>());
-                    map.get(temp.get(i - 1)[1]).add(temp.get(i)[1]);
-                    indegree[temp.get(i)[1]]++;
+                    map.putIfAbsent(a[1], new ArrayList<>());
+                    map.get(a[1]).add(b[1]); // a[1] -> b[1]
+                    indegree[b[1]]++; // indegree++
                 }
             }
         }
 
         // step 2: build group
-        HashMap<Integer, List<Integer>> group = new HashMap<>(); // key: parent idx, value: all members
+        HashMap<Integer, List<Integer>> group = new HashMap<>(); // key: parent index, val: all members
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                group.putIfAbsent(findParent(i * n + j), new ArrayList<>());
-                group.get(findParent(i * n + j)).add(i * n + j);
+                int p = findParent(i * n + j); // 在同一行和同一列的等值元素合并到一个group里，并选出一个ancestor
+                group.putIfAbsent(p, new ArrayList<>());
+                group.get(p).add(i * n + j); // 同一个group里的元素除了等值，还必然在同行或者同列，所以一定有相同rank
             }
         }
 
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (parent[i * n + j] != i * n + j) {
-                    // 同一个group的所有点都可以把它作为一个点来处理，以parent 为代表
-                    indegree[parent[i * n + j]] += indegree[i * n + j];
+        // The indegree of all members within the same group will be counted on the group ancestor
+        for (int x : group.keySet()) {
+            for (int member : group.get(x)) {
+                if (member != x) {
+                    indegree[x] += indegree[member]; // add its indegree onto its ancestor's indegree
                 }
             }
         }
@@ -100,8 +101,9 @@ public class LC1632_RankTransformofaMatrix {
         Queue<Integer> queue = new LinkedList<>(); // 非parent的点可以被忽略了，由parent代表整个group
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                if (parent[i * n + j] == i * n + j && indegree[i * n + j] == 0) {
-                    queue.offer(i * n + j);
+                int u = i * n + j;
+                if (parent[u] == u && indegree[u] == 0) {
+                    queue.offer(u);
                 }
             }
         }
@@ -111,23 +113,15 @@ public class LC1632_RankTransformofaMatrix {
         while (!queue.isEmpty()) {
             int size = queue.size();
             while (size-- > 0) {
-                int cur = queue.poll(); // cur -> parent
-                if (group.containsKey(cur)) {
-                    for (int member : group.get(cur)) {
-                        int i = member / n, j = member % n;
-                        res[i][j] = rank;
-                    }
-                }
+                int cur = queue.poll();
+                for (int member : group.get(cur)) {
+                    int i = member / n, j = member % n;
+                    res[i][j] = rank;
 
-                if (group.containsKey(cur)) {
-                    for (int member : group.get(cur)) {
-                        if (map.containsKey(member)) {
-                            for (int next : map.get(member)) {
-                                indegree[parent[next]]--; // 对indegree的加减统一都算在它的parent身上
-                                if (indegree[parent[next]] == 0) {
-                                    queue.offer(parent[next]);
-                                }
-                            }
+                    for (int next : map.getOrDefault(member, new ArrayList<>())) {
+                        indegree[parent[next]]--; // 对indegree的加减统一都算在它的parent身上
+                        if (indegree[parent[next]] == 0) {
+                            queue.offer(parent[next]);
                         }
                     }
                 }
@@ -138,7 +132,7 @@ public class LC1632_RankTransformofaMatrix {
     }
 
     private int findParent(int x) {
-        if (parent[x] != x) parent[x] = findParent(parent[x]);
+        if (x != parent[x]) parent[x] = findParent(parent[x]);
         return parent[x];
     }
 
@@ -154,54 +148,51 @@ public class LC1632_RankTransformofaMatrix {
     public int[][] matrixRankTransform2(int[][] matrix) {
         int m = matrix.length, n = matrix[0].length;
         parent = new int[m * n];
-        for (int i = 0; i < m * n; i++) {
-            parent[i] = i;
-        }
+        for (int i = 0; i < m * n; i++) parent[i] = i;
 
-        // step 1: build graph
+        // deal with each row
         for (int i = 0; i < m; i++) {
             List<int[]> temp = new ArrayList<>();
             for (int j = 0; j < n; j++) {
                 temp.add(new int[]{matrix[i][j], i * n + j});
             }
-            Collections.sort(temp, (o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o1[1] - o2[1]);
+            Collections.sort(temp, (o1, o2) -> o1[0] - o2[0]);
+
             for (int j = 1; j < n; j++) {
-                if (temp.get(j)[0] == temp.get(j - 1)[0]) {
-                    if (findParent(temp.get(j - 1)[1]) != findParent(temp.get(j)[1])) {
-                        union(temp.get(j)[1], temp.get(j - 1)[1]);
-                    }
+                int[] a = temp.get(j - 1), b = temp.get(j);
+                if (a[0] == b[0]) {
+                    if (findParent(a[1]) != findParent(b[1])) union(a[1], b[1]);
                 }
             }
         }
 
+        // deal with each col
         for (int j = 0; j < n; j++) {
             List<int[]> temp = new ArrayList<>();
             for (int i = 0; i < m; i++) {
                 temp.add(new int[]{matrix[i][j], i * n + j});
             }
-            Collections.sort(temp, (o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o1[1] - o2[1]);
+            Collections.sort(temp, (o1, o2) -> o1[0] - o2[0]);
+
             for (int i = 1; i < m; i++) {
-                if (temp.get(i)[0] == temp.get(i - 1)[0]) {
-                    if (findParent(temp.get(i - 1)[1]) != findParent(temp.get(i)[1])) {
-                        union(temp.get(i)[1], temp.get(i - 1)[1]);
-                    }
+                int[] a = temp.get(i - 1), b = temp.get(i);
+                if (a[0] == b[0]) {
+                    if (findParent(a[1]) != findParent(b[1])) union(a[1], b[1]);
                 }
             }
         }
 
-        // step 2: build group
-        HashMap<Integer, List<Integer>> group = new HashMap<>(); // key: parent idx, value: all members
+        HashMap<Integer, List<Integer>> group = new HashMap<>(); // key: parent index, val: all members
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                group.putIfAbsent(findParent(i * n + j), new ArrayList<>());
-                group.get(findParent(i * n + j)).add(i * n + j);
+                int p = findParent(i * n + j);
+                group.putIfAbsent(p, new ArrayList<>());
+                group.get(p).add(i * n + j);
             }
         }
 
-        // step 3: topological sort
         int rank = 1;
         int[][] res = new int[m][n];
-
         List<int[]> nums = new ArrayList<>();
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
@@ -209,34 +200,34 @@ public class LC1632_RankTransformofaMatrix {
             }
         }
 
-        Collections.sort(nums, (o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o1[1] - o2[1]);
+        Collections.sort(nums, (o1, o2) -> o1[0] - o2[0]);
 
         int[] rowRank = new int[m];
         int[] colRank = new int[n];
+
         for (int[] p : nums) {
             int x = p[1] / n, y = p[1] % n;
-            if (res[x][y] != 0) continue; // 注意：如果已经被rank过了，就不需要再被访问更新了！！！
-            // 确定rank -> look at its family member's ranks
-            if (group.containsKey(parent[p[1]])) {
-                int r = 0;
-                for (int member : group.get(parent[p[1]])) {
-                    int i = member / n, j = member % n;
-                    r = Math.max(r, rowRank[i]);
-                    r = Math.max(r, colRank[j]);
-                }
-                for (int member : group.get(parent[p[1]])) {
-                    int i = member / n, j = member % n;
-                    res[i][j] = r + 1;
-                    rowRank[i] = r + 1;
-                    colRank[j] = r + 1;
-                }
+            if (res[x][y] != 0) continue;
+
+            int r = 0;
+            for (int member : group.get(parent[p[1]])) {
+                int i = member / n, j = member % n;
+                r = Math.max(r, rowRank[i]);
+                r = Math.max(r, colRank[j]);
+            }
+
+            for (int member : group.get(parent[p[1]])) {
+                int i = member / n, j = member % n;
+                res[i][j] = r + 1;
+                rowRank[i] = r + 1;
+                colRank[j] = r + 1;
             }
         }
         return res;
     }
 
-    // S3
-    // time = O(m * n * log(m * n)), space = O(m * n)
+    // S3: TreeMap + Union Find
+    // time = O(m * n * log(m * n)), space = O(m + n)
     public int[][] matrixRankTransform3(int[][] matrix) {
         int m = matrix.length, n = matrix[0].length;
 
@@ -259,15 +250,15 @@ public class LC1632_RankTransformofaMatrix {
 
             for (int x : list) {
                 int i = findParent(x / n), j = findParent(x % n + m);
-                union(i, j);
-                if (i < j) temp[i] = Math.max(temp[i], temp[j]); // parent will store the max
-                else temp[j] = Math.max(temp[i], temp[j]);
+                union(i, j); // 同行同列union起来，赋予rank
+                if (i < j) temp[i] = Math.max(temp[i], temp[j]); // the parent will store the max (i, j union后ancestor是较小的i)
+                else temp[j] = Math.max(temp[i], temp[j]); // 反之，i j union后ancestor是较小的j
             }
 
             for (int x : list) {
-                int i = x / n, j = x % n, pi = findParent(i);
+                int i = x / n, j = x % n, p = findParent(i); // 当前行与列里最大的rank存储在parent里，call i 或者j的parent结果一样！
                 // update rank && matrix[i][j] with the max value of parent + 1 (the next min possible rank)
-                rank[i] = rank[j + m] = matrix[i][j] = temp[pi] + 1;
+                rank[i] = rank[j + m] = matrix[i][j] = temp[p] + 1;
             }
         }
         return matrix;
@@ -302,7 +293,7 @@ public class LC1632_RankTransformofaMatrix {
  * 3. topological sort => find the (group) points whose indegree = 0
  *                     => put them into queue
  *                     => each round, pop the points from queue and rank them
- *                     => based on the poped points, update indegree for other points
+ *                     => based on the popped points, update indegree for other points
  *
  * S2: greedy
  * 全局最小，rank = 1

@@ -35,10 +35,9 @@ public class LC206_ReverseLinkedList {
         // corner case
         if (head == null || head.next == null) return head;
 
-        ListNode prev = null, cur = head, next = null;
-
+        ListNode cur = head, prev = null;
         while (cur != null) {
-            next = cur.next;
+            ListNode next = cur.next;
             cur.next = prev;
             prev = cur;
             cur = next;
@@ -46,3 +45,10 @@ public class LC206_ReverseLinkedList {
         return prev;
     }
 }
+/**
+ * 我们维护一个滑窗，last,cur,nxt表示三个连续的node。
+ * 初始的时候，last=NULL, cur=head, nxt=cur->next.
+ * 对于每一个滑窗，我们要做的仅仅就是把cur从指向nxt改为指向last。
+ * 然后移动滑窗，更新last,cur,nxt所对应的节点.
+ * 最终当cur==NULL是结束循环，此时反转链表之后的头指针就是last。
+ */

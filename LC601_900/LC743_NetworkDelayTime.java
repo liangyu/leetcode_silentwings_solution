@@ -43,7 +43,7 @@ public class LC743_NetworkDelayTime {
         while (!pq.isEmpty()) { // O(ElogE)
             int[] top = pq.poll(); // cur[0] -> dist, cur[1] -> node
             int d = top[0], cur = top[1];
-            if (visited[cur] == 1) continue;
+            if (visited[cur] == 1) continue; // 注意：只能在从pq里poll()出来之后才能check visited,因为塞进去的时候没有排过序！！！
             visited[cur] = 1;
             res = Math.max(d, res); // dist[cur[1]] = cur[0]
 

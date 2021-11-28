@@ -65,4 +65,56 @@ public class LC143_ReorderList {
         if (l1 != null) cur.next = l1;
         if (l2 != null) cur.next = l2;
     }
+
+    // S2
+    // time = O(n), space = O(1)
+    public void reorderList2(ListNode head) {
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+
+        int count = 0;
+        ListNode p = dummy;
+        while (p.next != null) {
+            count++;
+            p = p.next;
+        }
+
+        ListNode q = dummy;
+        for (int i = 0; i < (count + 1) / 2; i++) {
+            q = q.next;
+        }
+        ListNode head2 = q.next;
+        q.next = null;
+
+        head2 = reverseLinkedList(head2);
+
+        p = head;
+        q = head2;
+        ListNode h = dummy;
+        while (p != null || q != null) {
+            if (p != null) {
+                h.next = p;
+                p = p.next;
+                h = h.next;
+            }
+            if (q != null) {
+                h.next = q;
+                q = q.next;
+                h = h.next;
+            }
+        }
+    }
+
+    private ListNode reverseLinkedList(ListNode head) {
+        if (head == null || head.next == null) return head;
+
+        ListNode cur = head, prev = null;
+        while (cur != null) {
+            ListNode next = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = next;
+        }
+        return prev;
+    }
 }

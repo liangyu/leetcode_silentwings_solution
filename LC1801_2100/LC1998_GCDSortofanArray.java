@@ -27,7 +27,7 @@ public class LC1998_GCDSortofanArray {
         parent = new int[100005]; // 拿数值进行union，而不是index
         for (int i = 0; i < parent.length; i++) parent[i] = i;
 
-        int[] primes = eratosthenes((int)Math.sqrt(100000));
+        List<Integer> primes = eratosthenes((int)Math.sqrt(100000));
 
         for (int i = 0; i < nums.length; i++) {
             int x = nums[i];
@@ -68,7 +68,7 @@ public class LC1998_GCDSortofanArray {
         else parent[x] = y;
     }
 
-    private int[] eratosthenes(int n) { // 给定一个上限n，求出这个上限以内所有的primes
+    private List<Integer> eratosthenes(int n) { // 给定一个上限n，求出这个上限以内所有的primes
         int[] q = new int[n + 1];
         for (int i = 2; i <= (int)Math.sqrt(n); i++) {
             if (q[i] == 0) {
@@ -83,9 +83,7 @@ public class LC1998_GCDSortofanArray {
         for (int i = 2; i <= n; i++) {
             if (q[i] == 0) primes.add(i);
         }
-        int[] res = new int[primes.size()];
-        for (int i = 0; i < primes.size(); i++) res[i] = primes.get(i);
-        return res;
+        return primes;
     }
 }
 /**

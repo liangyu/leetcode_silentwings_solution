@@ -22,12 +22,9 @@ public class LC866_PrimePalindrome {
      * @param n
      * @return
      */
+    // time = O(n), space = O(1)
     public int primePalindrome(int n) {
-        if (n <= 2) return 2;
-        if (n <= 3) return 3;
-        if (n <= 5) return 5;
-        if (n <= 7) return 7;
-        if (n <= 11) return 11;
+        if (n > 7 && n <= 11) return 11; // 11本身是个质数，无法被下面只考虑奇数位翻转的case考虑到，需要单独考虑！
 
         String M = String.valueOf(n);
         int N = M.length() / 2;

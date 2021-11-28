@@ -46,32 +46,55 @@ public class LC92_ReverseLinkedListII {
     // S2
     // time = O(n), space = O(1)
     public ListNode reverseBetween2(ListNode head, int left, int right) {
+        // corner case
+        if (head == null || head.next == null) return head;
+
         ListNode dummy = new ListNode(0);
         dummy.next = head;
 
         ListNode cur = dummy;
-        for (int i = 1; i <= left - 1; i++) {
+        for (int i = 0; i < right; i++) {
             cur = cur.next;
         }
+        ListNode c = cur.next;
+        cur.next = null;
 
-        ListNode endOfFirst = cur;
-        cur = cur.next;
-        ListNode startOfSecond = cur;
+        cur = dummy;
+        for (int i = 0; i < left - 1; i++) {
+            cur = cur.next;
+        }
+        ListNode b = cur.next;
+        cur.next = null;
 
-        // reverse
-        ListNode prev = null, next = null;
-        for (int i = left; i <= right; i++) {
-            next = cur.next;
+        b = reverseLinkedList(b);
+
+        cur = dummy;
+        while (cur.next != null) {
+            cur = cur.next;
+        }
+        cur.next = b;
+        while (cur.next != null) cur = cur.next;
+        cur.next = c;
+
+        return dummy.next;
+    }
+
+    private ListNode reverseLinkedList(ListNode head) {
+        if (head == null || head.next == null) return head;
+
+        ListNode cur = head, prev = null;
+        while (cur != null) {
+            ListNode next = cur.next;
             cur.next = prev;
             prev = cur;
             cur = next;
         }
-        endOfFirst.next = prev;
-        startOfSecond.next = cur;
-        return dummy.next;
+        return prev;
     }
 }
 /**
+ * 前面加一个dummy node, 每次都从dummy出发
+ * 把原先的链表分割成3部分
  * one-pass
  * 记录两个节点
  * 处理逆序区也要有左右节点指针

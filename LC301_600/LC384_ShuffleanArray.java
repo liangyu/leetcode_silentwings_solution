@@ -27,26 +27,25 @@ public class LC384_ShuffleanArray {
      */
     // time = O(n), space = O(n)
     int[] arr;
-    Random random;
+    int[] nums;
     public LC384_ShuffleanArray(int[] nums) {
-        arr = nums;
-        random = new Random();
+        this.nums = nums;
+        arr = nums.clone();
     }
 
-    /** Resets the array to its original configuration and return it. */
     public int[] reset() {
+        arr = nums.clone();
         return arr;
     }
 
-    /** Returns a random shuffling of the array. */
     public int[] shuffle() {
-        int[] copy = arr.clone();
-        int n = copy.length;
+        Random random = new Random();
+        int n = arr.length;
         for (int i = 0; i < n; i++) {
             int idx = random.nextInt(n);
-            swap(copy, i, idx);
+            swap(arr, i, idx);
         }
-        return copy;
+        return arr;
     }
 
     private void swap(int[] nums, int i, int j) {

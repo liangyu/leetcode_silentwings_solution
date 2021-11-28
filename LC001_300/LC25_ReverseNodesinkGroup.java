@@ -25,6 +25,7 @@ public class LC25_ReverseNodesinkGroup {
      * @param k
      * @return
      */
+    // S1
     // time = O(n), space = O(1)
     public ListNode reverseKGroup(ListNode head, int k) {
         // corner case
@@ -60,6 +61,50 @@ public class LC25_ReverseNodesinkGroup {
         ListNode prev = null, cur = head, next = null;
         while (cur != null) {
             next = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = next;
+        }
+        return prev;
+    }
+
+    // S2
+    // time = O(n), space = O(1)
+    public ListNode reverseKGroup2(ListNode head, int k) {
+        List<ListNode> heads = new ArrayList<>();
+
+        ListNode p = head;
+        boolean flag = true;
+        while (p != null) {
+            heads.add(p);
+            for (int i = 0; i < k - 1; i++) {
+                if (p.next != null) p = p.next;
+                else flag = false;
+            }
+            ListNode temp = p.next;
+            p.next = null;
+            p = temp;
+        }
+
+        for (int i = 0; i < heads.size(); i++) {
+            if (i == heads.size() - 1 && !flag) continue;
+            heads.set(i, reverseLinkedList(heads.get(i)));
+        }
+
+        for (int i = 0; i < heads.size() - 1; i++) {
+            ListNode h = heads.get(i);
+            while (h.next != null) h = h.next;
+            h.next = heads.get(i + 1);
+        }
+        return heads.get(0);
+    }
+
+    private ListNode reverseLinkedList(ListNode head) {
+        if (head == null || head.next == null) return head;
+
+        ListNode cur = head, prev = null;
+        while (cur != null) {
+            ListNode next = cur.next;
             cur.next = prev;
             prev = cur;
             cur = next;

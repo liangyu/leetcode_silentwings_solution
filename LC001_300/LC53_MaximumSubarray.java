@@ -28,8 +28,7 @@ public class LC53_MaximumSubarray {
         int max = dp[0];
 
         for (int i = 1; i < nums.length; i++) {
-            if (dp[i - 1] >= 0) dp[i] = dp[i - 1] + nums[i];
-            else dp[i] = nums[i];
+            dp[i] = Math.max(dp[i - 1] + nums[i], nums[i]);
             max = Math.max(max, dp[i]);
         }
         return max;
@@ -38,15 +37,14 @@ public class LC53_MaximumSubarray {
     // S2: rolling matrix
     // time = O(n), space = O(1)
     public int maxSubArray2(int[] nums) {
-        int old = nums[0], now = 0;
-        int max = old;
+        int n = nums.length;
+        int old = nums[0], now = 0, res = old;
 
-        for (int i = 1; i < nums.length; i++) {
-            if (old >= 0) now = old + nums[i];
-            else now = nums[i];
-            max = Math.max(max, now);
+        for (int i = 1; i < n; i++) {
+            now = Math.max(old + nums[i], nums[i]);
+            res = Math.max(res, now);
             old = now;
         }
-        return max;
+        return res;
     }
 }

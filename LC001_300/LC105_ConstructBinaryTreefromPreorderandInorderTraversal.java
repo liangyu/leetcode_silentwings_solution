@@ -23,38 +23,25 @@ public class LC105_ConstructBinaryTreefromPreorderandInorderTraversal {
      * @return
      */
     // time = O(n), space - O(n)
+    HashMap<Integer, Integer> map;
     public TreeNode buildTree(int[] preorder, int[] inorder) {
-        // corner case
-        if (preorder == null || preorder.length == 0 || inorder == null || inorder.length == 0) return null;
-
-        return helper(preorder, 0, preorder.length, inorder, 0, inorder.length);
+        map = new HashMap<>();
+        for (int i = 0; i < inorder.length; i++) {
+            map.put(inorder[i], i);
+        }
+        return helper(preorder, 0, preorder.length - 1, inorder, 0, inorder.length - 1);
     }
 
     private TreeNode helper(int[] preorder, int ps, int pe, int[] inorder, int is, int ie) {
-        if (ps == pe) return null;
+        // base case
+        if (ps > pe) return null;
 
-        int root_val = preorder[ps];
-        TreeNode root = new TreeNode(root_val);
-
-        int idx = 0;
-        for (int i = is; i < ie; i++) {
-            if (inorder[i] == root_val) {
-                idx = i;
-                break;
-            }
-        }
+        TreeNode root = new TreeNode(preorder[ps]);
+        int idx = map.get(preorder[ps]);
 
         int dist = idx - is;
-        root.left = helper(preorder, ps + 1, ps + dist + 1, inorder, is, idx);
+        root.left = helper(preorder, ps + 1, ps + dist, inorder, is, idx - 1);
         root.right = helper(preorder, ps + dist + 1, pe, inorder, idx + 1, ie);
         return root;
-    }
-
-    class TreeNode {
-        int val;
-        TreeNode left, right;
-        public TreeNode(int val) {
-            this.val = val;
-        }
     }
 }

@@ -35,72 +35,77 @@ public class LC803_BricksFallingWhenHit {
      * @param hits
      * @return
      */
+    // S1: Union Find
     // time = O((k + m * n) * log(m * n)), space = O(m * n) alpha: Inverse-Ackermann function
-    private static final int[][] DIRECTIONS = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
-    private int[] parent;
-    private int[] size;
-    private int m, n;
+    int m, n;
+    int[] parent;
+    int[] size;
+    private int[][] directions = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
     public int[] hitBricks(int[][] grid, int[][] hits) {
         m = grid.length;
         n = grid[0].length;
-        int[][] backup = new int[m][n];
-        for (int i = 0; i < m; i++) backup[i] = grid[i].clone(); // 逐行deep copy 2D matrix
-
         parent = new int[m * n];
         size = new int[m * n];
-        for (int i = 0; i < m * n; i++) { // O(m * n)
-            parent[i] = i; // (i, j) -> i * n + j
+        for (int i = 0; i < m * n; i++) {
+            parent[i] = i;
             size[i] = 1;
         }
 
-        for (int[] hit : hits) { // O(k)
-            grid[hit[0]][hit[1]] = 0;
+        // produce the last scene
+        for (int[] hit : hits) {
+            int a = hit[0], b = hit[1];
+            grid[a][b] *= -1; // grid: 0 empty; 1 suspended brick; -1 hit
         }
 
+        // union in the last scene
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                if (grid[i][j] == 0) continue;
-                for (int[] dir : DIRECTIONS) {
+                if (grid[i][j] != 1) continue;
+                for (int[] dir : directions) {
                     int x = i + dir[0];
                     int y = j + dir[1];
                     if (x < 0 || x >= m || y < 0 || y >= n) continue;
-                    if (grid[x][y] == 0) continue;
-                    if (findParent(i * n + j) != findParent(x * n + y)) {
-                        union(i * n + j, x * n + y);
-                    }
+                    if (grid[x][y] != 1) continue;
+
+                    int u = i * n + j, v = x * n + y;
+                    if (findParent(u) != findParent(v)) union(u, v);
                 }
             }
         }
 
-        List<Integer> res = new ArrayList<>();
-        for (int t = hits.length - 1; t >= 0; t--) { // O(k)
+        // time back
+        int[] res = new int[hits.length];
+        for (int t = hits.length - 1; t >= 0; t--) {
             int i = hits[t][0], j = hits[t][1];
-            if (backup[i][j] == 0) { // (i, j) is empty originally, not being empty because of hit
-                res.add(0);
+            // check if (i, j) has brick or not before hits
+            if (grid[i][j] == 0) {
+                res[t] = 0;
                 continue;
             }
-            grid[i][j] = 1; // recover the brick
+            grid[i][j] = 1; // recover back to 1
             int count = 0;
-            int flag = 0;
-            for (int[] dir : DIRECTIONS) {
+            boolean flag = i == 0; // check if the hit piece was attached to the ceiling itself
+            for (int[] dir : directions) {
                 int x = i + dir[0];
                 int y = j + dir[1];
                 if (x < 0 || x >= m || y < 0 || y >= n) continue;
-                if (grid[x][y] == 0) continue;
-                if (findParent(i * n + j) != findParent(x * n + y)) { // O(log(m * n))
-                    if (findParent(x * n + y) < n || i == 0) flag = 1;
-                    if (findParent(x * n + y) >= n) count += size[findParent(x * n + y)];
-                    union(i * n + j, x * n + y);
+                if (grid[x][y] != 1) continue;
+
+                int u = i * n + j, v = x * n + y;
+                if (findParent(u) != findParent(v)) {
+                    // check parent if in the first row (ceiling)
+                    if (findParent(v) < n) flag = true; // check if (x, y) was attached to the ceiling
+                    if (findParent(v) >= n) {
+                        count += size[findParent(v)]; // need to know the member size in this rescued group
+                    }
+                    union(u, v);
                 }
             }
-            res.add(flag == 1 ? count : 0);
-        }
 
-        Collections.reverse(res);
-        int[] ans = new int[res.size()];
-        int k = 0;
-        for (int x : res) ans[k++] = x;
-        return ans;
+            if (flag) res[t] = count;
+            else res[t] = 0; // has no meaning, not attached to the ceiling
+        }
+        return res;
     }
 
     private int findParent(int x) {
@@ -119,6 +124,69 @@ public class LC803_BricksFallingWhenHit {
             parent[x] = y;
             size[y] += size[x];
         }
+    }
+
+    // S2: DFS
+//    int m, n;
+//    private int[][] directions = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    public int[] hitBricks2(int[][] grid, int[][] hits) {
+        m = grid.length;
+        n = grid[0].length;
+        for (int[] hit : hits) {
+            int a = hit[0], b = hit[1];
+            grid[a][b] *= -1;
+        }
+
+        // grid: 0 empty; 1 suspended brick; 2 ceiling brick; -1 hit
+        for (int j = 0; j < n; j++) {
+            if (grid[0][j] == 1) { // first row
+                dfs(grid, 0, j); // mark as 2
+            }
+        }
+
+
+        int[] res = new int[hits.length];
+        // time backtrack
+        for (int t = hits.length - 1; t >= 0; t--) {
+            int i = hits[t][0], j = hits[t][1];
+            if (grid[i][j] != -1) { // fake point -> original empty spot
+                res[t] = 0;
+                continue;
+            }
+
+            boolean connectCeil = (i == 0); // the deleted point might be at ceiling originally
+            for (int[] dir : directions) {
+                int x = i + dir[0];
+                int y = j + dir[1];
+                if (x < 0 || x >= m || y < 0 || y >= n) continue;
+                if (grid[x][y] == 2) {
+                    connectCeil = true;
+                    break;
+                }
+            }
+
+            if (connectCeil) {
+                res[t] = dfs(grid, i, j) - 1; // can't count in the recovered one
+            } else {
+                grid[i][j] = 1;
+                res[t] = 0;
+            }
+        }
+        return res;
+    }
+
+    private int dfs(int[][] grid, int x, int y) {
+        grid[x][y] = 2;
+        int count = 1;
+        for (int[] dir : directions) {
+            int i = x + dir[0];
+            int j = y + dir[1];
+            if (i < 0 || i >= m || j < 0 || j >= n) continue;
+            if (grid[i][j] == 1) {
+                count += dfs(grid, i, j);
+            }
+        }
+        return count;
     }
 }
 /**

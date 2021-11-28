@@ -33,71 +33,68 @@ public class LC1617_CountSubtreesWithMaxDistanceBetweenCities {
      * @return
      */
     // time = O(n * 2^n), space = O(n)
-    List<List<Integer>> graph;
     public int[] countSubgraphsForEachDiameter(int n, int[][] edges) {
-        graph = new ArrayList<>();
-        for (int i = 0; i < n; i++) graph.add(new ArrayList<>());
+        // build graph
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) graph[i] = new ArrayList<>();
         for (int[] edge : edges) {
-            graph.get(edge[0] - 1).add(edge[1] - 1);
-            graph.get(edge[1] - 1).add(edge[0] - 1); // convert to 0-indexed without any issue here
+            int a = edge[0] - 1, b = edge[1] - 1;
+            graph[a].add(b);
+            graph[b].add(a);
         }
 
-        int[] allow = new int[n];
+        boolean[] allow = new boolean[n];
         int[] dist = new int[n];
         int[] count = new int[n];
-        for (int state = 1; state < (1 << n); state++) { // O(2^n)
-            int a = -1, nodeNum = 0;
-            for (int i = 0; i < n; i++) { // O(n)
+        for (int state = 1; state < (1 << n); state++) {
+            Arrays.fill(allow, false);
+            int start = -1, nodeNum = 0;
+            for (int i = 0; i < n; i++) {
                 if (((state >> i) & 1) == 1) {
-                    allow[i] = 1;
+                    allow[i] = true;
+                    start = i;
                     nodeNum++;
-                    a = i;
                 }
-                else allow[i] = 0;
             }
-            Arrays.fill(dist, -1); // 看遍历后有多少点不是-1了来检查连通性 O(n)
-            int b = bfs(a, dist, allow); // O(n)
+
+            Arrays.fill(dist, -1);
+            int[] b = bfs(graph, start, dist, allow); // [maxDist, id]
             int countVisited = 0;
-            for (int i = 0; i < n; i++) countVisited += (dist[i] != -1 ? 1 : 0);
+            for (int x : dist) countVisited += (x != -1 ? 1 : 0);
             if (countVisited != nodeNum) continue;
 
-            Arrays.fill(dist, -1); // reset dist
-            int c = bfs(b, dist, allow);
-            int maxDiameter = findMax(dist); // O(n)
-            count[maxDiameter]++;
+            Arrays.fill(dist, -1);
+            int[] c = bfs(graph, b[1], dist, allow);
+            int maxDist = c[0];
+            count[maxDist]++;
         }
+
         int[] res = new int[n - 1];
-        for (int i = 1; i < n; i++) res[i - 1] = count[i];
+        for (int i = 0; i < n - 1; i++) res[i] = count[i + 1];
         return res;
     }
 
-    private int bfs(int start, int[] dist, int[] allow) { // O(n)
+    private int[] bfs(List<Integer>[] graph, int start, int[] dist, boolean[] allow) {
         Queue<Integer> queue = new LinkedList<>();
         queue.offer(start);
         dist[start] = 0;
-        int maxDist = 0, nodeId = start;
+        int maxDist = 0, id = start;
 
         while (!queue.isEmpty()) {
             int cur = queue.poll();
-            for (int next : graph.get(cur)) {
-                if (allow[next] == 0) continue;
+            for (int next : graph[cur]) {
+                if (!allow[next]) continue;
                 if (dist[next] == -1) {
                     queue.offer(next);
                     dist[next] = dist[cur] + 1;
                     if (dist[next] > maxDist) {
                         maxDist = dist[next];
-                        nodeId = next;
+                        id = next;
                     }
                 }
             }
         }
-        return nodeId;
-    }
-
-    private int findMax(int[] nums) {
-        int max = 0;
-        for (int num : nums) max = Math.max(max, num);
-        return max;
+        return new int[]{maxDist, id};
     }
 }
 /**

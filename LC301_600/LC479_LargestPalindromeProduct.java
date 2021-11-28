@@ -14,7 +14,7 @@ public class LC479_LargestPalindromeProduct {
      * @param n
      * @return
      */
-    // time = O(1), space = O(1)
+    // time = O(nlogn), space = O(1)
     public int largestPalindrome(int n) {
         if (n == 1) return 9;
 
@@ -23,7 +23,7 @@ public class LC479_LargestPalindromeProduct {
 
         for (long i = high; i >= low; i--) {
             long p = createPalindrome(i);
-            for (int d = (int)high; d >= Math.sqrt(p); d--) {  // 这里注意d >= Math.sqrt(p)中，d默认转化为double去比较才精确！
+            for (long d = high; d * d >= p; d--) {  // 这里注意用int的话，d >= Math.sqrt(p)中，d默认转化为double去比较才精确
                 if (p % d == 0 && p / d >= low) return (int)(p % 1337);
             }
         }

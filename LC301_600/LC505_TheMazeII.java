@@ -61,7 +61,7 @@ public class LC505_TheMazeII {
                     i += dir[0];
                     j += dir[1];
                 }
-                if (visited[i][j]) continue;
+//                if (visited[i][j]) continue; // 出队列的时候check，这里其实并不需要check visited
                 pq.offer(new int[]{d + dist, i, j});
             }
         }
