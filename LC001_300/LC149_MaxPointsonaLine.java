@@ -19,42 +19,46 @@ public class LC149_MaxPointsonaLine {
      */
     // time = O(n^2), space = O(n)
     public int maxPoints(int[][] points) {
-        // corner case
-        if (points == null || points.length == 0 || points[0] == null || points[0].length == 0) return 0;
-        if (points.length < 2) return points.length;
-
         int res = 0;
         for (int i = 0; i < points.length; i++) {
             HashMap<String, Integer> map = new HashMap<>();
-            int samePoint = 0, verticle = 1;
+            int verticle = 0, same = 0;
             for (int j = 0; j < points.length; j++) {
-                if (i != j) {
-                    if (points[i] == points[j]) samePoint++;
-                    if (points[i][0] == points[j][0]) {
-                        verticle++;
-                        continue;
-                    }
-                    int deltaY = points[j][1] - points[i][1];
-                    int deltaX = points[j][0] - points[i][0];
-                    int b = deltaY / gcd(deltaY, deltaX);
-                    int a = deltaX / gcd(deltaY, deltaX);
-                    String str = b + "/" + a;
-                    map.put(str, map.getOrDefault(str, 1) + 1);
-                    res = Math.max(res, map.get(str) + samePoint);
+                if (i == j) continue;
+                if (points[i] == points[j]) {
+                    same++;
+                    continue;
                 }
+                int dy = points[j][1] - points[i][1];
+                int dx = points[j][0] - points[i][0];
+
+                if (dx == 0) {
+                    verticle++;
+                    continue;
+                }
+
+                int a = dy / gcd(dy, dx);
+                int b = dx / gcd(dy, dx);
+
+                String key = a + "#" + b;
+                map.put(key, map.getOrDefault(key, 0) + 1);
             }
-            res = Math.max(res, verticle);
+
+            res = Math.max(res, verticle + same + 1);
+            for (String key : map.keySet()) {
+                res = Math.max(res, map.get(key) + 1 + same); // + 1 is for i itself
+            }
         }
         return res;
     }
 
     private int gcd(int a, int b) {
-        if (a == 0) return b;
-        return gcd(b % a, a);
+        if (b == 0) return a;
+        return gcd(b, a % b);
     }
 }
 /**
  * o(n^2) 根据斜率去看哪些点在一条直线上 => 是0怎么办，90度怎么办
- * dy/dx => a/b
+ * dy/dx => a/b 化简成一个最简分数
  * double slope = dy * 1.0 / dx; // 可能精度会不够，非常危险！！！ -> 不提倡
  */

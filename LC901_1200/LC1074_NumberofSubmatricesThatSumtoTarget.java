@@ -42,11 +42,11 @@ public class LC1074_NumberofSubmatricesThatSumtoTarget {
     private int helper(int[] temp, int target) {
         int n = temp.length, preSum = 0, count = 0;
         HashMap<Integer, Integer> map = new HashMap<>();
-        map.put(0, 1);
+        map.put(0, 1); // 特别注意，开始要补个(0, 1)来应对从开始到现在为止的和刚好为target的情况，也算是一种，所以要+1
 
         for (int j = 0; j < n; j++) {
             preSum += temp[j];
-            if (map.containsKey(preSum - target)) count += map.get(preSum - target);
+            count += map.getOrDefault(preSum - target, 0);
             map.put(preSum, map.getOrDefault(preSum, 0) + 1);
         }
         return count;
@@ -56,7 +56,7 @@ public class LC1074_NumberofSubmatricesThatSumtoTarget {
  * 大矩阵里找小矩阵，找上界和下界，然后拍扁成1D array，在列上都累加起来
  * 找一个顶在第二行，底在第三行的submatrix，就相当于找一个interval
  * 遍历上下两条边，把中间的累加起来 -> 找一个interval，使得sum == target
- *
+ * YYYY[YYYY]YYYY
  * 在一个一维数组里，找sum => prefix sum
  * preSum[i] - preSum[j] = target
  * 设计一个有序容器，用二分法去查找

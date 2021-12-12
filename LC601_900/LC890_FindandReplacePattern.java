@@ -77,4 +77,32 @@ public class LC890_FindandReplacePattern {
         }
         return res;
     }
+
+    // S3: encode
+    // time = O(k + n * l), space = O(1)
+    public List<String> findAndReplacePattern3(String[] words, String pattern) {
+        List<String> res = new ArrayList<>();
+        String p = encode(pattern); // O(k)
+
+        for (String word : words) { // O(n)
+            String t = encode(word); // O(l)
+            if (t.equals(p)) res.add(word);
+        }
+        return res;
+    }
+
+    private String encode(String s) {
+        HashMap<Character, Integer> map = new HashMap<>();
+        StringBuilder sb = new StringBuilder();
+        int idx = 0;
+
+        for (char c : s.toCharArray()) {
+            if (map.containsKey(c)) sb.append(map.get(c));
+            else {
+                map.put(c, idx);
+                sb.append(idx++);
+            }
+        }
+        return sb.toString();
+    }
 }

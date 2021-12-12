@@ -77,4 +77,5 @@ public class LC1168_OptimizeWaterDistributioninaVillage {
 /**
  * 此题的解法非常巧妙。你增加一个隐藏的0号节点，把每个节点自建井的费用wells[i]想象成连接[0,i]的边的费用。
  * 这道题就变成了求最少的费用将所有的节点（包括隐藏的0号）连接起来。
+ * 这就是最基本的最小生成树问题（MST），和1135.Connecting-Cities-With-Minimum-Cost一模一样。
  */

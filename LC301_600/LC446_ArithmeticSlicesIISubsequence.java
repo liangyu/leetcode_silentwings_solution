@@ -24,8 +24,8 @@ public class LC446_ArithmeticSlicesIISubsequence {
      * @param nums
      * @return
      */
-    // S1
-    // time = O(n), space = O(n)
+    // S1: DP
+    // time = O(n^2), space = O(n^2)
     public int numberOfArithmeticSlices(int[] nums) {
         // corner case
         if (nums == null || nums.length == 0) return 0;
@@ -46,8 +46,8 @@ public class LC446_ArithmeticSlicesIISubsequence {
         return res;
     }
 
-    // S2
-    // time = O(n), space = O(n)
+    // S2: DP
+    // time = O(n^2), space = O(n^2)
     public int numberOfArithmeticSlices2(int[] nums) {
         // corner case
         if (nums == null || nums.length == 0) return 0;
@@ -102,6 +102,9 @@ public class LC446_ArithmeticSlicesIISubsequence {
  * fill(object[] a, int fromIndex, int toIndex, object val) method assigns the specified "Object reference"
  * to each element of the specified range of the specified array of objects.
  * 2个数就能确定一个公差，而题目要求三个数才形成一个等差数列，这也是我们采用长度>=2的定义出发再修改
+ * 为什么我们会这么定义“长度>=2”？
+ * 假设我们后面能接上一个元素k并保持这个公差diff的话，对于k而言，以其为结尾的长度>=3的等差数列那就是dp[i][diff]，恰好就是我们想统计的。
+ * 这样定义dp[i][diff]能给我们带来极大的方便。
  *
  * S2:
  * dp[j][i]: 以nums[j], nums[i]为最后两项的等差数列的个数 => 公差也就有了

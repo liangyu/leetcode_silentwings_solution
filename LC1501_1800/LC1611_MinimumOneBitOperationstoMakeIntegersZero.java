@@ -58,7 +58,7 @@ public class LC1611_MinimumOneBitOperationstoMakeIntegersZero {
         return map2.get(s);
     }
 
-    // Gray code
+    // S2: Gray code
     // time = O(1), space = O(1)
     public int minimumOneBitOperations2(int n) {
         // corner case

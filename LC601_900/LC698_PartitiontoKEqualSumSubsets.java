@@ -17,6 +17,7 @@ public class LC698_PartitiontoKEqualSumSubsets {
      * @param k
      * @return
      */
+    // time = O(n * 2^n), space = O(n * 2^n)
     public boolean canPartitionKSubsets(int[] nums, int k) {
         // corner case
         if (nums == null || nums.length == 0 || k <= 0) return false;

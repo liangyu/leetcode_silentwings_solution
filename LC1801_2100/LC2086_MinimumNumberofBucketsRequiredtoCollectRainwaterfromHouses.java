@@ -25,8 +25,30 @@ public class LC2086_MinimumNumberofBucketsRequiredtoCollectRainwaterfromHouses {
      * @param street
      * @return
      */
+    // S1: 1 pass
     // time = O(n), space = O(n)
     public int minimumBuckets(String street) {
+        int n = street.length();
+        char[] chars = street.toCharArray();
+        int res = 0;
+
+        for (int i = 0; i < n; i++) {
+            if (chars[i] != 'H') continue;
+            if (i - 1 >= 0 && chars[i - 1] == '#') continue;
+            else if (i + 1 < n && chars[i + 1] == '.') {
+                chars[i + 1] = '#';
+                res++;
+            } else if (i - 1 >= 0 && chars[i - 1] == '.') {
+                chars[i - 1] = '#';
+                res++;
+            } else return -1;
+        }
+        return res;
+    }
+
+    // S2: 3 pass
+    // time = O(n), space = O(n)
+    public int minimumBuckets2(String street) {
         char[] chars = street.toCharArray();
         int n = chars.length;
         if (n == 1) return chars[0] == 'H' ? -1 : 0;
@@ -61,3 +83,14 @@ public class LC2086_MinimumNumberofBucketsRequiredtoCollectRainwaterfromHouses {
         return count;
     }
 }
+/**
+ * 本题有纯粹的贪心策略。
+ * 但凡遇到H，我们可定优先在右边放篮子，这样放置的篮子就可以最大程度地被后面的H所分享。
+ * 当然，如果右边不能放置篮子的话，那么也只有在左边放了。
+ * 正确的逻辑顺序是：
+ * 1. 查看左边是否已经放置了篮子。有的话则skip
+ * 2. 查看右边是否可以放置篮子，是的话，就标记篮子
+ * 3. 查看左边是否可以放置篮子，是的话，就标记篮子
+ * 4. 此时说明左右都无法放置篮子，返回-1
+ */
+

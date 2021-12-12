@@ -36,7 +36,7 @@ public class LC1066_CampusBikesII {
         int m = workers.length, n = bikes.length;
         PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] - o2[0]); // {cost, state}
         pq.offer(new int[]{0, 0});
-        boolean[] visited = new boolean[n];
+        boolean[] visited = new boolean[1 << n];
         int[][] dist = new int[m][n];
 
         for (int i = 0; i < m; i++) { // O(m)
@@ -76,6 +76,7 @@ public class LC1066_CampusBikesII {
  * state: 01100 表示说我们已经处理完了前2个工人，分别配对了1号和2号自行车
  * k is the number of 1 bits in state
  * the minimum cost of the first k workers assigned with the 1-bit bikes
+ * 特别注意，因为我们约定了工人按顺序挑自行车，所以这三辆自行车一定是被前3号工人调走的。
  * 我们不关心具体这两个工人是怎么占据这2辆自行车，我们并不关心，只求最少代价来占据
  * 把state作为node，node 之间边的转化
  * initial state: 00000

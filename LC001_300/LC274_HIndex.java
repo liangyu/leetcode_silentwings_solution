@@ -29,9 +29,12 @@ public class LC274_HIndex {
 
         Arrays.sort(citations);
 
-        int res = 0, n = citations.length;
-        while (res < n && citations[n - 1 - res] > res) res++;
-        return res;
+        int n = citations.length, count = 0;
+        for (int i = n - 1; i >= 0; i--) { // 从后往前数
+            if (citations[i] < n - i) break; // 注意个数是n - i
+            count++;
+        }
+        return count;
     }
 
     // S2: 最优解
@@ -45,8 +48,16 @@ public class LC274_HIndex {
         for (int c : citations) {
             papers[Math.min(c, n)]++;
         }
-        int k = n;
-        for (int i = papers[n]; i < k; i += papers[k]) k--;
-        return k;
+        int count = 0;
+        for (int i = n; i >= 0; i--) {
+            count += papers[i];
+            if (count >= i) return i;
+        }
+        return 0;
     }
 }
+/**
+ * 可以发现 \text{H}H 指数不可能大于总的论文发表数，所以对于引用次数超过论文发表数的情况，我们可以将其按照总的论文发表数来计算即可。
+ * 这样我们可以限制参与排序的数的大小为 [0,n]（其中 n 为总的论文发表数），使得计数排序的时间复杂度降低到 O(n)。
+ *
+ */

@@ -18,6 +18,7 @@ public class LC49_GroupAnagrams {
      * @param strs
      * @return
      */
+    // S1
     // time = O(n * k), space = O(n * k)   k: the maximum length of a string in strs
     public List<List<String>> groupAnagrams(String[] strs) {
         // corner case
@@ -46,5 +47,23 @@ public class LC49_GroupAnagrams {
             }
         }
         return new ArrayList<>(map.values());
+    }
+
+    // S2: time = O(n * k * logk), space = O(n * k)
+    public List<List<String>> groupAnagrams2(String[] strs) {
+        HashMap<String, List<String>> map = new HashMap<>();
+        for (String s : strs) { // O(n)
+            char[] chars = s.toCharArray();
+            Arrays.sort(chars); // O(klogk)
+            String str = String.valueOf(chars);
+            map.putIfAbsent(str, new ArrayList<>());
+            map.get(str).add(s);
+        }
+
+        List<List<String>> res = new ArrayList<>();
+        for (String key : map.keySet()) {
+            res.add(map.get(key));
+        }
+        return res;
     }
 }

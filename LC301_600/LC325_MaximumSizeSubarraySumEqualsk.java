@@ -19,23 +19,19 @@ public class LC325_MaximumSizeSubarraySumEqualsk {
      */
     // time = O(n), space = O(n)
     public int maxSubArrayLen(int[] nums, int k) {
-        // corner case
-        if (nums == null || nums.length == 0) return 0;
-
         HashMap<Integer, Integer> map = new HashMap<>();
-        map.put(0, -1);
-        int res = 0;
+        map.put(0, -1); // 注意对于求前缀和的问题，一定要在HashMap里补(0, -1)这一对来应付从头开始到现在的subarray之和的情况
 
-        for (int i = 1; i < nums.length; i++) {
-            nums[i] += nums[i - 1]; // reuse nums to let it be the presum array
-        }
+        int n = nums.length, sum = 0, res = -1;
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+            if (!map.containsKey(sum)) map.put(sum, i); // 从左到右依次扫，只需要记录第一次出现该sum时的index
 
-        for (int i = 0; i < nums.length; i++) {
-            if (map.containsKey(nums[i] - k)) {
-                res = Math.max(res, i - map.get(nums[i] - k));
+            int temp = sum - k;
+            if (map.containsKey(temp)) {
+                res = Math.max(res, i - map.get(temp));
             }
-            if (!map.containsKey(nums[i])) map.put(nums[i], i); // only update the map with new value and its index
         }
-        return res;
+        return res == -1 ? 0 : res;
     }
 }

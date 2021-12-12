@@ -21,20 +21,24 @@ public class LC128_LongestConsecutiveSequence {
         if (nums == null || nums.length == 0) return 0;
 
         HashSet<Integer> set = new HashSet<>();
-        for (int n : nums) set.add(n);
+        int len = 0;
+        for (int x : nums) set.add(x);
 
-        int res = 0;
-        for (int i = 0; i < nums.length; i++) {
-            int down = nums[i] - 1, up = nums[i] + 1;
-            while (set.contains(down)) set.remove(down--);
-            while (set.contains(up)) set.remove(up++);
-            res = Math.max(res, up - down - 1);
+        for (int x : set) {
+            if (!set.contains(x - 1)) { // 不是最小值，而是中间值，以后到了最小值再数，现在不用管
+                int count = 0;
+                while (set.contains(x)) {
+                    count++;
+                    x++;
+                }
+                len = Math.max(len, count);
+            }
         }
-        return res;
+        return len;
     }
 
     // S2: union find
-    // time = O(nlogn), space = O(1)
+    // time = O(nlogn), space = O(n)
     HashMap<Integer, Integer> parent;
     public int longestConsecutive2(int[] nums) {
         parent = new HashMap<>();

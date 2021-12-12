@@ -48,7 +48,7 @@ public class LC532_KdiffPairsinanArray {
     }
 
     // S2: HashMap
-    // time = O(n), space = O(n) -> from sort
+    // time = O(n), space = O(n)
     public int findPairs2(int[] nums, int k) {
         // corner case
         if (nums == null || nums.length == 0) return 0;
