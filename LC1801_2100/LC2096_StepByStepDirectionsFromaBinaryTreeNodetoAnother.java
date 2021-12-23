@@ -97,4 +97,54 @@ public class LC2096_StepByStepDirectionsFromaBinaryTreeNodetoAnother {
         }
         return nodes;
     }
+
+    // S2: dfs
+    // time = O(n), space = O(n)
+    public String getDirections2(TreeNode root, int startValue, int destValue) {
+        List<Integer> nums1 = new ArrayList<>();
+        List<Integer> nums2 = new ArrayList<>();
+        StringBuilder dirs1 = new StringBuilder();
+        StringBuilder dirs2 = new StringBuilder();
+        dfs(root, nums1, dirs1, startValue);
+        dfs(root, nums2, dirs2, destValue);
+
+        // nums1: R-0-1-3; nums2: R-0-2-6
+        // dirs1: L-L-L, dirs2: R-R-L
+        int k = 0;
+        while (k < nums1.size() && k < nums2.size() && nums1.get(k).equals(nums2.get(k))) k++; // 注意：这里要用equals!!!
+        for (int i = k; i < dirs1.length(); i++) dirs1.setCharAt(i, 'U');
+        return dirs1.toString().substring(k) + dirs2.toString().substring(k);
+    }
+
+    private boolean dfs(TreeNode node, List<Integer> nums, StringBuilder dirs, int target) {
+        // base case
+        if (node == null) return false;
+        if (node.val == target) return true;
+
+        if (node.left != null) {
+            nums.add(node.left.val);
+            dirs.append('L');
+            if (dfs(node.left, nums, dirs, target)) return true;
+            nums.remove(nums.size() - 1); // setback
+            dirs.setLength(dirs.length() - 1); // setback
+        }
+
+        if (node.right != null) {
+            nums.add(node.right.val);
+            dirs.append('R');
+            if (dfs(node.right, nums, dirs, target)) return true;
+            nums.remove(nums.size() - 1); // setback
+            dirs.setLength(dirs.length() - 1); // setback
+        }
+        return false;
+    }
 }
+/**
+ * 会走过一个拐点 -> lca
+ * 本身需要把递归路径打印出来，不需要使用递归的做法
+ * 直接暴力一点就行了
+ * 把从根到某个结点的路径打印出来
+ * 通过两个路径的比较就能找到lca
+ * 从根节点走，作为一个全局路径的递归遍历
+ * 遍历到每个点的时候，把路径记录下来，再回溯
+ */

@@ -144,7 +144,6 @@ public class LC803_BricksFallingWhenHit {
             }
         }
 
-
         int[] res = new int[hits.length];
         // time backtrack
         for (int t = hits.length - 1; t >= 0; t--) {

@@ -53,14 +53,16 @@ public class LC220_ContainsDuplicateIII {
         if (nums == null || nums.length == 0 || k < 1 || t < 0) return false;
 
         TreeSet<Long> set = new TreeSet<>();
-        for (int i = 0; i < nums.length; i++) {
-            Long fk = set.floor((long)nums[i] + t); // 上界
-            Long ck = set.ceiling((long)nums[i] - t); // 下界
+        int n = nums.length;
 
-            if (fk != null && fk >= nums[i] || ck != null && ck <= nums[i]) return true;
-
-            set.add((long)nums[i]);
-            if (set.size() > k) set.remove((long)nums[i - k]);
+        for (int i = 0; i < n; i++) {
+            Long ck = set.ceiling((long) nums[i] - t);
+            Long fk = set.floor((long) nums[i] + t);
+            if (ck != null && ck <= nums[i] + t || fk != null && fk >= nums[i] - t) {
+                return true;
+            }
+            set.add((long) nums[i]);
+            if (set.size() > k) set.remove((long) nums[i - k]);
         }
         return false;
     }
@@ -89,3 +91,11 @@ public class LC220_ContainsDuplicateIII {
         return false;
     }
 }
+/**
+ * abs(nums[i] - nums[j]) <= t
+ * -t < nums[i] - nums[j] < t =>
+ * nums[j] - t < nums[i] < nums[j] + t => 二分搜索一个i
+ * 如果这个窗口是有序的话，用二分法可以做
+ * [j-k+1,j-1] 找到一个i，如果这些元素能自动排序就最好了 -> PriorityQueue / TreeSet  PQ只能保证出口的位置，剩下位置不是顺序的
+ * => TreeSet
+ */

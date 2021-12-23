@@ -27,6 +27,7 @@ public class LC774_MinimizeMaxDistancetoGasStation {
      * @param k
      * @return
      */
+    // S1: BS
     // time = O(nlogn), space = O(1)
     public double minmaxGasDist(int[] stations, int k) {
         int n = stations.length;

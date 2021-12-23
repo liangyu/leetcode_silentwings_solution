@@ -62,7 +62,7 @@ public class LC305_NumberofIslandsII {
                 if (parent[v] == -1) continue; // (i, j) is sea instead of land
                 if (findParent(u) != findParent(v)) {
                     union(u, v);
-                    count--;
+                    count--; // 注意count要放在union之后，因为四个方向上，如果都彼此连通，count只需要减1次，因为连上了其他方向也就连上了！！！
                 }
             }
             res.add(count);

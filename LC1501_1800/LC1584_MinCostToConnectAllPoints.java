@@ -105,7 +105,7 @@ public class LC1584_MinCostToConnectAllPoints {
     }
 }
 /**
- * MST:最基础版，给你很多条边，让你选权重最少的边把制定的n个点都连起来，连起来的图一定是棵树
+ * MST:最基础版，给你很多条边，让你选权重最少的边把指定的n个点都连起来，连起来的图一定是棵树
  * 没有点割裂，都是连通图
  * 1. Kruskal: E(logE) => n^2*logn
  *      sort all edges by weight

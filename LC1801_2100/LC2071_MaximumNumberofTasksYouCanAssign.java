@@ -30,7 +30,7 @@ public class LC2071_MaximumNumberofTasksYouCanAssign {
      * @param strength
      * @return
      */
-    // time = O(nlogn + (m + n) * (logn * logm)), space = O(logn + m)
+    // time = O(nlogn + (m + n) * (logn * logm)), space = O(m)
     public int maxTaskAssign(int[] tasks, int[] workers, int pills, int strength) {
         Arrays.sort(tasks); // O(nlogn) 记得一定要先排序啊！！！
         int left = 0, right = tasks.length;
@@ -81,7 +81,7 @@ public class LC2071_MaximumNumberofTasksYouCanAssign {
  * 比如难度为8的任务，到底要不要做
  * worker：task
  *         task - strength
- * 突破口：这k件任务一定是难度最低的k件，如果能做成功，我可以再试试k+1件，不行就k-1件。
+ * 突破口：这k件任务一定是"难度最低的k件"，如果能做成功，我可以再试试k+1件，不行就k-1件。
  * 所以这道题就是先猜，然后看看能不能完成。
  * 区间是非常明显的，所以非常适合用二分搜值，而且是有单调性的。
  * 7件任务做不好，8件肯定做不好，相反6件一定能做好。

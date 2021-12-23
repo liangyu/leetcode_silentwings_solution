@@ -32,7 +32,7 @@ public class LC1847_ClosestRoom {
      * @return
      */
     // S1: Sort + TreeSet
-    // time = O(nlogn + m * log(m * n)), space = O(m + n)
+    // time = O(mlogm + (m + n) * logn), space = O(m + n)
     // m: number of queries, n: number of rooms
     public int[] closestRoom(int[][] rooms, int[][] queries) {
         int[] res = new int[queries.length];
@@ -40,28 +40,41 @@ public class LC1847_ClosestRoom {
         Arrays.sort(rooms, (o1, o2) -> o2[1] - o1[1]); // O(nlogn)
 
         // step 2: sort the queries by size in descending order and save in a new array
-        int[][] arr = new int[queries.length][3];
+        int[][] que = new int[queries.length][3];
         for (int i = 0; i < queries.length; i++) { // O(m)
-            arr[i][0] = queries[i][0];
-            arr[i][1] = queries[i][1];
-            arr[i][2] = i; // save the original index of queries
+            que[i][0] = queries[i][0];
+            que[i][1] = queries[i][1];
+            que[i][2] = i; // save the original index of queries
         }
-        Arrays.sort(arr, (o1, o2) -> o2[1] - o1[1]); // O(mlogm)
+        Arrays.sort(que, (o1, o2) -> o2[1] - o1[1]); // O(mlogm)
 
         // step 3: search in the treeSet
         TreeSet<Integer> set = new TreeSet<>();
-        int k = 0;
-        for (int i = 0; i < arr.length; i++) { // O(m)
-            while (k < rooms.length && rooms[k][1] >= arr[i][1]) {
-                set.add(rooms[k][0]); // O(logn)
-                k++;
+        int i = 0;
+        for (int[] q : que) { // O(m)
+            while (i < rooms.length && rooms[i][1] >= q[1]) {
+                set.add(rooms[i][0]);  // O(logn)
+                i++;
             }
-            Integer fk = set.floor(arr[i][0]);
-            Integer ck = set.ceiling(arr[i][0]);
-            if (fk == null && ck == null) res[arr[i][2]] = -1;
-            else if (fk == null) res[arr[i][2]] = ck;
-            else if (ck == null) res[arr[i][2]] = fk;
-            else res[arr[i][2]] = (ck - arr[i][0] < arr[i][0] - fk ? ck : fk);
+
+            int ans = -1, diff = Integer.MAX_VALUE;
+            Integer ck = set.ceiling(q[0]);
+            Integer fk = set.floor(q[0]);
+
+            if (ck != null) {
+                if (Math.abs(ck - q[0]) < diff) {
+                    diff = Math.abs(ck - q[0]);
+                    ans = ck;
+                }
+            }
+
+            if (fk != null) {
+                if (Math.abs(fk - q[0]) <= diff) { // 注意：= 的时候也要更新！！！
+                    diff = Math.abs(fk - q[0]);
+                    ans = fk;
+                }
+            }
+            res[q[2]] = ans;
         }
         return res;
     }
@@ -118,10 +131,14 @@ public class LC1847_ClosestRoom {
 }
 /**
  * 优先考虑minSize比较大的case，随着minSize bar的降低，把room size比较大的房间放入pool里面
+ * 单调递增的过程，只要插入就行，不需要再拿出来
  * LC1697, LC1707 -> 根据minSize排个序
  * 新加一个房间O(logN),只加不删，找一个最接近的房间上界和下界O(logN)
  * 真正在pool里面看的是id
  * 1697 off-line querying + Union Find
  * 1707 off-line querying + trie
  * 1847 off-line querying + heap
+ * python: sorted container
+ * c++: pbds
+ * 不但能找到最接近的id,还能知道这个id是container里的第几个
  */

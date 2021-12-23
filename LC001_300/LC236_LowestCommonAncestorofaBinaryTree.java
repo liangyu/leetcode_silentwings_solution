@@ -24,6 +24,7 @@ public class LC236_LowestCommonAncestorofaBinaryTree {
      * @param q
      * @return
      */
+    // S1
     // time = O(n), space = O(n)
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
         // corner case
@@ -33,7 +34,37 @@ public class LC236_LowestCommonAncestorofaBinaryTree {
         TreeNode left = lowestCommonAncestor(root.left, p, q);
         TreeNode right = lowestCommonAncestor(root.right, p, q);
 
-        if (left != null && right != null) return root;
+        // left与right都不为null -> p, q分别是root.left和root.right (根据p == root || q == root) return root;而来！
+        if (left != null && right != null) return root; // p, q分别是root.left和root.right
         return left == null ? right : left;
     }
+
+    // S2
+    // time = O(n), space = O(n)
+    TreeNode res = null;
+    public TreeNode lowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q) {
+        dfs(root, p, q);
+        return res;
+    }
+
+    private int dfs(TreeNode node, TreeNode p, TreeNode q) {
+        if (node == null) return 0;
+
+        int left = dfs(node.left, p, q);
+        int right = dfs(node.right, p, q);
+        int self = (node == p || node == q ? 1 : 0);
+        int count = self + left + right;
+        if (count == 2 && res == null) res = node;
+        return count;
+    }
 }
+/**
+ * dfs(node) 是否是公共祖先
+ * node所在子树是否包含p和q
+ * 只要找某些结点同时包含p和q
+ * dfs(node): how many nodes of p and q is included in the subtree of node
+ * 3,5,2 -> 如何找到2
+ * 从上往下走的一系列common ancestor里面，最下面的就是最小的
+ * 递归返回从下往上返回，返回的时候2是确认common ancestor，之前没有，那就是lowest，因为其他的都在2的上面
+ * 本质上找第一个node，用一个全局变量就可以
+ */

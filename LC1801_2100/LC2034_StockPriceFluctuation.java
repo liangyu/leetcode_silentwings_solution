@@ -48,7 +48,7 @@ public class LC2034_StockPriceFluctuation {
     public void update(int timestamp, int price) {
         if (timeToPrice.containsKey(timestamp)) {
             int val = timeToPrice.get(timestamp);
-            priceToCount.put(val, priceToCount.get(val)- 1);
+            priceToCount.put(val, priceToCount.get(val) - 1);
             if (priceToCount.get(val) == 0) priceToCount.remove(val);
         }
         timeToPrice.put(timestamp, price);

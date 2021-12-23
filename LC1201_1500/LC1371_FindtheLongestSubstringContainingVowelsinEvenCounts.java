@@ -64,12 +64,12 @@ public class LC1371_FindtheLongestSubstringContainingVowelsinEvenCounts {
  * Map[even]:
  * Hash + prefix + state compression
  * Map[key]: key is a 5-bit state
- * 00000
- * 01010
- *
+ * 00000 -> 5个字母都出现了偶数次
+ * 01010 -> e和o出现了奇数次，其他出现了偶数次
+ * => 找一个状态完全相同的才能对消
  * aaee
  *    j
- * Map[00]  => 3 - (-1) = 4   => 虚拟的在最前面插入-1,否则是永远取不到 -1 x x x x x]这样的区间的
+ * Map[00]  => 3 - (-1) = 4   => 虚拟的在最前面插入-1,否则是永远取不到 -1 [x x x x x]这样的区间的
  * 这与前缀和类似，在第一个元素之前加一个元素
  * Map[0] = -1
  * 本题要求区间内五个元音字母的频次都是偶数，所以我们可以用5个bit组成的二进制数来编码，来代表preFreq[j]里五个字母频次的奇偶性。

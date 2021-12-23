@@ -75,7 +75,7 @@ public class LC1856_MaximumSubarrayMinProduct {
  * 倒过来想
  * 1 [5 3 2 4 6] 0 x
  * a      ^      b
- *        9 subArrays => 求一个最大的subArray sum * minVal, sum越大越好，val > 0 => subArray越大越好
+ *        9 subArrays => 求一个最大的subArray sum * minVal, sum越大越好，val > 0 => subArray越大越好 => 范围越大越好
  * 找prev smaller 和 next smaller
  * nums[i]: prev smaller element / next smaller element => 单调栈 LC496 / 503 -> O(n) one pass
  * 做一个预处理，再扫一遍

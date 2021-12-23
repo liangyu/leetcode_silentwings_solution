@@ -19,6 +19,7 @@ public class LC235_LowestCommonAncestorofaBinarySearchTree {
      * @param q
      * @return
      */
+    // S1
     // time = O(n), space = O(n)
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
         // corner case
@@ -28,4 +29,20 @@ public class LC235_LowestCommonAncestorofaBinarySearchTree {
         if (p.val > root.val && q.val > root.val) return lowestCommonAncestor(root.right, p, q);
         return root;
     }
+
+    // S2
+    // time = O(n), space = O(n)
+    public TreeNode lowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q) {
+        if ((root.val - p.val) * (root.val - q.val) <= 0) return root;
+        if (p.val > root.val && q.val > root.val) return lowestCommonAncestor2(root.right, p, q);
+        if (p.val < root.val && q.val < root.val) return lowestCommonAncestor2(root.left, p, q);
+        return null;
+    }
 }
+/**
+ * 90%的功能都是要通过递归来实现的
+ * dfs(node): check if p is in one side of node, and q is in the other side
+ * 从根节点开始考察，如果p,q都比root小，则root移动至其左子树；
+ * 否则，root移动至其右子树。直到发现p,q在root节点的两侧，则root是最低共同节点。
+ *
+ */

@@ -22,17 +22,14 @@ public class LC1167_MinimumCosttoConnectSticks {
      */
     // time = O(nlogn), space = O(n)
     public int connectSticks(int[] sticks) {
-        // corner case
-        if (sticks == null || sticks.length < 2) return 0;
-
         PriorityQueue<Integer> pq = new PriorityQueue<>();
-        for (int stick : sticks) pq.offer(stick);
+        for (int x : sticks) pq.offer(x);
 
         int res = 0;
-        while (pq.size() > 1) {
-            int sum = pq.poll() + pq.poll();
-            res += sum;
-            pq.offer(sum);
+        while (pq.size() >= 2) {
+            int a = pq.poll(), b = pq.poll();
+            res += a + b;
+            pq.offer(a + b);
         }
         return res;
     }

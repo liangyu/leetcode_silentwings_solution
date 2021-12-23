@@ -26,6 +26,7 @@ public class LC547_NumberofProvinces {
      * @param isConnected
      * @return
      */
+    // time = O(n^2 * logn), space = O(n)
     HashMap<Integer, Integer> father;
     public int findCircleNum(int[][] isConnected) {
         int n = isConnected.length;

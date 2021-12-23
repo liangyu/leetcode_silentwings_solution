@@ -32,9 +32,9 @@ public class LC729_MyCalendarI {
     private TreeMap<Integer, Integer> map;
     public LC729_MyCalendarI() {
         map = new TreeMap<>();
-    }
+    } // 把起点做为key，终点作为end,注意区间是左闭右开！
 
-    public boolean book(int start, int end) {
+    public boolean book(int start, int end) { // 2种情况：1种是起点与[start, end]有重合，一种是终点和[start, end]有重合。
         Integer fk = map.floorKey(start);
         if (fk != null) {
             if (map.get(fk) > start) return false;
@@ -47,4 +47,9 @@ public class LC729_MyCalendarI {
         return true;
     }
 }
-
+/**
+ * 首先，使用Map.upper_bound(start)找到第一个大于start的迭代器iter，检查其对应的区间[a,b)是否与[start,end)重合。
+ * 记得前提是iter有意义，也就是iter!=Map.end().
+ * 接着，将iter回退一个位置，找到第一个小于等于start的迭代器，检查其对应的区间[a,b)是否与[start,end)重合。
+ * 同样，记得前提是此时的iter有意义，也就是iter!=Map.begin().
+ */

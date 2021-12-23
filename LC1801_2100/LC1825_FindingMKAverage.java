@@ -35,10 +35,11 @@ public class LC1825_FindingMKAverage {
      * @param k
      */
     // time = O(nlogn), space = O(n)
+    int m, k;
     TreeMap<Integer, Integer> left, mid, right;
+    int cntL, cntM, cntR;
+    long sum = 0;
     Queue<Integer> queue;
-    private int sum, m, k, cntL, cntR;
-
     public LC1825_FindingMKAverage(int m, int k) {
         this.m = m;
         this.k = k;
@@ -49,77 +50,115 @@ public class LC1825_FindingMKAverage {
     }
 
     public void addElement(int num) {
-        if (queue.size() == m) {
-            int cur = queue.poll();
-            if (right.containsKey(cur)) {
-                remove(right, cur);
-                cntR--;
-            } else if (mid.containsKey(cur)) {
-                remove(mid, cur);
-                sum -= cur;
-            } else {
-                remove(left, cur);
-                cntL--;
+        if (queue.size() < m) {
+            queue.offer(num);
+            mid.put(num, mid.getOrDefault(num, 0) + 1);
+            sum += num;
+            cntM++;
+
+            if (queue.size() == m) {
+                while (cntL < k) {
+                    sum -= mid.firstKey();
+                    shiftLeft(left, mid);
+                    cntL++;
+                    cntM--;
+                }
+                while (cntR < k) {
+                    sum -= mid.lastKey();
+                    shiftRight(mid, right);
+                    cntR++;
+                    cntM--;
+                }
             }
-        }
+        } else if (queue.size() == m) {
+            queue.offer(num);
+            if (num <= left.lastKey()) {
+                left.put(num, left.getOrDefault(num, 0) + 1);
+                cntL++;
+            } else if (num >= right.firstKey()) {
+                right.put(num, right.getOrDefault(num, 0) + 1);
+                cntR++;
+            } else {
+                sum += num;
+                mid.put(num, mid.getOrDefault(num, 0) + 1);
+                cntM++;
+            }
 
-        // insert to mid first
-        add(mid, num);
-        queue.offer(num);
-        sum += num;
+            // adjust
+            if (cntL > k) {
+                sum += left.lastKey();
+                shiftRight(left, mid);
+                cntL--;
+                cntM++;
+            }
+            if (cntR > k) {
+                sum += right.firstKey();
+                shiftLeft(mid, right);
+                cntR--;
+                cntM++;
+            }
 
-        // move item from mid to right, to fill k slots
-        while (cntR < k && !mid.isEmpty()) {
-            cntR++;
-            sum -= mid.lastKey();
-            add(right, remove(mid, mid.lastKey()));
-        }
+            // delete old element
+            int x = queue.poll();
+            if (left.containsKey(x)) {
+                left.put(x, left.get(x) - 1);
+                if (left.get(x) == 0) left.remove(x);
+                cntL--;
+            } else if (right.containsKey(x)) {
+                right.put(x, right.get(x) - 1);
+                if (right.get(x) == 0) right.remove(x);
+                cntR--;
+            } else {
+                sum -= x;
+                mid.put(x, mid.get(x) - 1);
+                if (mid.get(x) == 0) mid.remove(x);
+                cntM--;
+            }
 
-        // rebalance mid and right
-        while (!mid.isEmpty() && !right.isEmpty() && right.firstKey() < mid.lastKey()) {
-            sum += right.firstKey();
-            add(mid, remove(right, right.firstKey()));
-            sum -= mid.lastKey();
-            add(right, remove(mid, mid.lastKey()));
-        }
-
-        //move item from mid to left, to fill k slots
-        while (cntL < k && !mid.isEmpty()) {
-            cntL++;
-            sum -= mid.firstKey();
-            add(left, remove(mid, mid.firstKey()));
-        }
-
-        // rebalance mid and left
-        while (!mid.isEmpty() && !left.isEmpty() && left.lastKey() > mid.firstKey()) {
-            sum += left.lastKey();
-            add(mid, remove(left, left.lastKey()));
-            sum -= mid.firstKey();
-            add(left, remove(mid, mid.firstKey()));
+            // adjust -> 注意：delete之后还需要adjust！
+            if (cntL < k) {
+                sum -= mid.firstKey();
+                shiftLeft(left, mid);
+                cntL++;
+                cntM--;
+            }
+            if (cntR < k) {
+                sum -= mid.lastKey();
+                shiftRight(mid, right);
+                cntR++;
+                cntM--;
+            }
         }
     }
 
     public int calculateMKAverage() {
-        return queue.size() == m ? sum / (m - 2 * k) : -1;
+        if (queue.size() < m) return -1;
+        return (int) sum / (m - 2 * k);
     }
 
-    private int remove(TreeMap<Integer, Integer> map, int num) {
-        map.put(num, map.get(num) - 1);
-        if (map.get(num) == 0) map.remove(num);
-        return num;
+    private void shiftLeft(TreeMap<Integer, Integer> a, TreeMap<Integer, Integer> b) {
+        int x = b.firstKey();
+        a.put(x, a.getOrDefault(x, 0) + 1);
+        b.put(x, b.get(x) - 1);
+        if (b.get(x) == 0) b.remove(x);
     }
 
-    private void add(TreeMap<Integer, Integer> map, int num) {
-        map.put(num, map.getOrDefault(num, 0) + 1);
+
+    private void shiftRight(TreeMap<Integer, Integer> a, TreeMap<Integer, Integer> b) {
+        int x = a.lastKey();
+        b.put(x, b.getOrDefault(x, 0) + 1);
+        a.put(x, a.get(x) - 1);
+        if (a.get(x) == 0) a.remove(x);
     }
 }
 /**
+ * ref: LC295
  * X X Y X O Y X X X
  * arr = stream[a:b]
  * sort(arr)
  * sum(arr[k : m - k])/(m - 2k)
  *
- * 维护3个heap
+ * 直接维护3个heap
  * left: X X X O A
  * mid: A X X X X X X B
  * right: X O X X

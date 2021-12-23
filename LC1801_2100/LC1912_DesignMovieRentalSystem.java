@@ -53,72 +53,135 @@ public class LC1912_DesignMovieRentalSystem {
      * @param n
      * @param entries
      */
-    HashMap<Integer, TreeSet<Entry>> map; // <id, entry>
-    HashMap<String, Integer> movies; // <entry, price>
-    TreeSet<Entry> rent; // rented entry
-    public LC1912_DesignMovieRentalSystem(int n, int[][] entries) {
-        map = new HashMap<>();
-        movies = new HashMap<>();
-        rent = new TreeSet<>((o1, o2) -> o1.price != o2.price ? o1.price - o2.price : (o1.shop != o2.shop ? o1.shop - o2.shop : o1.id - o2.id));
+    // S1
+//    HashMap<Integer, TreeSet<Entry>> map; // <id, entry>
+//    HashMap<String, Integer> movies; // <entry, price>
+//    TreeSet<Entry> rent; // rented entry
+//    public LC1912_DesignMovieRentalSystem(int n, int[][] entries) {
+//        map = new HashMap<>();
+//        movies = new HashMap<>();
+//        rent = new TreeSet<>((o1, o2) -> o1.price != o2.price ? o1.price - o2.price : (o1.shop != o2.shop ? o1.shop - o2.shop : o1.id - o2.id));
+//
+//        for (int[] e : entries) {
+//            int shop = e[0], id = e[1], price = e[2];
+//            Entry entry = new Entry(shop, id, price);
+//            map.putIfAbsent(id, new TreeSet<>((o1, o2) -> o1.price != o2.price ? o1.price - o2.price : o1.shop - o2.shop));
+//            map.get(id).add(entry);
+//            movies.put(shop + "+" + id, price);
+//        }
+//    }
+//
+//    // time = O(n), space = O(n)
+//    public List<Integer> search(int movie) {
+//        List<Integer> res = new ArrayList<>();
+//        if (!map.containsKey(movie)) return res;
+//        TreeSet<Entry> set = map.get(movie);
+//        List<Entry> temp = new ArrayList<>();
+//        int k = 5;
+//        for (Entry entry : set) {
+//            if (k > 0) {
+//                res.add(entry.shop);
+//                k--;
+//            } else break;
+//        }
+//        return res;
+//    }
+//
+//    // time = O(logn), space = O(n)
+//    public void rent(int shop, int movie) {
+//        int price = movies.get(shop + "+" + movie);
+//        rent.add(new Entry(shop, movie, price));
+//        map.get(movie).remove(new Entry(shop, movie, price));
+//    }
+//
+//    // time = O(logn), space = O(n)
+//    public void drop(int shop, int movie) {
+//        int price = movies.get(shop + "+" + movie);
+//        rent.remove(new Entry(shop, movie, price));
+//        map.get(movie).add(new Entry(shop, movie, price));
+//    }
+//
+//    // time = O(n), space = O(n)
+//    public List<List<Integer>> report() {
+//        List<List<Integer>> res = new ArrayList<>();
+//        int k = 5;
+//        for (Entry entry : rent) {
+//            if (k > 0) {
+//                res.add(Arrays.asList(entry.shop, entry.id));
+//                k--;
+//            }
+//        }
+//        return res;
+//    }
+//
+//    private class Entry {
+//        private int shop, id, price;
+//        public Entry(int shop, int id, int price) {
+//            this.shop = shop;
+//            this.id = id;
+//            this.price = price;
+//        }
+//    }
 
-        for (int[] e : entries) {
-            int shop = e[0], id = e[1], price = e[2];
-            Entry entry = new Entry(shop, id, price);
-            map.putIfAbsent(id, new TreeSet<>((o1, o2) -> o1.price != o2.price ? o1.price - o2.price : o1.shop - o2.shop));
-            map.get(id).add(entry);
-            movies.put(shop + "+" + id, price);
+    // S2:
+    HashMap<Integer, TreeSet<int[]>> left; // movie -> {price, shop}
+    TreeSet<int[]> rented; // {price, shop, movie}
+    HashMap<String, Integer> prices; // shop+movie -> price
+    public LC1912_DesignMovieRentalSystem(int n, int[][] entries) {
+        left = new HashMap<>();
+        rented = new TreeSet<>((o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : (o1[1] != o2[1] ? o1[1] - o2[1] : o1[2] - o2[2]));
+        prices = new HashMap<>();
+
+        for (int[] x : entries) {
+            int shop = x[0], movie = x[1], price = x[2];
+            left.putIfAbsent(movie, new TreeSet<>((o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o1[1] - o2[1]));
+            left.get(movie).add(new int[]{price, shop});
+            prices.put(shop + "#" + movie, price);
         }
     }
 
-    // time = O(n), space = O(n)
     public List<Integer> search(int movie) {
         List<Integer> res = new ArrayList<>();
-        if (!map.containsKey(movie)) return res;
-        TreeSet<Entry> set = map.get(movie);
-        List<Entry> temp = new ArrayList<>();
-        int k = 5;
-        for (Entry entry : set) {
-            if (k > 0) {
-                res.add(entry.shop);
-                k--;
-            } else break;
+        if (!left.containsKey(movie)) return res;
+        TreeSet<int[]> set = left.get(movie);
+        List<int[]> temp = new ArrayList<>();
+        int k = Math.min(set.size(), 5);
+        while (k-- > 0) {
+            res.add(set.first()[1]);
+            temp.add(set.first());
+            set.remove(set.first());
         }
+        for (int[] x : temp) set.add(x);
+        left.put(movie, set);
         return res;
     }
 
-    // time = O(logn), space = O(n)
     public void rent(int shop, int movie) {
-        int price = movies.get(shop + "+" + movie);
-        rent.add(new Entry(shop, movie, price));
-        map.get(movie).remove(new Entry(shop, movie, price));
+        int price = prices.get(shop + "#" + movie);
+        rented.add(new int[]{price, shop, movie});
+        TreeSet<int[]> set = left.get(movie);
+        set.remove(new int[]{price, shop});
+        left.put(movie, set);
     }
 
-    // time = O(logn), space = O(n)
     public void drop(int shop, int movie) {
-        int price = movies.get(shop + "+" + movie);
-        rent.remove(new Entry(shop, movie, price));
-        map.get(movie).add(new Entry(shop, movie, price));
+        int price = prices.get(shop + "#" + movie);
+        rented.remove(new int[]{price, shop, movie});
+        left.putIfAbsent(movie, new TreeSet<>((o1, o2) -> o1[0] - o2[0]));
+        left.get(movie).add(new int[]{price, shop});
     }
 
-    // time = O(n), space = O(n)
     public List<List<Integer>> report() {
         List<List<Integer>> res = new ArrayList<>();
-        int k = 5;
-        for (Entry entry : rent) {
-            if (k > 0) {
-                res.add(Arrays.asList(entry.shop, entry.id));
-                k--;
-            }
+        List<int[]> temp = new ArrayList<>();
+        int k = Math.min(rented.size(), 5);
+        while (k-- > 0) {
+            int[] x = rented.first();
+            temp.add(x);
+            res.add(Arrays.asList(x[1], x[2]));
+            rented.remove(x);
         }
+        for (int[] x : temp) rented.add(x);
         return res;
-    }
-
-    private class Entry {
-        private int shop, id, price;
-        public Entry(int shop, int id, int price) {
-            this.shop = shop;
-            this.id = id;
-            this.price = price;
-        }
     }
 }
