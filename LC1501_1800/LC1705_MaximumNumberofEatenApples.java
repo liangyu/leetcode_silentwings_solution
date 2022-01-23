@@ -28,21 +28,20 @@ public class LC1705_MaximumNumberofEatenApples {
      */
     // time = O(nlogn), space = O(n)
     public int eatenApples(int[] apples, int[] days) {
-        PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] - o2[0]);
-        int n = apples.length, res = 0, i = 0;
+        PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] - o2[0]); // {date, num}
+
+        int n = apples.length, count = 0, i = 0;
         while (i < n || !pq.isEmpty()) {
-            while (!pq.isEmpty() && pq.peek()[0] == i) pq.poll();
-            if (i < n && apples[i] > 0) {
-                pq.offer(new int[]{i + days[i], apples[i]});
-            }
+            while (!pq.isEmpty() && pq.peek()[0] <= i) pq.poll();
+            if (i < n && apples[i] > 0) pq.offer(new int[]{i + days[i], apples[i]});
             if (!pq.isEmpty()) {
-                res++;
+                count++;
                 pq.peek()[1]--;
                 if (pq.peek()[1] == 0) pq.poll();
             }
             i++;
         }
-        return res;
+        return count;
     }
 }
 /**

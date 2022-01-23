@@ -45,14 +45,18 @@ public class LC312_BurstBalloons {
  * 经典区间型dp
  * x x x j x x x i
  * dp[i] => dp[j]  j < i
- * 无法从一个较小index的dp推断出一个较大index的dp
+ * 区间型dp无法从一个较小index的dp推断出一个较大index的dp
  * 一个区间一个区间的射
  * i x x x x x [k] x x x x x j
- * 最后一个射爆的是哪个气球
- * 假设k是最后一个射爆的
+ * "最后一个"射爆的是哪个气球
+ * dp[i][j]:maximum coins you can collect by bursting the balloons[i:j]
+ * 假设k是最后一个射爆的，两端都已经被射爆了
  * [i:k-1] k [k+1:j]
- * dp[i][k-1] + dp[k+1][j] + nums[k] * nums[i-1] * nums[j+1]
- * 我怎么知道nums[i-1]和nums[j+1]一定存在呢？
- * 考虑dp[i][j]的时候，k是最后留存的，你必须先解决小的dp
+ * dp[i][k-1] + dp[k+1][j] + nums[k] * nums[i-1] * nums[j+1]  当前残存的左边的和右边的气球
+ * Q: 我怎么知道nums[i-1]和nums[j+1]一定存在呢？
+ * 这是因为我们考察dp的顺序，这是一个递归的过程
+ * 考虑dp[i][j]的时候，k是最后留存的，你必须先解决小的dp，dp[i][j]之外的还没有被消掉
+ * 如果换做考虑整个区间里要爆的第一个气球是什么，就比较难了
+ * 小区间左右两边之外的值总是存在的，就比较方便了，可以放心使用
  * dp[i][j] i > j => 默认值 = 0没问题
  */

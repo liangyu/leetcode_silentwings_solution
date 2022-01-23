@@ -2,77 +2,58 @@ package LC601_900;
 import java.util.*;
 public class LC828_CountUniqueCharactersofAllSubstringsofaGivenString {
     /**
-     * Let's define a function countUniqueChars(s) that returns the number of unique characters on s, for example if
-     * s = "LEETCODE" then "L", "T","C","O","D" are the unique characters since they appear only once in s,
-     * therefore countUniqueChars(s) = 5.
+     * Let's define a function countUniqueChars(s) that returns the number of unique characters on s.
      *
-     * On this problem given a string s we need to return the sum of countUniqueChars(t) where t is a substring of s.
-     * Notice that some substrings can be repeated so on this case you have to count the repeated ones too.
+     * For example if s = "LEETCODE" then "L", "T", "C", "O", "D" are the unique characters since they appear only once
+     * in s, therefore countUniqueChars(s) = 5.
      *
-     * Since the answer can be very large, return the answer modulo 10 ^ 9 + 7.
+     * Given a string s, return the sum of countUniqueChars(t) where t is a substring of s.
+     *
+     * Notice that some substrings can be repeated so in this case you have to count the repeated ones too.
      *
      * Input: s = "ABC"
      * Output: 10
-     * Explanation: All possible substrings are: "A","B","C","AB","BC" and "ABC".
-     * Evey substring is composed with only unique letters.
-     * Sum of lengths of all substring is 1 + 1 + 1 + 2 + 2 + 3 = 10
      *
      * Constraints:
      *
-     * 0 <= s.length <= 10^4
-     * s contain upper-case English letters only.
+     * 1 <= s.length <= 10^5
+     * s consists of uppercase English letters only.
      *
      * @param s
      * @return
      */
-    // S1：两边扩散法
-    // time = O(n^2), space = O(1)
-    public int uniqueLetterString(String s) {
-        // corner case
-        if (s == null || s.length() == 0) return 0;
-
-        long res = 0;
-
-        for (int i = 0; i < s.length(); i++) {
-            int j = i - 1, k = i + 1;
-            while (j >= 0) {
-                if (s.charAt(j) == s.charAt(i)) break;
-                j--;
-            }
-            while (k < s.length()) {
-                if (s.charAt(k) == s.charAt(i)) break;
-                k++;
-            }
-            res += (i - (j + 1) + 1) * ((k - 1) - i + 1);
-        }
-        return (int)(res % 1000000007);
-    }
-
-    // S2: int[]  最优解！！！
     // time = O(n), space = O(1)
-    public int uniqueLetterString2(String s) {
-        // corner case
-        if (s == null || s.length() == 0) return 0;
+    public int uniqueLetterString(String s) {
+        int n = s.length(), count = 0, res = 0;
+        int[] lastCount = new int[26];
+        int[] lastSeen = new int[26];
+        Arrays.fill(lastSeen, -1); // 注意，一开始要初始化为-1， 这样从0开始的substring的长度才是正确的!
 
-        int[] lastIndex = new int[26];
-        int[] secondLastIndex = new int[26];
-        Arrays.fill(lastIndex, -1); // O(1)
-        Arrays.fill(secondLastIndex, -1); // O(1)
-
-        int len = s.length();
-        long res = 0;
-
-        for (int i = 0; i < len; i++) { // O(n)
+        for (int i = 0; i < n; i++) {
             int idx = s.charAt(i) - 'A';
-            res += (i - secondLastIndex[idx]) * (secondLastIndex[idx] - lastIndex[idx]);
-            lastIndex[idx] = secondLastIndex[idx];
-            secondLastIndex[idx] = i;
+            int currentCount = i - lastSeen[idx];
+            count = count + currentCount - lastCount[idx];
+            lastCount[idx] = currentCount;
+            lastSeen[idx] = i;
+            res += count;
         }
-
-        // post-processing the final case
-        for (int i = 0; i < 26; i++) { // O(1)
-            res += (len - 1 - secondLastIndex[i] + 1) * (secondLastIndex[i] - lastIndex[i]);
-        }
-        return (int)(res % 1000000007);
+        return res;
     }
 }
+/**
+ * "ABCBD"
+ * cur[i]: the sum of Uniq() for all substrings whose last char is S.charAt(i).
+ * The final result is the sum of all cur[i].
+ * cur[1] = 3
+ *   B
+ * A B
+ * cur[2] = 3 + 3
+ *     | C
+ *   B | C
+ * A B | C
+ * cur[3] = -2 + 6 + 2 = 6 => count - lastCount[idx] + currentCount = 6 - 2 + 2 = 6
+ *           B
+ *     | C | B
+ *   B | C | B
+ * A B | C | B
+ */

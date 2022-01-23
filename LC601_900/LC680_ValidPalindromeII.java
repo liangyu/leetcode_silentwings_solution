@@ -15,27 +15,22 @@ public class LC680_ValidPalindromeII {
      */
     // time = O(n), space = O(1)
     public boolean validPalindrome(String s) {
-        // corner case
-        if (s == null || s.length() == 0) return true;
-
         int i = 0, j = s.length() - 1;
-        while (i < j) { // O(n)
-            char c1 = s.charAt(i), c2 = s.charAt(j);
-            if (c1 == c2) {
+        boolean flag = false;
+        while (i < j) {
+            if (s.charAt(i) == s.charAt(j)) {
                 i++;
                 j--;
-            } else {
-                return isPalin(s, i + 1, j) || isPalin(s, i, j - 1); // 分两叉分别讨论
-            }
+            } else return isPalin(s, i + 1, j) || isPalin(s, i, j - 1);
         }
         return true;
     }
 
-    private boolean isPalin(String s, int i, int j) { // O(n)
+    private boolean isPalin(String s, int i, int j) {
         while (i < j) {
-            if (s.charAt(i++) != s.charAt(j--)) { // 双指针相向而行
-                return false;
-            }
+            if (s.charAt(i) != s.charAt(j)) return false;
+            i++;
+            j--;
         }
         return true;
     }

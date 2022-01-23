@@ -30,29 +30,27 @@ public class LC1834_SingleThreadedCPU {
     public int[] getOrder(int[][] tasks) {
         int n = tasks.length;
         int[][] jobs = new int[n][3];
-        for (int i = 0; i < tasks.length; i++) {
+        for (int i = 0; i < n; i++) {
             jobs[i][0] = tasks[i][0];
             jobs[i][1] = tasks[i][1];
             jobs[i][2] = i;
         }
 
-        Arrays.sort(jobs, (o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : ((o1[1] != o2[1]) ? o1[1] - o2[1] : o1[2] - o2[2]));
-        PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o1[1] - o2[1]); // {processing time, idx}
+        Arrays.sort(jobs, (o1, o2) -> o1[0] - o2[0]);
+        PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o1[1] - o2[1]); // {processing time, id}
 
         int curTime = 0, idx = 0;
         int[] res = new int[n];
-        for (int[] job : jobs) {
-            while (!pq.isEmpty() && curTime < job[0]) {
+        for (int[] task : jobs) {
+            while (!pq.isEmpty() && curTime < task[0]) {
                 res[idx++] = pq.peek()[1];
                 curTime += pq.poll()[0];
             }
-            curTime = Math.max(curTime, job[0]); // 可能出while loop时，curTime < job[0]，否则不会有新任务加入
-            pq.offer(new int[]{job[1], job[2]});
+            curTime = Math.max(curTime, task[0]);
+            pq.offer(new int[]{task[1], task[2]});
         }
-        // all jobs are in the queue, but can't guarantee all of the jobs were completed
-        while (!pq.isEmpty()) {
-            res[idx++] = pq.poll()[1];
-        }
+
+        while (!pq.isEmpty()) res[idx++] = pq.poll()[1];
         return res;
     }
 }

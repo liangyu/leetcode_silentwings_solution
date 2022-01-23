@@ -60,11 +60,6 @@ public class LC938_RangeSumofBST {
         return res;
     }
 
-    private class TreeNode {
-        private int val;
-        private TreeNode left, right;
-    }
-
     /**
      * Definition for a binary tree node.
      * public class TreeNode {

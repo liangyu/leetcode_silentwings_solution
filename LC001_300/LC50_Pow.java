@@ -40,9 +40,10 @@ public class LC50_Pow {
         }
 
         double res = 1, cur = x;
-        for (long i = k; i > 0; i /= 2) {
-            if (i % 2 == 1) res *= cur;
-            cur *= cur;
+        // 在对 i 进行二进制拆分的同时计算答案
+        for (long i = k; i > 0; i /= 2) { // 舍弃 i 二进制表示的最低位，这样我们每次只要判断最低位即可
+            if (i % 2 == 1) res *= cur; // 如果 i 二进制表示的最低位为 1，那么需要计入贡献
+            cur *= cur; // 将贡献不断地平方
         }
         return res;
     }

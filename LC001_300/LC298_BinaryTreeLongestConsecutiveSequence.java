@@ -36,4 +36,27 @@ public class LC298_BinaryTreeLongestConsecutiveSequence {
         helper(root.left, max, root.val + 1);
         helper(root.right, max, root.val + 1);
     }
+
+    // S2: dfs
+    int ans = 0;
+    public int longestConsecutive2(TreeNode root) {
+        dfs(root);
+        return ans;
+    }
+
+    private int dfs(TreeNode node) {
+        if (node == null) return 0;
+
+        int max = 1;
+        if (node.left != null) {
+            int t = dfs(node.left);
+            if (node.val + 1 == node.left.val) max = Math.max(max, t + 1);
+        }
+        if (node.right != null) {
+            int t = dfs(node.right);
+            if (node.val + 1 == node.right.val) max = Math.max(max, t + 1);
+        }
+        ans = Math.max(ans, max);
+        return max;
+    }
 }

@@ -19,13 +19,15 @@ public class LC144_BinaryTreePreorderTraversal {
         if (root == null) return res;
 
         Stack<TreeNode> stack = new Stack<>();
-        stack.push(root);
-
-        while (!stack.isEmpty()) {
-            TreeNode cur = stack.pop();
-            res.add(cur.val);
-            if (cur.right != null) stack.push(cur.right);
-            if (cur.left != null) stack.push(cur.left);
+        TreeNode cur = root;
+        while (cur != null || !stack.isEmpty()) {
+            if (cur == null) {
+                cur = stack.pop().right;
+            } else {
+                res.add(cur.val);
+                stack.push(cur);
+                cur = cur.left;
+            }
         }
         return res;
     }
@@ -48,9 +50,18 @@ public class LC144_BinaryTreePreorderTraversal {
         preOrder(root.left, res);
         preOrder(root.right, res);
     }
-
-    class TreeNode {
-        int val;
-        TreeNode left, right;
-    }
 }
+/**
+ * 栈的3种用法：
+ * 1. 表达式，左右括号匹配
+ * 2. 单调栈，O(n) next greater element
+ * 3. 遍历一棵树
+ * 对于树的问题，理论上都是用递归来做
+ * 先序：先遍历根，再遍历左子树和右子树
+ * 必须保留根，因为访问完左子树后还要去访问右子树
+ * node要存起来，目的是读完左子树后读右子树
+ * res: 1,2,3,null,4,null,null,null,5,null,null
+ * stack:
+ * 1. 先序遍历的时候，我们读什么，栈里就放什么
+ * 2. 每次读到null，穷途末路了，我们直接看栈顶元素，找它的右子树
+ */

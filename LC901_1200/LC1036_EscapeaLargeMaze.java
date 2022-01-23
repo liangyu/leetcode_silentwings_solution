@@ -31,7 +31,7 @@ public class LC1036_EscapeaLargeMaze {
      * @return
      */
     // time = O(b^2), space = O(b^2)  b = b * (b - 1) / 2
-    private static final int[][] DIRECTIONS = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    private int[][] directions = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
     public boolean isEscapePossible(int[][] blocked, int[] source, int[] target) {
         HashSet<String> blocks = new HashSet<>();
         for (int[] b : blocked) blocks.add(b[0] + "#" + b[1]);
@@ -39,29 +39,29 @@ public class LC1036_EscapeaLargeMaze {
         return true;
     }
 
-    private boolean enclose(int[] start, int[] end, HashSet<String> blocks) {
-        HashSet<String> visited = new HashSet<>();
+    private boolean enclose(int[] source, int[] target, HashSet<String> set) {
         Queue<int[]> queue = new LinkedList<>();
-        queue.offer(start);
-        visited.add(start[0] + "#" + start[1]);
+        queue.offer(new int[]{source[0], source[1]});
+        HashSet<String> visited = new HashSet<>();
+        visited.add(source[0] + "#" + source[1]);
 
-        while (!queue.isEmpty() && visited.size() <= 19900) {
+        int n = set.size();
+        while (!queue.isEmpty() && visited.size() <= n * (n - 1) / 2 ) {
             int[] cur = queue.poll();
-            int i = cur[0], j = cur[1];
-            if (i == end[0] && j == end[1]) return false;
+            int x = cur[0], y = cur[1];
+            if (x == target[0] && y == target[1]) return false;
 
-            for (int[] dir : DIRECTIONS) {
-                int ii = i + dir[0];
-                int jj = j + dir[1];
-                if (ii < 0 || ii >= (int) 1e6 || jj < 0 || jj >= (int) 1e6) continue;
-                if (blocks.contains(ii + "#" + jj)) continue;
-                if (visited.contains(ii + "#" + jj)) continue;
-                queue.offer(new int[]{ii, jj});
-                visited.add(ii + "#" + jj);
+            for (int[] dir : directions) {
+                int i = x + dir[0];
+                int j = y + dir[1];
+                if (i < 0 || i >= (int) 1e6 || j < 0 || j >= (int) 1e6) continue;
+                if (set.contains(i + "#" + j)) continue;
+                if (visited.contains(i + "#" + j)) continue;
+                queue.offer(new int[]{i, j});
+                visited.add(i + "#" + j);
             }
         }
-        if (queue.isEmpty()) return true;
-        return false;
+        return queue.isEmpty() ? true : false;
     }
 }
 /**
@@ -86,7 +86,7 @@ public class LC1036_EscapeaLargeMaze {
  * 因为根本没有周长是200的图形可以封闭住这么的面积，所以blocked对于这个起点而言是无效的。也就是说，blocked并不能完全围住起点。
  * 所以这是一个BFS题，只要从一个点出发开始发散，当visited的网格数目（也就是覆盖的面积）大于2500的时候，就说明这个点并没有被封闭。
  * 我们需要注意，其实200的周长最大能封闭的面积可以是19900，而不是2500.
- * 原因是这200个点可以以45度倾斜地围住一个角。因此0+1+2+...+199 = 19900才是最大的封闭面积。
+ * 原因是这200个点可以以45度倾斜地围住一个角。因此0+1+2+...+199 = 19900才是最大的封闭面积。=> area = (0 + 199) * 200 / 2 = (n-1)*n/2
  * 只有发散的区域超过了这个面积，才能保证不被封闭。
  * 0th      _________________________
  *          |O O O O O O O X

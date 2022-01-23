@@ -133,4 +133,103 @@ public class LC850_RectangleAreaII {
         }
         return (int) res;
     }
+
+    // S3: 2d diff array
+    // time = O(n^2), space = O(n)
+    public int rectangleArea3(int[][] rectangles) {
+        TreeSet<Integer> pointX = new TreeSet<>();
+        TreeSet<Integer> pointY = new TreeSet<>();
+        for (int[] rect : rectangles) {
+            pointX.add(rect[0]);
+            pointX.add(rect[2]);
+            pointY.add(rect[1]);
+            pointY.add(rect[3]);
+        }
+
+        // export to an array
+        List<Integer> row = new ArrayList<>(pointX);
+        List<Integer> col = new ArrayList<>(pointY);
+
+        HashMap<Integer, Integer> x2idx = new HashMap<>();
+        HashMap<Integer, Integer> y2idx = new HashMap<>();
+
+        for (int i = 0; i < row.size(); i++) x2idx.put(row.get(i), i);
+        for (int i = 0; i < col.size(); i++) y2idx.put(col.get(i), i);
+
+        int m = row.size(), n = col.size();
+        Diff2d grid = new Diff2d(m, n);
+        for (int[] rect : rectangles) {
+            int i = x2idx.get(rect[0]);
+            int j = y2idx.get(rect[1]);
+            int x = x2idx.get(rect[2]) - 1;
+            int y = y2idx.get(rect[3]) - 1;
+            grid.set(i, j, x, y, 1);
+        }
+        grid.compute();
+
+        long res = 0;
+        long M = (long)(1e9 + 7);
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid.f[i][j] > 0) {
+                    int dx = row.get(i + 1) - row.get(i);
+                    int dy = col.get(j + 1) - col.get(j);
+                    res = (res + (long)dx * dy % M) % M;
+                }
+            }
+        }
+        return (int) res;
+
+    }
+
+    private class Diff2d {
+        int[][] f, diff;
+        int m, n;
+        public Diff2d(int m, int n) {
+            this.m = m;
+            this.n = n;
+            f = new int[m + 1][n + 1];
+            diff = new int[m + 1][n + 1];
+        }
+
+        private void set(int x0, int y0, int x1, int y1, int val) {
+            diff[x0][y0] += val;
+            diff[x0][y1 + 1] -= val;
+            diff[x1 + 1][y0] -= val;
+            diff[x1 + 1][y1 + 1] += val;
+        }
+
+        private void compute() {
+            f[0][0] = diff[0][0];
+            for (int i = 0; i < m; i++) {
+                for (int j = 0; j < n; j++) {
+                    int a = i == 0 ? 0 : f[i - 1][j];
+                    int b = j == 0 ? 0 : f[i][j - 1];
+                    int c = (i == 0 || j == 0) ? 0 : f[i - 1][j - 1];
+                    f[i][j] = a + b - c + diff[i][j];
+                }
+            }
+        }
+    }
 }
+/**
+ * 2d diff array
+ * 1d diff array: sweep line
+ * nums: [1,5][2,7][3,4]
+ * diff: diff[1]+=1, diff[6]-=1  => 阶跃函数
+ *       diff[2]+=1, diff[8]-=1
+ *       diff[3]+=1, diff[5]-=1
+ * reconstruct: 0 1 2 3 4 5  6 7  8 9
+ *                1 1 1 0 -1-1 0 -1 0
+ *        nums: 0 1 2 3 3 2  1 1  0 0
+ * 1,2,3,4,5
+ *   2,3,4,5,6
+ *     3,4,5,6,7
+ * diff[i][j]: 以(i,j)为左上角的矩形整体抬升多少
+ * diff[x0][y0]+=1
+ * diff[[x0][y1+1]-=1
+ * diff[x1+1][y0]-=1
+ * diff[x1+1][y1+1]+=1
+ * f[i][j] = f[i-1][j]+f[i][j-1]-f[i-1][j-1]+diff[i][j]
+ * 这里需要离散化
+ */

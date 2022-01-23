@@ -31,18 +31,17 @@ public class LC2003_SmallestMissingGeneticValueinEachSubtree {
      */
     // S1
     // time = O(n), space = O(n)
+    List<Integer>[] children;
+    HashSet<Integer> set;
+    int q = 1;
     public int[] smallestMissingValueSubtree(int[] parents, int[] nums) {
         int n = parents.length;
-        HashMap<Integer, List<Integer>> map = new HashMap<>();
-        HashSet<Integer> set = new HashSet<>();
-        int q = 1;
-
+        children = new List[n];
+        for (int i = 0; i < n; i++) children[i] = new ArrayList<>();
+        set = new HashSet<>();
         int node1 = -1;
-        for (int i = 0; i < n; i++) { // O(n)
-            if (parents[i] != -1) {
-                map.putIfAbsent(parents[i], new ArrayList<>());
-                map.get(parents[i]).add(i);
-            }
+        for (int i = 0; i < n; i++) {
+            if (parents[i] != -1) children[parents[i]].add(i);
             if (nums[i] == 1) node1 = i;
         }
         if (node1 == -1) { // 整棵树都没有1
@@ -52,24 +51,28 @@ public class LC2003_SmallestMissingGeneticValueinEachSubtree {
         }
 
         int[] res = new int[n];
-        if (map.containsKey(node1)) {
-            for (int child : map.get(node1)) dfs1(map, child, res);
+        // case 1: node值为1的所有子树的结果都是1
+        for (int child : children[node1]) {
+            dfs1(child, res);
         }
 
+        // case 2: 从node开始不停向上的父亲节点的其他分支肯定没有1，所以其smallest missing一定也为1
         int node = node1;
-        while (node != 0) {
+        while (node != 0) { // 注意: 这里最多只能走到node.parent = 0，而node本身不需要走到0！
             int p = parents[node];
-            if (map.containsKey(p)) {
-                for (int child : map.get(p)) {
-                    if (child != node) dfs1(map, child, res);
+            for (int child : children[p]) {
+                if (child != node) {
+                    dfs1(child, res);
                 }
             }
             node = p; // node往上走一级
         }
 
+        // case 3: 走剩下唯一从root到node1的单链,把所有子树的node值全部放入set里，然后从小到大遍历找第一个不在set里的值
         node = node1;
-        while (node != -1) {
-            dfs2(map, set, nums, node);
+        while (node != -1) { // 可以走到0
+            dfs2(node, nums); // find all of the children nodes of node
+            // find smallest missing num in the set
             while (set.contains(q)) q++;
             res[node] = q;
             node = parents[node]; // 再往上走
@@ -77,72 +80,75 @@ public class LC2003_SmallestMissingGeneticValueinEachSubtree {
         return res;
     }
 
-    private void dfs1(HashMap<Integer, List<Integer>> map, int node, int[] res) { // mark the node's result as 1
+    private void dfs1(int node, int[] res) { // mark the node's result as 1
         res[node] = 1;
-        if (map.containsKey(node)) {
-            for (int child : map.get(node)) dfs1(map, child, res);
+        for (int child : children[node]) {
+            dfs1(child, res);
         }
     }
 
-    // collect the node's subtree elements into set
-    private void dfs2(HashMap<Integer, List<Integer>> map, HashSet<Integer> set, int[] nums, int node) {
-        if (set.contains((nums[node]))) return;
+    private void dfs2(int node, int[] nums) { // collect the node's subtree elements into set
+        if (set.contains(nums[node])) return;
         set.add(nums[node]);
-        if (map.containsKey(node)) {
-            for (int child : map.get(node)) {
-                dfs2(map, set, nums, child);
-            }
+        for (int child : children[node]) {
+            dfs2(child, nums);
         }
     }
 
     // S2
     // time = O(n), space = O(n)
+    // List<Integer>[] children;
+    List<HashSet<Integer>> setList;
+    int[] setIdx, nums, res;
     public int[] smallestMissingValueSubtree2(int[] parents, int[] nums) {
         int n = parents.length;
-        HashMap<Integer, List<Integer>> map = new HashMap<>();
-        List<HashSet<Integer>> setList = new ArrayList<>();
-        int[] setIdx = new int[100001];
-        int[] res = new int[n];
+        children = new List[n];
+        setIdx = new int[n];
+        setList = new ArrayList<>();
+        this.nums = nums;
+        res = new int[n];
 
+        for (int i = 0; i < n; i++) children[i] = new ArrayList<>();
         for (int i = 1; i < n; i++) {
-            map.putIfAbsent(parents[i], new ArrayList<>());
-            map.get(parents[i]).add(i);
+            children[parents[i]].add(i);
         }
-        dfs(nums, map, setList, setIdx,0, res);
+
+        dfs(0);
         return res;
     }
 
-    private void dfs(int[] nums, HashMap<Integer, List<Integer>> map, List<HashSet<Integer>> setList, int[] setIdx, int node, int[] res) {
+    private void dfs(int node) {
         // base case
-        if (!map.containsKey(node)) { // leaf node
+        if (children[node].size() == 0) {
             setIdx[node] = setList.size();
             setList.add(new HashSet<>(Arrays.asList(nums[node])));
             res[node] = nums[node] == 1 ? 2 : 1;
         } else {
-
-            for (int child : map.get(node)) {
-                dfs(nums, map, setList, setIdx, child, res);
+            for (int child : children[node]) {
+                dfs(child);
             }
 
-            int maxSetSize = 0, maxSetIdx = -1;
-            for (int child : map.get(node)) {
+            // find biggest set among node's children
+            int maxSetSize = 0;
+            int maxSetIdx = -1;
+            for (int child : children[node]) {
                 if (setList.get(setIdx[child]).size() > maxSetSize) {
                     maxSetSize = setList.get(setIdx[child]).size();
                     maxSetIdx = setIdx[child];
                 }
             }
 
+            // merge all sets into the max set of node's children, and assign it to node
             setIdx[node] = maxSetIdx;
-            for (int child : map.get(node)) {
+            for (int child : children[node]) {
                 if (setIdx[child] == maxSetIdx) continue;
-                for (int x : setList.get(setIdx[child])) {
-                    setList.get(maxSetIdx).add(x);
-                }
+                setList.get(maxSetIdx).addAll(setList.get(setIdx[child]));
             }
             setList.get(maxSetIdx).add(nums[node]);
 
+            // find smallest missing value
             int maxMissing = 0;
-            for (int child : map.get(node)) {
+            for (int child : children[node]) {
                 maxMissing = Math.max(maxMissing, res[child]);
             }
             int x = maxMissing;

@@ -30,33 +30,23 @@ public class LC1168_OptimizeWaterDistributioninaVillage {
      * @return
      */
     // time = O((m + n)log(m + n)), space = O(m + n)
-    private int[] parent;
+    int[] parent;
     public int minCostToSupplyWater(int n, int[] wells, int[][] pipes) {
         parent = new int[n + 1];
+        for (int i = 0; i <= n; i++) parent[i] = i;
 
-        int m = pipes.length;
-        int[][] p = new int[m + n][3];
-        for (int i = 0; i < m; i++) {
-            p[i] = new int[]{pipes[i][0], pipes[i][1], pipes[i][2]};
-        }
+        List<int[]> edges = new ArrayList<>();
+        for (int i = 0; i < wells.length; i++) edges.add(new int[]{i + 1, 0, wells[i]}); // add a dummy 0 node to connect!
+        for (int[] x : pipes) edges.add(x);
 
-        for (int i = 0; i < n; i++) {
-            p[m + i] = new int[]{i + 1, 0, wells[i]};
-        }
-
-        Arrays.sort(p, (o1, o2) -> o1[2] - o2[2]); // don't forget to sort the arrays!!!
-
-        for (int i = 0; i <= n; i++) {
-            parent[i] = i;
-        }
+        Collections.sort(edges, (o1, o2) -> o1[2] - o2[2]); // don't forget to sort the arrays!!!
 
         int res = 0;
-        for (int[] edge : p) {
-            int a = edge[0];
-            int b = edge[1];
+        for (int[] x : edges) {
+            int a = x[0], b = x[1], cost = x[2];
             if (findParent(a) != findParent(b)) {
                 union(a, b);
-                res += edge[2];
+                res += cost;
             }
         }
         return res;

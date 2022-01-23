@@ -35,14 +35,14 @@ public class LC408_ValidWordAbbreviation {
             if (word.charAt(i) == abbr.charAt(j)) {
                 i++;
                 j++;
-                continue;
+            } else {
+                if (Character.isLetter(abbr.charAt(j))) return false;
+                if (abbr.charAt(j) == '0') return false;
+                int start = j;
+                while (j < n && Character.isDigit(abbr.charAt(j))) j++;
+                int num = Integer.parseInt(abbr.substring(start, j));
+                i += num;
             }
-            if (abbr.charAt(j) <= '0' || abbr.charAt(j) > '9') return false;
-
-            int start = j;
-            while (j < n && Character.isDigit(abbr.charAt(j))) j++;
-            int len = Integer.parseInt(abbr.substring(start, j));
-            i += len;
         }
         return i == m && j == n;
     }

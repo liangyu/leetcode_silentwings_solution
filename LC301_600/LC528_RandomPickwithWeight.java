@@ -25,30 +25,49 @@ public class LC528_RandomPickwithWeight {
      *
      * @param w
      */
+    // S1: BS
     // time = O(n), space = O(n)
-    private List<Integer> psum;
-    private int sum;
-    private Random rand;
+    List<Integer> list;
+    Random random;
+    int sum = 0;
     public LC528_RandomPickwithWeight(int[] w) {
-        psum = new ArrayList<>();
-        rand = new Random();
-        sum = 0;
-
-        for (int n : w) {
-            sum += n;
-            psum.add(sum);
+        list = new ArrayList<>();
+        random = new Random();
+        for (int x : w) {
+            sum += x;
+            list.add(sum);
         }
     }
+
     // time = O(logn), space = O(1)
     public int pickIndex() {
-        int r = rand.nextInt(sum);
-        int left = 0, right = psum.size() - 1;
-        while (left <= right) {
+        int r = random.nextInt(sum) + 1; // 注意：list里放的sum，值域是[1:sum] (1 <= w[i] <= 10^5),而不是从0开始，所以要+1！！！
+        int left = 0, right = list.size() - 1;
+        while (left < right) {
             int mid = left + (right - left) / 2;
-            if (psum.get(mid) <= r) left = mid + 1;
-            else right = mid - 1;
+            if (list.get(mid) < r) left = mid + 1;
+            else right = mid;
         }
         return left;
+    }
+
+    // S2: TreeMap
+    TreeMap<Integer, Integer> map;
+    Random rand;
+    int total = 0;
+    // time = O(nlogn), space = O(n)
+    public Solution(int[] w) {
+        map = new TreeMap<>();
+        rand = new Random();
+        for (int i = 0; i < w.length; i++) {
+            total += w[i];
+            map.put(total, i);
+        }
+    }
+    // time = O(logn), space = O(n)
+    public int pickIndex2() {
+        int r = rand.nextInt(total) + 1;
+        return map.get(map.ceilingKey(r));
     }
 }
 

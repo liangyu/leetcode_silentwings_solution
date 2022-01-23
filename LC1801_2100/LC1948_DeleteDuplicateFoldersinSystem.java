@@ -45,18 +45,20 @@ public class LC1948_DeleteDuplicateFoldersinSystem {
      * @return
      */
     // time = O(n^2 * k), space = O(n^2 * k)  k: the maximum length of folder name
-    TreeNode root;
+    HashMap<String, Integer> key2id;
     HashMap<String, Integer> key2count;
-    HashMap<String, Integer> key2Id;
     HashMap<TreeNode, String> node2key;
     List<List<String>> res;
     public List<List<String>> deleteDuplicateFolder(List<List<String>> paths) {
-        root = new TreeNode("/");
+        // init
+        key2id = new HashMap<>();
         key2count = new HashMap<>();
-        key2Id = new HashMap<>();
         node2key = new HashMap<>();
         res = new ArrayList<>();
 
+        TreeNode root = new TreeNode("/");
+
+        // step 1: build tree
         for (List<String> path : paths) {
             TreeNode node = root;
             for (String s : path) {
@@ -66,30 +68,31 @@ public class LC1948_DeleteDuplicateFoldersinSystem {
                 node = node.next.get(s);
             }
         }
+
+        // step 2: key -> id serialization
         getId(root);
-        List<String> path = new ArrayList<>();
-        dfs(root, path);
+
+        // step 3: dfs
+        dfs(root, new ArrayList<>());
         return res;
     }
 
     private int getId(TreeNode node) {
-        if (node == null) return 0;
+        if (node == null) return 0; // 这个条件可以忽略，因为不会在遍历孩子节点中出现null，因此下面id也可以直接从0开始而不需要+1！
 
         String key = "";
-        for (String x : node.next.keySet()) {
-            TreeNode child = node.next.get(x);
+        for (TreeNode child : node.next.values()) {
             key += getId(child) + "#" + child.val + "#";
         }
-
-        node2key.put(node, key);
         key2count.put(key, key2count.getOrDefault(key, 0) + 1);
         if (key2count.get(key) == 1) {
-            key2Id.put(key, key2Id.size() + 1);
+            key2id.put(key, key2id.size() + 1);
         }
-        return key2Id.get(key);
+        node2key.put(node, key);
+        return key2id.get(key);
     }
 
-    private void dfs(TreeNode node, List<String> path) {
+    private void dfs(TreeNode node, List<String> path) { // 没有孩子就不会继续往下递归，所以不需要写边界条件！
         String key = node2key.get(node);
         if (!key.equals("") && key2count.get(key) >= 2) return; // keep all leaf nodes
 
@@ -98,12 +101,11 @@ public class LC1948_DeleteDuplicateFoldersinSystem {
             res.add(new ArrayList<>(path));
         }
 
-        for (String x : node.next.keySet()) {
-            dfs(node.next.get(x), path);
+        for (TreeNode child : node.next.values()) {
+            dfs(child, path);
         }
-        if (!node.val.equals("/")) {
-            path.remove(path.size() - 1);
-        }
+
+        if (!node.val.equals("/")) path.remove(path.size() - 1);
     }
 
     private class TreeNode {
@@ -120,21 +122,23 @@ public class LC1948_DeleteDuplicateFoldersinSystem {
  * 遍历字典树，结点还是要被删除的
  * 除根节点以外的结点相同就是duplicated
  * key(root) -> O(n)
- * String key(node) = key(node.left) + "#" + key(node.right) + "#" + node.val
+ * String key(node) = key(node.left) + "#" + key(node.right) + "#" + node.val  =>
+ * 不考虑node本身，只考虑其children node
  * String key(node) = key(node.child1) + "#" + node.child1.val + "#" +
  *                    key(node.child2) + "#" + node.child2.val + "#" + ...
- * 靠顶端的key会非常长
+ * 但在递归定义中，不考虑根节点本身，所以一路下来根本就没有记录任何关于val的值！！！
+ * => 要把child.val的信息也拼上去！！！child node和val两个信息都给拼到一起去！
+ * 靠顶端的key会非常长，相当于爆炸了 => 怎么解决？ ref: LC652  key to id 一一映射
  * node2key
  * key2count
  * getId(root)
- *
- * int getId(node):
+ * int getId(node): 个数只取决于它的一级孩子，有效防止key的膨胀
  *      String key(node) = getId(node.child1) + "#" + node.child1.val + "#" +
  *                         getId(node.child2) + "#" + node.child2.val + "#" + ...
  *      key <-> id
  *      return id
- *
- * 要保留所有的叶子节点
+ * 注意：对于所有的叶子节点而言，它们都没有孩子，所以它们的key都是空字符串""，所以说这个算法会把所有叶子节点都认为duplicate而删掉！！！
+ * 所以为了要保留所有的叶子节点 => 叶子节点的key是空，所以要加一个判断!
  * 注意：本题中Trie节点的child的先后顺序不应该影响节点的key的构建。比如说x->(a,b)和y->(b,a)应该认为是duplicate subtree。
  * 所以我们对TrieNode的结构要定义为TreeMap<String, TreeNode> next
  * 使得我们总是按照一定顺序读取子节点，以保证判定duplicate subtree时不受子节点顺序的干扰。

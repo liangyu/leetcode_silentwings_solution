@@ -80,7 +80,7 @@ public class LC1942_TheNumberoftheSmallestUnoccupiedChair {
             time[i][1] = times[i][1];
             time[i][2] = i;
         }
-        Arrays.sort(time, (o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o1[1] - o2[1]); // {start, end, personId}
+        Arrays.sort(time, (o1, o2) -> o1[0] - o2[0]); // {start, end, personId}
 
         for (int[] t : time) {
             int start = t[0];

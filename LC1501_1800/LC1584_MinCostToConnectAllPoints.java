@@ -64,12 +64,41 @@ public class LC1584_MinCostToConnectAllPoints {
         else parent[x] = y;
     }
 
-    // S2: Prim
-    // time = O(n^2), space = O(n^2)
+    // S2: Kruskal 优化
+    // time = O(ElogE) = O(n^2 * logn), space = O(n^2)
     public int minCostConnectPoints2(int[][] points) {
         int n = points.length;
+        parent = new int[n];
+        for (int i = 0; i < n; i++) parent[i] = i;
+        PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] - o2[0]);
+
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int dis = Math.abs(points[i][0] - points[j][0]) + Math.abs(points[i][1] - points[j][1]);
+                pq.offer(new int[]{dis, i, j});
+            }
+        }
+
+        int count = 0, res = 0;
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int dis = cur[0], a = cur[1], b = cur[2];
+            if (findParent(a) != findParent(b)) {
+                union(a, b);
+                count++;
+                res += dis;
+            }
+            if (count == n - 1) break;
+        }
+        return res;
+    }
+
+    // S3: Prim (no need to use Union Find!)
+    // time = O(n^2), space = O(n^2)
+    public int minCostConnectPoints3(int[][] points) {
+        int n = points.length;
         // corner case
-        if (n == 1) return 0;
+        if (n == 1) return 0; // 注意单点的corner case!!!
 
         List<int[]>[] edges = new List[n];
         for (int i = 0; i < n; i++) edges[i] = new ArrayList<>();
@@ -81,13 +110,14 @@ public class LC1584_MinCostToConnectAllPoints {
             }
         }
 
+        // 从任意一点开始生长MST都可以
         boolean[] visited = new boolean[n];
-        visited[0] = true;
+        visited[0] = true; // start from 0
         PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] - o2[0]);
         for (int[] x : edges[0]) pq.offer(x);
 
         int count = 0, res = 0;
-        while (true) {
+        while (!pq.isEmpty()) {
             while (!pq.isEmpty() && visited[pq.peek()[1]]) pq.poll();
             int[] edge = pq.poll();
             int dis = edge[0];
@@ -108,13 +138,14 @@ public class LC1584_MinCostToConnectAllPoints {
  * MST:最基础版，给你很多条边，让你选权重最少的边把指定的n个点都连起来，连起来的图一定是棵树
  * 没有点割裂，都是连通图
  * 1. Kruskal: E(logE) => n^2*logn
- *      sort all edges by weight
+ *      sort all edges by weight, 朴素的贪心思想，优先用最短的那条边
  *      edge1, edge2, edge3 ... edgek
- *      1-2,2-3,1-3(x) 跳过那些已经被连通的2点，该跳就跳 => Union Find
+ *      1-2,2-3,1-3(x) 跳过那些已经被连通的2点，该跳就跳，不能跳就用 => Union Find
+ *      好多个连通区域，不断合并
  * 2. Prim: O(n^2)
  * 稠密图：Prim有优势
  * 0      pick min of {edges0}
  * [0,2]  pick min of {edges0, edges2}
  * [0,2,4] pick min of {edges0,edges2,edges4}
- * 从0开始作为种子，不断向外扩散，一个连通区域
+ * 从0开始作为种子，不断向外扩散，一个连通区域不断长大
  */

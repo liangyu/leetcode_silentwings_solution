@@ -16,6 +16,7 @@ public class LC99_RecoverBinarySearchTree {
      * -2^31 <= Node.val <= 2^31 - 1
      * @param root
      */
+    // S1
     // time = O(n), space = O(n)
     private TreeNode prev = null;
     public void recoverTree(TreeNode root) {
@@ -46,8 +47,40 @@ public class LC99_RecoverBinarySearchTree {
         mistakes[1].val = temp;
     }
 
-    private class TreeNode {
-        private int val;
-        private TreeNode left, right;
+    // S2: dfs
+    // time = O(n), space = O(n)
+    TreeNode lastSeen = new TreeNode(Integer.MIN_VALUE), first = null, second = null;
+    public void recoverTree2(TreeNode root) {
+        dfs(root);
+
+        int val = first.val;
+        first.val = second.val;
+        second.val = val;
+    }
+
+    private void dfs(TreeNode node) {
+        if (node == null) return;
+
+        dfs(node.left);
+
+        if (node.val < lastSeen.val) {
+            if (first == null) {
+                first = lastSeen;
+                second = node;
+            } else {
+                second = node;
+            }
+        }
+        lastSeen = node;
+
+        dfs(node.right);
     }
 }
+/**
+ * 中序遍历得到一个递增的序列
+ * 交换2个node -> 不和谐 -> 递增顺序没有了
+ * 扫一遍定位peak和valley
+ * 如果被交换的2个是相邻的 => 1处不和谐
+ * 把所有元素抽出来转化成数组
+ * 中序遍历，一边走一边看，看相邻2个是否是递增的
+ */

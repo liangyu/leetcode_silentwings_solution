@@ -29,15 +29,6 @@ public class LC235_LowestCommonAncestorofaBinarySearchTree {
         if (p.val > root.val && q.val > root.val) return lowestCommonAncestor(root.right, p, q);
         return root;
     }
-
-    // S2
-    // time = O(n), space = O(n)
-    public TreeNode lowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q) {
-        if ((root.val - p.val) * (root.val - q.val) <= 0) return root;
-        if (p.val > root.val && q.val > root.val) return lowestCommonAncestor2(root.right, p, q);
-        if (p.val < root.val && q.val < root.val) return lowestCommonAncestor2(root.left, p, q);
-        return null;
-    }
 }
 /**
  * 90%的功能都是要通过递归来实现的

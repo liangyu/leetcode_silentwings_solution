@@ -23,31 +23,38 @@ public class LC987_VerticalOrderTraversalofaBinaryTree {
      * @param root
      * @return
      */
-    // time = O(nlogn), space = O(n)
+    // time = O(n), space = O(n)
     public List<List<Integer>> verticalTraversal(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
         // corner case
         if (root == null) return res;
 
-        TreeMap<Integer, List<Integer>> map = new TreeMap<>();
-
         Queue<Pair> queue = new LinkedList<>();
         queue.offer(new Pair(root, 0));
+        HashMap<Integer, List<Integer>> map = new HashMap<>(); // 也可以直接用TreeMap来代替这里的min, max
+        int min = 0, max = 0;
 
         while (!queue.isEmpty()) {
             int size = queue.size();
             HashMap<Integer, List<Integer>> temp = new HashMap<>();
             while (size-- > 0) {
-                Pair cur = queue.poll();
-                TreeNode node = cur.node;
-                int idx = cur.idx;
-
+                Pair p = queue.poll();
+                TreeNode node = p.node;
+                int idx = p.idx;
+                min = Math.min(min, idx);
+                max = Math.max(max, idx);
                 temp.putIfAbsent(idx, new ArrayList<>());
                 temp.get(idx).add(node.val);
-
-                if (node.left != null) queue.offer(new Pair(node.left, idx - 1));
-                if (node.right != null) queue.offer(new Pair(node.right, idx + 1));
+                if (node.left != null) {
+                    queue.offer(new Pair(node.left, idx - 1));
+                    min = Math.min(min, idx - 1);
+                }
+                if (node.right != null) {
+                    queue.offer(new Pair(node.right, idx + 1));
+                    max = Math.max(max, idx + 1);
+                }
             }
+
             for (int key : temp.keySet()) {
                 List<Integer> list = temp.get(key);
                 Collections.sort(list);
@@ -56,9 +63,8 @@ public class LC987_VerticalOrderTraversalofaBinaryTree {
             }
         }
 
-        for (int key : map.keySet()) {
-            List<Integer> list = map.get(key);
-            res.add(list);
+        for (int i = min; i <= max; i++) {
+            res.add(map.get(i));
         }
         return res;
     }

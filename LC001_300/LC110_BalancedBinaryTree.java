@@ -33,39 +33,22 @@ public class LC110_BalancedBinaryTree {
         return Math.max(left, right) + 1;
     }
 
-    // S2: Use ResultType
+    // S2
     // time = O(n), space = O(n)
     public boolean isBalanced2(TreeNode root) {
-        return helper(root).isBalanced;
+        if (root == null) return true;
+
+        if (!isBalanced(root.left) || !isBalanced(root.right)) return false;
+        int left = getHeight(root.left);
+        int right = getHeight(root.right);
+        return Math.abs(left - right) <= 1;
     }
 
-    private ResultType helper(TreeNode root) {
-        // corner case
-        if (root == null) return new ResultType(true, 0);
+    private int getHeight(TreeNode node) {
+        if (node == null) return 0;
 
-        ResultType left = helper(root.left);
-        ResultType right = helper(root.right);
-
-        // subtree not balanced
-        if (!left.isBalanced || !right.isBalanced) return new ResultType(false, -1);
-
-        // root not balanced
-        if (Math.abs(left.maxDepth - right.maxDepth) > 1) return new ResultType(false, -1);
-
-        return new ResultType(true, Math.max(left.maxDepth, right.maxDepth) + 1);
-    }
-
-    private class ResultType {
-        private boolean isBalanced;
-        private int maxDepth;
-        public ResultType(boolean isBalanced, int maxDepth) {
-            this.isBalanced = isBalanced;
-            this.maxDepth = maxDepth;
-        }
-    }
-
-    class TreeNode {
-        int val;
-        TreeNode left, right;
+        int lh = getHeight(node.left);
+        int rh = getHeight(node.right);
+        return Math.max(lh, rh) + 1;
     }
 }

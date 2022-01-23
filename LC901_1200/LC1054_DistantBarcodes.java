@@ -17,9 +17,42 @@ public class LC1054_DistantBarcodes {
      * @param barcodes
      * @return
      */
-    // S1: PQ
-    // time = O(nlogn), space = O(n)
+    // S1: 跳着构造(最优解!)
+    // time = O(n), space = O(n)
     public int[] rearrangeBarcodes(int[] barcodes) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int max = 0, maxNum = 0, n = barcodes.length;
+        for (int x : barcodes) {
+            map.put(x, map.getOrDefault(x, 0) + 1);
+            if (max < map.get(x)) {
+                max = map.get(x);
+                maxNum = x;
+            }
+        }
+
+        int[] res = new int[n];
+        int idx = 0;
+        while (map.get(maxNum) > 0) {
+            res[idx] = maxNum;
+            idx += 2;
+            map.put(maxNum, map.get(maxNum) - 1);
+        }
+
+        for (int x : map.keySet()) {
+            if (map.get(x) == 0) continue;
+            while (map.get(x) > 0) {
+                if (idx >= n) idx = 1;
+                res[idx] = x;
+                idx += 2;
+                map.put(x, map.get(x) - 1);
+            }
+        }
+        return res;
+    }
+
+    // S2: 顺着构造
+    // time = O(nlogn), space = O(n)
+    public int[] rearrangeBarcodes2(int[] barcodes) {
         // corner case
         if (barcodes == null || barcodes.length == 0) return new int[0];
 
@@ -56,9 +89,9 @@ public class LC1054_DistantBarcodes {
         return ans;
     }
 
-    // S2
+    // S3: 跳着构造
     // time = O(nlogn), space = O(n)
-    public int[] rearrangeBarcodes2(int[] barcodes) {
+    public int[] rearrangeBarcodes3(int[] barcodes) {
         // corner case
         if (barcodes == null || barcodes.length == 0) return new int[0];
 
@@ -79,6 +112,8 @@ public class LC1054_DistantBarcodes {
         }
         return res;
     }
+
+
 }
 /**
  * ref: LC767 一模一样，LC358特例

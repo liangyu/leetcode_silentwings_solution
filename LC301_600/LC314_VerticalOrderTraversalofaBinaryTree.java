@@ -25,63 +25,37 @@ public class LC314_VerticalOrderTraversalofaBinaryTree {
         if (root == null) return res;
 
         HashMap<Integer, List<Integer>> map = new HashMap<>();
-        map.putIfAbsent(0, new ArrayList<>());
-        map.get(0).add(root.val);
+        Queue<Pair> queue = new LinkedList<>();
+        queue.offer(new Pair(root, 0));
+        int minIdx = 0, maxIdx = 0;
 
-        Queue<Cell> queue = new LinkedList<>();
-        queue.offer(new Cell(root, 0));
-
-        int minCol = 0, maxCol = 0;
         while (!queue.isEmpty()) {
-            Cell cur = queue.poll();
-            minCol = Math.min(minCol, cur.idx);
-            maxCol = Math.max(maxCol, cur.idx);
+            Pair cur = queue.poll();
+            TreeNode node = cur.node;
+            int idx = cur.idx;
+            map.putIfAbsent(idx, new ArrayList<>());
+            map.get(idx).add(node.val);
 
-            if (cur.node.left != null) {
-                map.putIfAbsent(cur.idx - 1, new ArrayList<>());
-                map.get(cur.idx - 1).add(cur.node.left.val);
-                queue.offer(new Cell(cur.node.left, cur.idx - 1));
+            if (node.left != null) {
+                queue.offer(new Pair(node.left, idx - 1));
+                minIdx = Math.min(minIdx, idx - 1);
             }
-            if (cur.node.right != null) {
-                map.putIfAbsent(cur.idx + 1, new ArrayList<>());
-                map.get(cur.idx + 1).add(cur.node.right.val);
-                queue.offer(new Cell(cur.node.right, cur.idx + 1));
+            if (node.right != null) {
+                queue.offer(new Pair(node.right, idx + 1));
+                maxIdx = Math.max(maxIdx, idx + 1);
             }
         }
 
-        for (int i = minCol; i <= maxCol; i++) {
-            res.add(map.get(i));
-        }
+        for (int i = minIdx; i <= maxIdx; i++) res.add(map.get(i));
         return res;
     }
 
-    private class Cell {
+    private class Pair {
         private TreeNode node;
         private int idx;
-        public Cell(TreeNode node, int idx) {
+        public Pair(TreeNode node, int idx) {
             this.node = node;
             this.idx = idx;
         }
     }
-
-    private class TreeNode {
-        private int val;
-        private TreeNode left, right;
-    }
-
-    /**
-     * Definition for a binary tree node.
-     * public class TreeNode {
-     *     int val;
-     *     TreeNode left;
-     *     TreeNode right;
-     *     TreeNode() {}
-     *     TreeNode(int val) { this.val = val; }
-     *     TreeNode(int val, TreeNode left, TreeNode right) {
-     *         this.val = val;
-     *         this.left = left;
-     *         this.right = right;
-     *     }
-     * }
-     */
 }

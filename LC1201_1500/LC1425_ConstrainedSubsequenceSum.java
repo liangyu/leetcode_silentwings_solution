@@ -20,8 +20,32 @@ public class LC1425_ConstrainedSubsequenceSum {
      * @param k
      * @return
      */
-    // time = O(n), space = O(n)
+    // S1: TreeSet
+    // time = O(nlogk), space = O(n + k)
     public int constrainedSubsetSum(int[] nums, int k) {
+        TreeSet<int[]> set = new TreeSet<>((o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o1[1] - o2[1]);
+        int n = nums.length;
+        int[] dp = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            if (set.size() > k && i - k - 1 >= 0) {
+                set.remove(new int[]{dp[i - k - 1], i - k - 1});
+            }
+            dp[i] = nums[i];
+            if (set.size() > 0) dp[i] = Math.max(dp[i], nums[i] + set.last()[0]);
+            set.add(new int[]{dp[i], i});
+        }
+
+        int res = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            res = Math.max(res, dp[i]);
+        }
+        return res;
+    }
+
+    // S2: Deque
+    // time = O(n), space = O(n)
+    public int constrainedSubsetSum2(int[] nums, int k) {
         // corner case
         if (nums == null || nums.length == 0) return 0;
 

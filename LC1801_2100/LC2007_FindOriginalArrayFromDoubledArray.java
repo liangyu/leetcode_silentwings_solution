@@ -18,6 +18,7 @@ public class LC2007_FindOriginalArrayFromDoubledArray {
      * @param changed
      * @return
      */
+    // S1: TreeMap
     // time = O(nlogk), space = O(k)
     public int[] findOriginalArray(int[] changed) {
         // corner case
@@ -44,4 +45,56 @@ public class LC2007_FindOriginalArrayFromDoubledArray {
         }
         return res;
     }
+
+    // S2: TreeMap
+    // time = O(nlogk), space = O(k)
+    public int[] findOriginalArray2(int[] changed) {
+        int n = changed.length;
+        if (n % 2 == 1) return new int[0];
+
+        TreeMap<Integer, Integer> map = new TreeMap<>();
+        for (int x : changed) map.put(x, map.getOrDefault(x, 0) + 1);
+
+        int[] res = new int[n / 2];
+        for (int i = 0; i < n / 2; i++) {
+            Integer lk = map.lastKey();
+            if (lk % 2 == 1) return new int[0];
+            if (!map.containsKey(lk / 2)) return new int[0];
+            map.put(lk, map.get(lk) - 1);
+            map.put(lk / 2, map.get(lk / 2) - 1);
+            if (map.get(lk) == 0) map.remove(lk);
+            if (map.containsKey(lk / 2) && map.get(lk / 2) == 0) map.remove(lk / 2); // 注意：lk可能与lk/2相等，比如0！！！
+            res[i] = lk / 2;
+        }
+        return res;
+    }
+
+    // S3: Two Pointers
+    public int[] findOriginalArray3(int[] changed) {
+        int n = changed.length;
+        if (n % 2 == 1) return new int[0];
+
+        Arrays.sort(changed);
+        int[] res = new int[n / 2];
+        int left = 0, right = 0;
+        boolean[] used = new boolean[n];
+
+        for (int i = 0; i < n / 2; i++) {
+            while (left < n && used[left]) left++;
+            if (left == n) return new int[0];
+            res[i] = changed[left];
+            used[left] = true;
+            while (right < n && (used[right] || changed[right] != changed[left] * 2)) right++;
+            if (right == n) return new int[0];
+            used[right] = true;
+        }
+        return res;
+    }
 }
+/**
+ * constructive problem
+ * original [1,3,4]
+ * changed [1,3,2,6,8]  -> original里不可能有8
+ * 同理也不可能有6
+ * 在change里面实时找到最大值 -> multiSet
+ */

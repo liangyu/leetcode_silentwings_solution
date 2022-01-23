@@ -86,4 +86,35 @@ public class LC272_ClosestBinarySearchTreeValueII {
             cur = cur.left;
         }
     }
+
+    // S2: DFS
+    // time = O(n), space = O(n)
+    public List<Integer> closestKValues2(TreeNode root, double target, int k) {
+        List<Integer> res = new ArrayList<>();
+        // corner case
+        if (root == null) return res;
+
+        Queue<Integer> queue = new LinkedList<>();
+        dfs(root, queue, target, k);
+
+        while (!queue.isEmpty()) res.add(queue.poll());
+        return res;
+    }
+
+    private void dfs(TreeNode node, Queue<Integer> queue, double t, int k) {
+        if (node == null) return;
+
+        dfs(node.left, queue, t, k);
+
+        if (queue.size() < k) {
+            queue.offer(node.val);
+            dfs(node.right, queue, t, k);
+        } else {
+            if (Math.abs(queue.peek() - t) > Math.abs(node.val - t)) {
+                queue.offer(node.val);
+                queue.poll();
+                dfs(node.right, queue, t, k);
+            }
+        }
+    }
 }

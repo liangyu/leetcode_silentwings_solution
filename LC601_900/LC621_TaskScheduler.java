@@ -30,52 +30,48 @@ public class LC621_TaskScheduler {
     // S1: PriorityQueue
     // time = O(mlogm), space = O(m)
     public int leastInterval(char[] tasks, int n) {
-        // corner case
-        if (tasks == null || tasks.length == 0 || n < 0) return 0;
-
-        HashMap<Character, Integer> map = new HashMap<>();
-        for (char c : tasks) map.put(c, map.getOrDefault(c, 0) + 1);
+        n++;
+        int[] count = new int[26];
+        for (char c : tasks) count[c - 'A']++;
 
         PriorityQueue<Integer> pq = new PriorityQueue<>((o1, o2) -> o2 - o1);
-        for (char key : map.keySet()) pq.offer(map.get(key));
+        for (int x : count) {
+            if (x > 0) pq.offer(x);
+        }
 
-        // 每一轮处理 n + 1 个
-        n++;
-        int count = 0;
+        int res = 0;
         while (!pq.isEmpty()) {
-            int k = Math.min(pq.size(), n);
+            int k = Math.min(n, pq.size());
             List<Integer> temp = new ArrayList<>();
-            for (int i = 0; i < k; i++) { // O(n)
-                int freq = pq.poll();
-                if (freq - 1 > 0) temp.add(freq - 1);
+            for (int i = 0; i < k; i++) {
+                int f = pq.poll();
+                f--; // don't put back into pq right away!
+                if (f != 0) temp.add(f);
             }
-            if (k == n) count += n;
-            else if (temp.size() > 0) count += n;
-            else count += k;
 
+            if (temp.size() > 0) res += n;
+            else res += k; // temp.size() == 0 -> last round
             for (int x : temp) pq.offer(x);
         }
-        return count;
+        return res;
     }
 
     // S2: Greedy
     // time = O(m), space = O(1)   m: number of tasks
     public int leastInterval2(char[] tasks, int n) {
-        // corner case
-        if (tasks == null || tasks.length == 0 || n < 0) return 0;
-
-        HashMap<Character, Integer> map = new HashMap<>();
-        for (char c : tasks) map.put(c, map.getOrDefault(c, 0) + 1);
-
+        n++;
+        int[] count = new int[26];
         int maxFreq = 0;
-        for (char key : map.keySet()) maxFreq = Math.max(maxFreq, map.get(key));
-
-        int res = (maxFreq - 1) * (n + 1);
-        int count = 0;
-        for (char key : map.keySet()) {
-            if (map.get(key) == maxFreq) count++;
+        for (char c : tasks) {
+            count[c - 'A']++;
+            maxFreq = Math.max(maxFreq, count[c - 'A']);
         }
-        return Math.max(res + count, tasks.length);
+
+        int tail = 0;
+        for (int x : count) {
+            if (x == maxFreq) tail++;
+        }
+        return Math.max((maxFreq - 1) * n + tail, tasks.length);
     }
 }
 /**

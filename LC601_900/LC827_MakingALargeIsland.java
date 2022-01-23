@@ -21,19 +21,19 @@ public class LC827_MakingALargeIsland {
      * @return
      */
     // time = O(n^2), space = O(n^2)
-    private static final int[][] DIRECTIONS = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    int n;
+    private int[][] directions = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
     public int largestIsland(int[][] grid) {
-        // corner case
-        if (grid == null || grid.length == 0 || grid[0] == null || grid[0].length == 0) return 0;
-
         // step 1: dfs each island and give each island an index
-        int n  = grid.length, index = 2, res = 0;
+        n = grid.length;
+        int index = 2, res = 0;
         HashMap<Integer, Integer> map = new HashMap<>();
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 if (grid[i][j] == 1) {
-                    map.put(index, dfs(grid, i, j, index));
-                    res = Math.max(res, map.get(index++));
+                    int area = dfs(grid, i, j, index);
+                    map.put(index++, area);
+                    res = Math.max(res, area); // 有可能grid里没有0， 所以res要在一开始遍历原始island的时候就要更新！
                 }
             }
         }
@@ -43,18 +43,16 @@ public class LC827_MakingALargeIsland {
             for (int j = 0; j < n; j++) {
                 if (grid[i][j] == 0) {
                     HashSet<Integer> set = new HashSet<>();
-                    int cur = 1;
-                    for (int[] dir : DIRECTIONS) {
-                        int ii = i + dir[0];
-                        int jj = j + dir[1];
-                        if (ii >= 0 && ii < n && jj >= 0 && jj < n) {
-                            index = grid[ii][jj]; // 因为grid[i][j]只有0或者1，为了区别开index,index必须从2开始！
-                            if (index > 1 && set.add(index)) {
-                                cur += map.get(index);
-                            }
-                        }
+                    int area = 1;
+                    for (int[] dir : directions) {
+                        int x = i + dir[0];
+                        int y = j + dir[1];
+                        if (x < 0 || x >= n || y < 0 || y >= n) continue;
+                        if (grid[x][y] == 0) continue;
+                        index = grid[x][y]; // 因为grid[i][j]只有0或者1，为了区别开index,index必须从2开始！
+                        if (set.add(index)) area += map.get(index); // 注意查重，防止四周连接上的是同一个岛。
                     }
-                    res = Math.max(res, cur);
+                    res = Math.max(res, area);
                 }
             }
         }
@@ -62,17 +60,17 @@ public class LC827_MakingALargeIsland {
     }
 
     private int dfs(int[][] grid, int i, int j, int index) {
-        int n = grid.length, area = 0;
+        // base case
+        if (i < 0 || i >= n || j < 0 || j >= n) return 0;
+        if (grid[i][j] != 1) return 0;
+
         grid[i][j] = index; // coloring the island with index!
-        for (int[] dir : DIRECTIONS) {
-            int ii = i + dir[0];
-            int jj = j + dir[1];
-            if (ii >= 0 && ii < n && jj >= 0 && jj < n) {
-                if (grid[ii][jj] == 1) {
-                    area += dfs(grid, ii, jj, index);
-                }
-            }
+        int area = 1;
+        for (int[] dir : directions) {
+            int x = i + dir[0];
+            int y = j + dir[1];
+            area += dfs(grid, x, y, index);
         }
-        return area + 1;
+        return area;
     }
 }

@@ -54,17 +54,25 @@ public class LC825_FriendsOfAppropriateAges {
         // corner case
         if (ages == null || ages.length <= 1) return 0;
 
-        int[] arr = new int[121];
-        int res = 0;
-        for (int age : ages) arr[age]++;
-        for (int i = 15; i <= 120; i++) {  // i -> A
-            for (int j = (int)(0.5 * i + 8); j <= i; j++) res += arr[j] * (arr[i] - (i == j ? 1 : 0)); // j -> B
+        int[] nums = new int[121];
+        for (int x : ages) nums[x]++;
+
+        int bound = 15, presum = 0, count = 0;
+        for (int i = 15; i < 121; i++) {
+            if (bound <= 0.5 * i + 7) {
+                presum -= nums[bound];
+                bound++;
+            }
+            if (nums[i] == 0) continue;
+            count += nums[i] * presum + nums[i] * (nums[i] - 1);
+            presum += nums[i];
         }
-        return res;
+        return count;
     }
 }
 /**
  * age[B] <= 0.5 * age[A] + 7   => age[B] > age[A]*0.5+7  => age[B] >= age[A]*0.5 + 8
  * age[B] > age[A]   => age[B] <= age[A]  => 0.5*age[A] + 7 < age[A]  -> age[A] > 14 => age[A] >= 15
  * age[B] > 100 && age[A] < 100
+ * 条件 3 是蕴含在条件 2 中的，即如果满足条件 3 那么一定满足条件 2。
  */

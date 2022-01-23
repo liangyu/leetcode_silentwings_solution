@@ -126,8 +126,9 @@ public class LC792_NumberofMatchingSubsequences {
  * pos[c] = {.2,3,6...}
  * word = a b c  -> 找a后面的b
  * O(n*logm*k)
- *    0 1 2 3 4 5 6 7 8
- * s =  x x a b a x a c
+ *    0 1 2 3 4 5 6 7 8 9 10
+ * s =  x x a b a x a c x b
+ *    ^
  * S3: next[0][a] = 3   从 idx = 0 的位置向右看，第一个出现a的位置 = 3
  *     next[3][b] = 4
  *     next[4][c] = 8   -> read directly from the table    跳转非常快 -> 读n次

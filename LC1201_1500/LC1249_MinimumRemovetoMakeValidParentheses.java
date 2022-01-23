@@ -29,24 +29,21 @@ public class LC1249_MinimumRemovetoMakeValidParentheses {
      */
     // time = O(n), space = O(n)
     public String minRemoveToMakeValid(String s) {
-        // corner case
-        if (s == null || s.length() == 0) return "";
-
+        int n = s.length();
         Stack<Integer> stack = new Stack<>();
         char[] chars = s.toCharArray();
-        for (int i = 0; i < chars.length; i++) {
-            if (chars[i] == '(') {
-                stack.push(i);
-            } else if (chars[i] == ')') {
-                if (!stack.isEmpty()) stack.pop();
-                else chars[i] = '\0';
+
+        for (int i = 0; i < n; i++) {
+            if (chars[i] == '(') stack.push(i);
+            else if (chars[i] == ')') {
+                if (stack.isEmpty()) chars[i] = ' ';
+                else stack.pop();
             }
         }
-        while (!stack.isEmpty()) chars[stack.pop()] = '\0'; // 剩下没匹配完的左括号必须删除
-
+        while (!stack.isEmpty()) chars[stack.pop()] = ' '; // 剩下没匹配完的左括号必须删除
         StringBuilder sb = new StringBuilder();
-        for (char c : chars) {
-            if (c != '\0') sb.append(c);
+        for (int i = 0; i < n; i++) {
+            if (chars[i] != ' ') sb.append(chars[i]);
         }
         return sb.toString();
     }

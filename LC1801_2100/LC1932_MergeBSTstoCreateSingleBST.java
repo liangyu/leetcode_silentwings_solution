@@ -33,15 +33,19 @@ public class LC1932_MergeBSTstoCreateSingleBST {
      * @return
      */
     // time = O(n), space = O(n)
+    HashSet<Integer> blacklist;
+    HashMap<Integer, TreeNode> val2root;
+    HashSet<Integer> used;
     public TreeNode canMerge(List<TreeNode> trees) {
-        HashSet<Integer> blacklist = new HashSet<>();
-        HashMap<Integer, TreeNode> map = new HashMap<>();
-        HashSet<Integer> used = new HashSet<>();
+        blacklist = new HashSet<>();
+        val2root = new HashMap<>();
+        used = new HashSet<>();
         for (TreeNode root : trees) {
-            findLeaves(root.left, blacklist);
-            findLeaves(root.right, blacklist);
-            map.put(root.val, root);
+            findLeaves(root.left); // 注意：不能写成findLeaves(root), 因为面对这种case [[7]], 并不能把它作为leaf来考虑。
+            findLeaves(root.right);
+            val2root.put(root.val, root);
         }
+
         int count = 0;
         int n = trees.size();
         TreeNode root = null;
@@ -51,35 +55,39 @@ public class LC1932_MergeBSTstoCreateSingleBST {
                 root = trees.get(i);
             }
         }
-        if (count != 1) return null;
-        used.add(root.val);
-        boolean ok = build(root, map, used, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        if (count != 1) return null; // failed construction
 
-        return (ok && used.size() == n) ? root : null;
+        used.add(root.val);
+        boolean ok = build(root, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        if (ok && used.size() == n) return root;
+        return null;
     }
 
-    private boolean build(TreeNode node, HashMap<Integer, TreeNode> map, HashSet<Integer> used, int min, int max) {
+    private boolean build(TreeNode node, int min, int max) {
+        // base case
         if (node == null) return true;
+
         int val = node.val;
         if (val < min || val > max) return false;
 
         if (node.left != null || node.right != null) {
-            return build(node.left, map, used, min, val - 1) && build(node.right, map, used,val + 1, max);
-        }
-        else if (map.containsKey(val)) {
-            TreeNode childRoot = map.get(val);
-            node.left = childRoot.left;
-            node.right = childRoot.right;
+            return build(node.left, min, val - 1) && build(node.right, val + 1, max);
+        } else if (val2root.containsKey(val)) {  // 能拼就拼
+            TreeNode subRoot = val2root.get(val); // 直接把要拼接的子树root的左右子树拼到当前叶子节点上
+            node.left = subRoot.left;
+            node.right = subRoot.right;
+
             used.add(val);
-            return build(node.left, map, used, min, val - 1) && build(node.right, map, used, val + 1, max);
-        } else return true;
+            return build(node.left, min, val - 1) && build(node.right, val + 1, max);
+        } else return true; // reach leave, but do not need merge anything
     }
 
-    private void findLeaves(TreeNode node, HashSet<Integer> blacklist) {
+    private void findLeaves(TreeNode node) {
         if (node == null) return;
+        // 如果题目改成不止2层，下面继续加的话，可以不断递归下去，能拼就拼，否则可以check是否为叶子节点再放入set!
         blacklist.add(node.val);
-        findLeaves(node.left, blacklist);
-        findLeaves(node.right, blacklist);
+        findLeaves(node.left);
+        findLeaves(node.right);
     }
 }
 /**

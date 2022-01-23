@@ -74,7 +74,7 @@ public class LC282_ExpressionAddOperators {
     private void dfs(String num, int target, int idx, String path, long preVal, long lastVal, List<String> res) {
         // base case
         if (idx == num.length()) {
-            if (preVal == target) res.add(path.toString());
+            if (preVal == target) res.add(path);
             return;
         }
 

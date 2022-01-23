@@ -25,18 +25,16 @@ public class LC249_GroupShiftedStrings {
     // time = O(n * k), space = O(n)  k: max length of the string in the array
     public List<List<String>> groupStrings(String[] strings) {
         List<List<String>> res = new ArrayList<>();
-        // corner case
-        if (strings == null || strings.length == 0) return res;
-
         HashMap<String, List<String>> map = new HashMap<>();
         for (String s : strings) {
             int offset = s.charAt(0) - 'a';
-            String key = "";
+            StringBuilder sb = new StringBuilder();
             for (int i = 0; i < s.length(); i++) {
                 char c = (char)(s.charAt(i) - offset);
-                if (c < 'a') c += 26;
-                key += c;
+                if (c < 'a') c += 26; // 注意：这里是diff < 'a' 而不是diff < 0
+                sb.append(c);
             }
+            String key = sb.toString();
             map.putIfAbsent(key, new ArrayList<>());
             map.get(key).add(s);
         }

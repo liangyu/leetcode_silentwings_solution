@@ -95,7 +95,7 @@ public class LC727_MinimumWindowSubsequence {
 }
 /**
  * 双序列dp -> O(m*n)
- * dp[i][j]: the minimum subsequence length k, s.t. s1[1:j] is a subsequence of s1[i-k+1:i]
+ * dp[i][j]: the minimum subsequence length k, s.t. s2[1:j] is a subsequence of s1[i-k+1:i]
  * if (s[i] == s2[j]) dp[i][j] = dp[i-1][j-1]+1
  * else dp[i][j] = dp[i-1][j]+1
  * dp[i][n] i 不确定，不知道ending在哪里，必须要扫一遍i看长度

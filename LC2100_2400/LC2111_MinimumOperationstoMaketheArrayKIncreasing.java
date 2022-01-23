@@ -60,6 +60,34 @@ public class LC2111_MinimumOperationstoMaketheArrayKIncreasing {
         }
         return buffer.get(left) > t ? left : left + 1;
     }
+
+    // S2: TreeSet
+    public int kIncreasing2(int[] arr, int k) {
+        int n = arr.length, res = 0;
+
+        for (int t = 0; t < k; t++) {
+            List<Integer> nums = new ArrayList<>();
+            for (int i = t; i < n; i += k) {
+                nums.add(arr[i]);
+            }
+            res += nums.size() - helper(nums);
+        }
+        return res;
+    }
+
+    private int helper(List<Integer> nums) {
+        TreeSet<int[]> set = new TreeSet<>((o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o1[1] - o2[1]);
+        for (int i = 0; i < nums.size(); i++) {
+            int[] hk = set.higher(new int[]{nums.get(i), set.size()});
+            if (hk == null) set.add(new int[]{nums.get(i), set.size()});
+            else {
+                int idx = hk[1];
+                set.remove(hk);
+                set.add(new int[]{nums.get(i), idx});
+            }
+        }
+        return set.size();
+    }
 }
 /**
  * 0,0+k,0+2k,0+3k,...
@@ -73,6 +101,14 @@ public class LC2111_MinimumOperationstoMaketheArrayKIncreasing {
  * 比如[1,1,2]，最长严格递增序列是[1,2]，但是你无法只修改一个数字得到合法的解。
  * 方法是，将所有的元素都减去其下标(1,2,3...)，然后去除掉负数，在其中找LIS（更确切的说是非递减序列）。
  * 在这个例子中，变换后的数组是[0,-1,-1]。所以其LIS的长度其实只有1.
+ * 去掉负数的那些元素k无论如何都无法成为一个严格递增序列里面的成员，
+ * 原因是它之前的元素个数太少，即使第一个元素从1开始以公差1递增，到该元素时也超过了k本身。
+ * 此外有一个followup：如果要求构造所有元素为正、且严格的递增序列怎么办？
+ * 这里会出现的一个问题是，找到LIS之后，其他元素的改动可能无法实现。
+ * 比如[1,1,2]，最长严格递增序列是[1,2]，但是你无法只修改一个数字得到合法的解。
+ * 方法是，将所有的元素都减去其下标(1,2,3...)，然后去除掉负数，在其中找LIS（更确切的说是非递减序列）。
+ * 在这个例子中，变换后的数组是[0,-1,-1]。
+ * 所以其LIS的长度其实只有1.负数是非改不可的。
  * 去掉负数的那些元素k无论如何都无法成为一个严格递增序列里面的成员，
  * 原因是它之前的元素个数太少，即使第一个元素从1开始以公差1递增，到该元素时也超过了k本身。
  */

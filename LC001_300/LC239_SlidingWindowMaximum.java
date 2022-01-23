@@ -29,33 +29,20 @@ public class LC239_SlidingWindowMaximum {
      * @return
      */
     // S1: TreeSet
-    // time = O(nlogn), space = O(n)
+    // time = O(nlogk), space = O(k)
     public int[] maxSlidingWindow(int[] nums, int k) {
-        // corner case
-        if (nums == null || nums.length == 0 || k <= 0) return new int[0];
+        TreeSet<int[]> set = new TreeSet<>((o1, o2) -> o1[1] != o2[1] ? o1[1] - o2[1] : o1[0] - o2[0]);
 
-        int[] res = new int[nums.length - k + 1];
-        TreeSet<Node> set = new TreeSet<>((o1, o2) -> o1.val == o2.val ? o1.pos - o2.pos : o1.val - o2.val);
-        int idx = 0;
-
-        for (int i = 0; i < nums.length; i++) {
-            set.add(new Node(i, nums[i]));
+        int n = nums.length, idx = 0;
+        int[] res = new int[n - k + 1];
+        for (int i = 0; i < n; i++) {
+            set.add(new int[]{i, nums[i]});
             if (set.size() > k) {
-                Node delNode = new Node(i - k, nums[i - k]);
-                set.remove(delNode);
+                set.remove(new int[]{i - k, nums[i - k]});
             }
-            if (set.size() == k) res[idx++] = set.last().val;
+            if (set.size() == k) res[idx++] = set.last()[1];
         }
         return res;
-    }
-
-    private class Node {
-        private int pos;
-        private int val;
-        public Node(int pos, int val) {
-            this.pos = pos;
-            this.val = val;
-        }
     }
 
     // S2: Deque (最优解）
@@ -86,8 +73,11 @@ public class LC239_SlidingWindowMaximum {
  *  j  i
  * [7 5]   => if (i - j <= k) => max of sliding window = 7
  *         => if (i - j > k) => max of sliding window = 5
+ * 时刻维护一个单调递减的队列
+ * 最大值只要看单调队列的第一个元素即可
  * 1. maintain a mono-decreasing queue
  * 2. check if the queue head is outdated
  * 3. the maximum of the sliding window is the queue head
  * => O(n) + O(n) 每个元素都最多只进出window一次
+ * 给一个窗口，用O(1)时间把最大元素取出来
  */

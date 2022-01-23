@@ -36,7 +36,7 @@ public class LC803_BricksFallingWhenHit {
      * @return
      */
     // S1: Union Find
-    // time = O((k + m * n) * log(m * n)), space = O(m * n) alpha: Inverse-Ackermann function
+    // time = O((k + m * n) * log(m * n)), space = O(m * n)
     int m, n;
     int[] parent;
     int[] size;
@@ -94,7 +94,7 @@ public class LC803_BricksFallingWhenHit {
                 int u = i * n + j, v = x * n + y;
                 if (findParent(u) != findParent(v)) {
                     // check parent if in the first row (ceiling)
-                    if (findParent(v) < n) flag = true; // check if (x, y) was attached to the ceiling
+                    if (findParent(v) < n) flag = true; // check if (x, y) was already attached to the ceiling
                     if (findParent(v) >= n) {
                         count += size[findParent(v)]; // need to know the member size in this rescued group
                     }
@@ -197,4 +197,11 @@ public class LC803_BricksFallingWhenHit {
  * 小细节：原来没有砖块，hit是没有意义的，时光倒流的时候注意不能把它恢复成1
  * 看族长的id是否< n，是的话就是表示接在天花板上的，否则就不是,说明当初是掉落的，我们要拼接的
  * 注意另一种情况：如果被恢复的这块砖本身就在第一行的话，那么它也是可以拯救下面的砖块的 => i == 0
+ * 检查是否连接到天花板从而可以拯救掉落的砖块，必须考虑2种情况：
+ * 1. 被打掉的砖块是连接在天花板上的，那么跟它连接的四周的砖块，只要不是本身也连接在天花板上，那么一定可以被拯救
+ * 2. 被打掉的砖块本身不在天花板上，而跟它连接的四周的砖块有的连接在天花板上，那么这些砖块本身不需要被拯救，但是通过被打掉的砖块与它们union，
+ * 可以拯救被打掉砖块其他方向上不和天花板相连的砖块。
+ * 所以综上2种情况，只要出现任意一种，我们都要把flag设置为true，表明砖块有被拯救的先决条件，然后再根据与被打掉砖块相连接的四周砖块，
+ * 其本身是否和天花板相连来决定是否需要被拯救；需要则加入count，否则只要设置成flag = true即可。
+ * 有逐个抽取看情况的题，可以考虑用"时光倒流"。
  */

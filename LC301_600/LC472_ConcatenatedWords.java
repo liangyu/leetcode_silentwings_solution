@@ -56,76 +56,55 @@ public class LC472_ConcatenatedWords {
     // length of each word, and only try to form one word by using words in front of it.
 
     // S2: Trie
-    // time = O(n * k^2)), space = O(k), k: max length of the word in the words list
+    // time = O(sum(k) * logn + sum(k^2)), space = O(sum(k) * 26), k: 单词words[i] 的长度
+    TrieNode root;
     public List<String> findAllConcatenatedWordsInADict2(String[] words) {
         List<String> res = new ArrayList<>();
-        // corner case
-        if (words == null || words.length == 0) return res;
-
-        Arrays.sort(words, (o1, o2) -> o1.length() - o2.length()); // O(nlogn)
-
-        Trie trie = new Trie();
+        root = new TrieNode();
+        Arrays.sort(words, (o1, o2) -> o1.length() - o2.length()); // O(sum(k) * logn)
 
         for (String word : words) { // O(n)
-            if (word.length() != 0 && check(word, trie.root)) { // O(k^2)
-                res.add(word);
+            if (word.length() != 0 && check(word)) res.add(word);
+
+            TrieNode node = root;
+            for (char ch : word.toCharArray()) {
+                if (node.next[ch - 'a'] == null) {
+                    node.next[ch - 'a'] = new TrieNode();
+                }
+                node = node.next[ch - 'a'];
             }
-            trie.insert(word);
+            node.isEnd = true;
         }
         return res;
     }
 
-    private boolean check(String word, TrieNode root) {
-        int[] visited = new int[word.length()]; // O(k)
-        return dfs(word, root, 0, visited);
+    private boolean check(String word) {
+        boolean[] memo = new boolean[word.length()];
+        return dfs(word, 0, memo);
     }
 
-    private boolean dfs(String word, TrieNode root, int idx, int[] visited) {
-        // base case - success
-        if (idx == word.length()) return true;
+    private boolean dfs(String word, int cur, boolean[] memo) {
+        // base case
+        if (cur == word.length()) return true;
+        if (memo[cur]) return false;
 
-        if (visited[idx] == 1) return false;
-
-        TrieNode cur = root;
-        for (int i = idx; i < word.length(); i++) {
-            char ch = word.charAt(i);
-            if (cur.nexts[ch - 'a'] != null) {
-                cur = cur.nexts[ch - 'a'];
-                if (cur.isWord && dfs(word, root, i + 1, visited)) {
-                    return true;
-                }
+        TrieNode node = root;
+        for (int i = cur; i < word.length(); i++) {
+            if (node.next[word.charAt(i) - 'a'] != null) {
+                node = node.next[word.charAt(i) - 'a'];
+                if (node.isEnd && dfs(word, i + 1, memo)) return true;
             } else break;
         }
-        visited[idx] = 1;
+        memo[cur] = true;
         return false;
     }
 
     private class TrieNode {
-        private char ch;
-        private TrieNode[] nexts;
-        private boolean isWord;
-        public TrieNode(char ch) {
-            this.ch = ch;
-            this.nexts = new TrieNode[26];
-            this.isWord = false;
-        }
-    }
-
-    private class Trie {
-        private TrieNode root;
-        public Trie() {
-            root = new TrieNode('\0');
-        }
-
-        private void insert(String word) {
-            TrieNode cur = root;
-            for (char ch : word.toCharArray()) {
-                if (cur.nexts[ch - 'a'] == null) {
-                    cur.nexts[ch - 'a'] = new TrieNode(ch);
-                }
-                cur = cur.nexts[ch - 'a'];
-            }
-            cur.isWord = true;
+        private TrieNode[] next;
+        private boolean isEnd;
+        public TrieNode() {
+            next = new TrieNode[26];
+            isEnd = false;
         }
     }
 }

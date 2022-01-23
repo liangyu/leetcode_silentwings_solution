@@ -60,30 +60,32 @@ public class LC1851_MinimumIntervaltoIncludeEachQuery {
         return res;
     }
 
-    // S2: PriorityQueue
-    // time = O(nlogn), space = O(n)   n: # of intervals
+    // S2: Sort + PQ
+    // time = O(nlogn + mlogm), space = O(m + n)   n: # of intervals
     public int[] minInterval2(int[][] intervals, int[] queries) {
-        List<int[]> qs = new ArrayList<>();
-        for (int i = 0; i < queries.length; i++) {
-            qs.add(new int[]{queries[i], i});
+        int n = queries.length;
+        int[][] qs = new int[n][2];
+        for (int i = 0; i < n; i++) {
+            qs[i][0] = queries[i];
+            qs[i][1] = i;
         }
 
-        Collections.sort(qs, (o1, o2) -> o1[0] - o2[0]);
         Arrays.sort(intervals, (o1, o2) -> o1[0] - o2[0]);
+        Arrays.sort(qs, (o1, o2) -> o1[0] - o2[0]);
 
         PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] - o2[0]);
-        int i = 0;
-        int[] res = new int[queries.length];
-        Arrays.fill(res, -1);
 
-        for (int[] query : qs) {
-            int q = query[0];
-            int idx = query[1];
-            while (i < intervals.length && intervals[i][0] <= q) {
+        int i = 0;
+        int[] res = new int[n];
+        Arrays.fill(res, -1);
+        for (int[] q : qs) {
+            int t = q[0], idx = q[1];
+            while (i < intervals.length && intervals[i][0] <= t) {
                 pq.offer(new int[]{intervals[i][1] - intervals[i][0] + 1, intervals[i][1]});
                 i++;
             }
-            while (!pq.isEmpty() && pq.peek()[1] < q) pq.poll();
+
+            while (!pq.isEmpty() && pq.peek()[1] < t) pq.poll();
             if (!pq.isEmpty()) res[idx] = pq.peek()[0];
         }
         return res;

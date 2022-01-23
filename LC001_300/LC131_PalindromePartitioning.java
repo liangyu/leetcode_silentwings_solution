@@ -19,81 +19,45 @@ public class LC131_PalindromePartitioning {
      */
     // S1: dfs
     // time = O(n * 2^n), space = O(n^2)
+    boolean[][] isPalin;
     public List<List<String>> partition(String s) {
         List<List<String>> res = new ArrayList<>();
-        // corner case
-        if (s == null || s.length() == 0) return res;
+
+        int n = s.length();
+        isPalin = new boolean[n][n];
+
+        // init
+        // j - 1 = i + len - 2 >= i + 1  => len >= 3
+        // len = 1 => j = i => isPalin[i][i] = true
+        for (int i = 0; i < n; i++) isPalin[i][i] = true;
+        // len = 2 -> j = i + 1 -> i + 1 > j - 1
+        for (int i = 0; i < n - 1; i++) isPalin[i][i + 1] = s.charAt(i) == s.charAt(i + 1);
+
+        for (int len = 3; len <= n; len++) {
+            for (int i = 0; i + len - 1 < n; i++) {
+                int j = i + len - 1;
+                if (s.charAt(i) == s.charAt(j) && isPalin[i + 1][j - 1]) {
+                    isPalin[i][j] = true;
+                } else isPalin[i][j] = false;
+            }
+        }
 
         dfs(s, 0, new ArrayList<>(), res);
         return res;
     }
 
     private void dfs(String s, int idx, List<String> path, List<List<String>> res) {
-        // base case - success
+        // base case
         if (idx == s.length()) {
             res.add(new ArrayList<>(path));
             return;
         }
 
         for (int i = idx; i < s.length(); i++) {
-            String sub = s.substring(idx, i + 1);
-            if (isPalin(sub)) {
-                path.add(sub);
-                dfs(s, i + 1, path, res);
-                path.remove(path.size() - 1);
-            }
-        }
-    }
-
-    private boolean isPalin(String s) {
-        if (s == null || s.length() == 0) return true;
-
-        int left = 0, right = s.length() - 1;
-        while (left < right) {
-            if (s.charAt(left++) != s.charAt(right--)) return false;
-        }
-        return true;
-    }
-
-    // S2: dfs + dp
-    // time = O(n * 2^n), space = O(n^2)
-    public List<List<String>> partition2(String s) {
-        List<List<String>> res = new ArrayList<>();
-        // corner case
-        if (s == null || s.length() == 0) return res;
-
-        int n = s.length();
-        boolean[][] isPalin = new boolean[n][n];
-        helper(s, isPalin);
-
-        dfs(s, 0, new ArrayList<>(), res, isPalin);
-        return res;
-    }
-
-    private void dfs(String s, int idx, List<String> path, List<List<String>> res, boolean[][] isPalin) {
-        int n = s.length();
-        // base case
-        if (idx == n) {
-            res.add(new ArrayList<>(path));
-            return;
-        }
-
-        for (int i = idx; i < n; i++) {
             if (isPalin[idx][i]) {
                 path.add(s.substring(idx, i + 1));
-                dfs(s, i + 1, path, res, isPalin);
+                dfs(s, i + 1, path, res);
                 path.remove(path.size() - 1);
-            }
-        }
-    }
-
-    private void helper(String s, boolean[][] isPalin) {
-        int n = s.length();
-        for (int i = n - 1; i >= 0; i--) {
-            for (int j = i; j < n; j++) {
-                if (s.charAt(i) == s.charAt(j) && (j - i < 2 || isPalin[i + 1][j - 1])) {
-                    isPalin[i][j] = true;
-                }
             }
         }
     }

@@ -38,23 +38,23 @@ public class LC502_IPO {
      */
     // time = O(nlogn), space = O(n)
     public int findMaximizedCapital(int k, int w, int[] profits, int[] capital) {
-        List<int[]> project = new ArrayList<>();
-        for (int i = 0; i < profits.length; i++) {
-            project.add(new int[]{capital[i], profits[i]});
-        }
-        Collections.sort(project, (o1, o2) -> o1[0] - o2[0]);
+        int n = profits.length;
+        int[][] tasks = new int[n][2];
 
-        PriorityQueue<Integer> pq = new PriorityQueue<>((o1, o2) -> o2- o1);
+        for (int i = 0; i < n; i++) tasks[i] = new int[]{capital[i], profits[i]};
+
+        Arrays.sort(tasks, (o1, o2) -> o1[0] - o2[0]);
+
+        PriorityQueue<Integer> pq = new PriorityQueue<>((o1, o2) -> o2 - o1);
         int count = 0, i = 0;
         while (count < k) {
-            while (i < project.size() && project.get(i)[0] <= w) {
-                pq.offer(project.get(i)[1]);
+            while (i < n && tasks[i][0] <= w) {
+                pq.offer(tasks[i][1]);
                 i++;
             }
-            if (!pq.isEmpty()) {
-                w += pq.poll();
-                count++;
-            } else break;
+            if (pq.isEmpty()) break;
+            w += pq.poll();
+            count++;
         }
         return w;
     }

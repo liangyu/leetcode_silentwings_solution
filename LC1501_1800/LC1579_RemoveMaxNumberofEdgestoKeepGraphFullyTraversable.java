@@ -42,7 +42,7 @@ public class LC1579_RemoveMaxNumberofEdgestoKeepGraphFullyTraversable {
             if (edge[0] == 2) edges2.add(new int[]{edge[1], edge[2]});
         }
         parent = new int[n + 1];
-        for (int i = 0; i < n; i++) parent[i] = i;
+        for (int i = 0; i < n + 1; i++) parent[i] = i;
 
         int count0 = 0, count1 = 0, count2 = 0;
         for (int[] edge : edges0) {

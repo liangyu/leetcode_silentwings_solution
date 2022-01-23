@@ -57,12 +57,4 @@ public class LC701_InsertintoaBinarySearchTree {
         }
         return new TreeNode(val);
     }
-
-    class TreeNode {
-        int val;
-        TreeNode left, right;
-        public TreeNode(int val) {
-            this.val = val;
-        }
-    }
 }

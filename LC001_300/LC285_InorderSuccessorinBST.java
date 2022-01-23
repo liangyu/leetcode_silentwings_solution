@@ -20,7 +20,7 @@ public class LC285_InorderSuccessorinBST {
      * @return
      */
     // S1: recursion
-    // time = O(logn), space = O(logn)
+    // time = O(n), space = O(n)
     public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
         // corner case
         if (root == null || p == null) return null;
@@ -47,5 +47,28 @@ public class LC285_InorderSuccessorinBST {
             }
         }
         return res;
+    }
+
+    // S3: dfs
+    // time = O(n), space = O(n)
+    TreeNode prev = null, res = null;
+    public TreeNode inorderSuccessor3(TreeNode root, TreeNode p) {
+        dfs(root, p);
+        return res;
+    }
+
+    private boolean dfs(TreeNode node, TreeNode p) {
+        if (node == null) return false;
+
+        if (dfs(node.left, p)) return true;
+
+        if (prev == p) {
+            res = node;
+            return true;
+        }
+        prev = node;
+
+        if (dfs(node.right, p)) return true;
+        return false;
     }
 }

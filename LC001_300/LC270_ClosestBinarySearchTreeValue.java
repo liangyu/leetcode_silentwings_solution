@@ -19,9 +19,6 @@ public class LC270_ClosestBinarySearchTreeValue {
      */
     // time = O(logn), space = O(1)
     public int closestValue(TreeNode root, double target) {
-        // corner case
-        if (root == null) throw new IllegalArgumentException("Invalid input!");
-
         int res = root.val;
         TreeNode cur = root;
         while (cur != null) {
@@ -33,3 +30,7 @@ public class LC270_ClosestBinarySearchTreeValue {
         return res;
     }
 }
+/**
+ * 利用BST的性质不断朝target搜索，直至最底层。记录一路经过的根节点，不断更新 (root->val - target)的最小结果。
+ * 注意：result的初始值必须设置为root->val。
+ */

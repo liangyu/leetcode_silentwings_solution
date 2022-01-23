@@ -46,10 +46,10 @@ public class LC1489_FindCriticalandPseudoCriticalEdgesinMinimumSpanningTree {
         for (int i = 0; i < edge.size(); i++) {
             if (set1.contains(edge.get(i)[3])) continue;
             int[] x = edge.get(i);
-            edge.add(0, x);
+            edge.add(0, x); // 注意：这里插入后，所有的后续元素都由i变成了i+1!!!
             int mst = kruskal(edge, -1, n);
-            if (mst == minMST) set2.add(x[3]);
-            edge.remove(0);
+            if (mst == minMST) set2.add(x[3]); // 注意：这里如果前面没有用int[]x提取的话，这里得变成edge.get(i + 1)!
+            edge.remove(0); // 注意，加入后要记得还原删除!!!
         }
 
         List<List<Integer>> res = new ArrayList<>();
@@ -106,4 +106,5 @@ public class LC1489_FindCriticalandPseudoCriticalEdgesinMinimumSpanningTree {
  * Kruskal
  * {edges} sorted by weight
  * [edge, edge0, edge1, edge2, ..., edgek,...
+ * edge0会永远被用到 -> 把要用到的边放到edge0之前，就会被强制用到
  */

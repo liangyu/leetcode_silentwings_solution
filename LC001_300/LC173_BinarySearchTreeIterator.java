@@ -57,9 +57,11 @@ public class LC173_BinarySearchTreeIterator {
     public boolean hasNext() {
         return !stack.isEmpty();
     }
-
-    class TreeNode {
-        int val;
-        TreeNode left, right;
-    }
 }
+/**
+ * BST: 中序遍历，依次递归下去
+ * 对于树的遍历，递归比较好写
+ * 这里用迭代的方法，一个接一个的遍历
+ * 永远往左走，找到最小值
+ * 接下来会遍历root => use stack
+ */

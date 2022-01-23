@@ -31,26 +31,27 @@ public class LC1383_MaximumPerformanceofaTeam {
      */
     // time = O(n * (logn + logk)), space = O(n + k)
     public int maxPerformance(int n, int[] speed, int[] efficiency, int k) {
-        // corner case
-        if (speed == null || speed.length == 0 || efficiency == null || efficiency.length == 0) return 0;
-
-        List<int[]> list = new ArrayList<>();
-        for (int i = 0; i < n; i++) list.add(new int[]{efficiency[i], speed[i]}); // O(n)
-        Collections.sort(list, (o1, o2) -> o2[0] - o1[0]); // O(nlogn)
+        int[][] persons = new int[n][2];
+        for (int i = 0; i < n; i++) persons[i] = new int[]{efficiency[i], speed[i]};
+        Arrays.sort(persons, (o1, o2) -> o2[0] - o1[0]); // reverse sort
 
         PriorityQueue<Integer> pq = new PriorityQueue<>();
-        long res = 0, speedSum = 0, M = (long)(1e9 + 7);
-
-        for (int i = 0; i < n; i++) { // O(n)
-            speedSum += list.get(i)[1];
-            pq.offer(list.get(i)[1]); // O(logk)
-            if (pq.size() > k) speedSum -= pq.poll();
-            res = Math.max(res, list.get(i)[0] * speedSum);
+        long speedSum = 0, res = 0;
+        long M = (long)(1e9 + 7);
+        for (int i = 0; i < n; i++) {
+            if (pq.size() > k - 1) speedSum -= pq.poll();
+            speedSum += persons[i][1];
+            res = Math.max(res, speedSum * persons[i][0]);
+            pq.offer(persons[i][1]);
         }
-        return (int)(res % M);
+        return (int) (res % M);
     }
 }
 /**
+ * objective = speedSum * minEfficiency
+ * 遍历speedSum不太可能，就从minEfficiency入手
+ * 如果确认张三效率最低，那么就要选比他效率高的人里面去选， 让speedSum最大的k-1个 => 放到pq里 minHeap topK大的
+ * 按照效率排个序
  * 要使团队得分最大，既要团队的速度和尽量大，又要最低效率的人的效率尽量大。
  * 如果一个人是团队中效率最低的, 我们在所有效率比他高的人里面，取speed最大的k个人
  */

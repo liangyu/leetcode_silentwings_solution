@@ -19,43 +19,34 @@ public class LC358_RearrangeStringkDistanceApart {
      */
     // time = O(nlogn), space = O(n)
     public String rearrangeString(String s, int k) {
-        // corner case
         if (k == 0) return s;
-        HashMap<Character, Integer> map = new HashMap<>();
-        for (char ch : s.toCharArray()) {
-            map.put(ch, map.getOrDefault(ch, 0) + 1);
-        }
+        int[] count = new int[26];
+        for (char c : s.toCharArray()) count[c - 'a']++;
 
-        PriorityQueue<Pair> pq = new PriorityQueue<Pair>((o1, o2) -> o1.freq != o2.freq ? o2.freq - o1.freq : o1.ch - o2.ch);
-        for (char key : map.keySet()) pq.offer(new Pair(map.get(key), key));
+        PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] != o2[0] ? o2[0] - o1[0] : o1[1] - o2[1]);
+
+        for (int i = 0; i < 26; i++) {
+            if (count[i] > 0) pq.offer(new int[]{count[i], i});
+        }
 
         StringBuilder sb = new StringBuilder();
         while (!pq.isEmpty()) {
-            if (pq.size() < k && pq.peek().freq > 1) return "";
-            int n = Math.min(k, pq.size());
-            List<Pair> temp = new ArrayList<>();
+            if (pq.size() < k && pq.peek()[0] > 1) return ""; // 取不完了！
+            int n = Math.min(pq.size(), k);
+            List<int[]> temp = new ArrayList<>();
             for (int i = 0; i < n; i++) {
-                sb.append(pq.peek().ch);
+                sb.append((char)(pq.peek()[1] + 'a'));
                 temp.add(pq.poll());
             }
 
-            for (Pair x : temp) {
-                if (x.freq > 1) {
-                    x.freq--;
+            for (int[] x : temp) {
+                if (x[0] > 1) {
+                    x[0]--;
                     pq.offer(x);
                 }
             }
         }
         return sb.toString();
-    }
-
-    private class Pair {
-        private int freq;
-        private char ch;
-        public Pair(int freq, char ch) {
-            this.freq = freq;
-            this.ch = ch;
-        }
     }
 }
 /**
@@ -68,4 +59,5 @@ public class LC358_RearrangeStringkDistanceApart {
  * dddd
  * eee
  * f
+ * 挑词频最高的k个字母，用pq
  */

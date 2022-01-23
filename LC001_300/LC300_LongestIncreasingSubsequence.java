@@ -94,6 +94,19 @@ public class LC300_LongestIncreasingSubsequence {
         }
         return p;
     }
+
+    // S3: TreeSet
+    // time = O(nlogn), space = O(n)
+    public int lengthOfLIS4(int[] nums) {
+        TreeSet<Integer> set = new TreeSet<>();
+
+        for (int x : nums) {
+            Integer ck = set.ceiling(x);
+            if (ck != null) set.remove(ck);
+            set.add(x);
+        }
+        return set.size();
+    }
 }
 /**
  * dp 第二类dp基本型 O(n^2)

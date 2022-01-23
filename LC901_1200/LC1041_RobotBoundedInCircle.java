@@ -22,79 +22,19 @@ public class LC1041_RobotBoundedInCircle {
      * @param instructions
      * @return
      */
-    // S1: Math
     // time = O(n), space = O(1)
     public boolean isRobotBounded(String instructions) {
-        // corner case
-        if (instructions == null || instructions.length() == 0) return false;
-
-        int[][] dir = new int[][]{{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-        int x = 0, y = 0, idx = 0;
-
+        int[][] directions = new int[][]{{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        int x = 0, y = 0, k = 0;
         for (char c : instructions.toCharArray()) {
-            if (c == 'L') idx = (idx + 3) % 4;
-            else if (c == 'R') idx = (idx + 1) % 4;
-            else {
-                x += dir[idx][0];
-                y += dir[idx][1];
-            }
+            if (c == 'G') {
+                x += directions[k][0];
+                y += directions[k][1];
+            } else if (c == 'L') k--;
+            else k++;
+            if (k < 0) k += 4;
+            if (k >= 4) k %= 4;
         }
-        return (x == 0 && y == 0) || idx != 0;
-    }
-
-    // S2: brute-force
-    // time = O(n), space = O(1)
-    public boolean isRobotBounded2(String instructions) {
-        // corner case
-        if (instructions == null || instructions.length() == 0) return false;
-
-        char dir = 'N';
-        int x = 0, y = 0, k = 4;
-        HashSet<Pair> set = new HashSet<>();
-        set.add(new Pair(0, 0));
-        while (k-- > 0) {
-            for (int i = 0; i < instructions.length(); i++) {
-                char c = instructions.charAt(i);
-                if (c == 'G') {
-                    if (dir == 'N') y++;
-                    if (dir == 'W') x--;
-                    if (dir == 'S') y--;
-                    if (dir == 'E') x++;
-                } else if (c == 'L') {
-                    if (dir == 'N') {dir = 'W'; continue;}
-                    if (dir == 'W') {dir = 'S'; continue;}
-                    if (dir == 'S') {dir = 'E'; continue;}
-                    if (dir == 'E') {dir = 'N'; continue;}
-                } else {
-                    if (dir == 'N') {dir = 'E'; continue;}
-                    if (dir == 'W') {dir = 'N'; continue;}
-                    if (dir == 'S') {dir = 'W'; continue;}
-                    if (dir == 'E') {dir = 'S'; continue;}
-                }
-            }
-            if (!set.add(new Pair(x, y))) return true;
-        }
-        return false;
-    }
-
-    private class Pair {
-        private int x, y;
-        public Pair(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        @Override
-        public int hashCode() {
-            return x * 31 + y;
-        }
-
-        public boolean equals(Object o) {
-            if (o == null) return false;
-            if (o instanceof Pair) {
-                Pair that = (Pair) o;
-                return this.x == that.x && this.y == that.y;
-            } else return false;
-        }
+        return (x == 0 && y == 0) || k != 0;
     }
 }

@@ -69,7 +69,7 @@ public class LC1801_NumberofOrdersintheBacklog {
     }
 
     // S1.2: PQ
-    // time = O(nlogn), space = O(1)
+    // time = O(nlogn), space = O(n)
     public int getNumberOfBacklogOrders2(int[][] orders) {
         // corner case
         if (orders == null || orders.length == 0 || orders[0] == null || orders[0].length == 0) return 0;

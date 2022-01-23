@@ -21,25 +21,24 @@ public class LC8_StringtoInteger {
     // time = O(n), space = O(1)
     public int myAtoi(String s) {
         s = s.trim();
-        // corner case
-        if (s == null || s.length() == 0) return 0;
+        if (s.length() == 0) return 0;
 
-        char firstChar = s.charAt(0);
+        char first = s.charAt(0);
         int sign = 1, start = 0;
         long res = 0;
 
-        if (firstChar == '+') {
+        if (first == '+') start++;
+        else if (first == '-') {
             start++;
-        } else if (firstChar == '-') {
             sign = -1;
-            start++;
         }
 
-        for (int i = start; i < s.length(); i++) {
+        int n = s.length();
+        for (int i = start; i < n; i++) {
             if (!Character.isDigit(s.charAt(i))) return (int) res * sign;
             res = res * 10 + s.charAt(i) - '0';
-            if (sign == 1 && res > Integer.MAX_VALUE) return Integer.MAX_VALUE;
-            if (sign == -1 && res > Integer.MAX_VALUE) return Integer.MIN_VALUE;
+            if (res * sign > Integer.MAX_VALUE) return Integer.MAX_VALUE;
+            if (res * sign < Integer.MIN_VALUE) return Integer.MIN_VALUE;
         }
         return (int) res * sign;
     }

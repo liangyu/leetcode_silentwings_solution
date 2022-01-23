@@ -55,7 +55,7 @@ public class LC354_RussianDollEnvelopes {
         if (envelopes == null || envelopes.length == 0 || envelopes[0] == null || envelopes[0].length == 0) return 0;
 
         // 排除长度上的干扰，只要看宽度即可！降维！
-        Arrays.sort(envelopes, (o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o2[1] - o1[1]);
+        Arrays.sort(envelopes, (o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o2[1] - o1[1]); // 宽度按降序排列！！！
         List<Integer> buffer = new ArrayList<>();
         for (int[] x : envelopes) {
             int idx = upperBound(buffer, x[1]);

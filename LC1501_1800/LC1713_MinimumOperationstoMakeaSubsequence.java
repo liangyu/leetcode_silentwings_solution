@@ -79,7 +79,8 @@ public class LC1713_MinimumOperationstoMakeaSubsequence {
  * [a,b,c,d,e ...]
  * [x f a b e c d]   LIS
  * 递增子序列
- * LCS -> LIS
+ * LCS -> LIS 根据distinct integers 转化成LIS，可以把它搞成递增序列
+ * 找第一个大于等于它的最小值
  * 此题的算法是，将target里面的所有元素顺次映射成1,2,3...，
  * 然后将target在arr里面的元素也都替换成对应的1,2,3...其他没有在target里出现的数字都忽略。
  * 于是我们可以计算target和arr的LIS。最终的答案就是target的长度减去LIS的长度。

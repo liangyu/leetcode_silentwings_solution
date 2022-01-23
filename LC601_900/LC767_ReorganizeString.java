@@ -16,118 +16,94 @@ public class LC767_ReorganizeString {
      * @param s
      * @return
      */
-    // S1: PQ
-    // time = O(nlogn), space = O(n)
-    public String reorganizeString(String s) {
-        // corner case
-        if (s == null || s.length() == 0) return "";
-
-        // 统计词频
-        HashMap<Character, Integer> map = new HashMap<>();
-        for (char ch : s.toCharArray()) {
-            map.put(ch, map.getOrDefault(ch, 0) + 1);
-        }
-
-        PriorityQueue<Pair> pq = new PriorityQueue<>((o1, o2) -> o1.freq != o2.freq ? o2.freq - o1.freq : o1.c - o2.c);
-
-        for (char key : map.keySet()) {
-            pq.offer(new Pair(map.get(key), key));
-        }
-
-        StringBuilder sb = new StringBuilder();
-        while (!pq.isEmpty()) {
-            // 1次挑出2个字符
-            int k = Math.min(2, pq.size()); // k可能是一个1
-            List<Pair> temp = new ArrayList<>(); // 暂存p
-            for (int i = 0; i < k; i++) {
-                Pair p = pq.poll();
-                sb.append(p.c);
-                p.freq--;
-                // 不能马上放回pq,否则会出现问题，如果有个char频次特别多，马山放回去又会被拿出来，所以要最后再塞回去
-                if (p.freq > 0) temp.add(p);
-            }
-            if (k == 1 && temp.size() > 0) return ""; // {1 : a} ok  {2 : a} x
-            for (Pair p : temp) pq.offer(p);
-        }
-        return sb.toString();
-    }
-
-    private class Pair {
-        private int freq;
-        private char c;
-        public Pair(int freq, char c) {
-            this.freq = freq;
-            this.c = c;
-        }
-    }
-
-    // S2: count
+    // S1: 跳着构造 (最优解!)
     // time = O(n), space = O(n)
-    public String reorganizeString2(String s) {
-        // corner case
-        if (s == null || s.length() == 0) return "";
-
-        int n = s.length();
-        int[] hash = new int[26];
-        for (int i = 0; i < n; i++) hash[s.charAt(i) - 'a']++;
-
-        int max = 0, letter = 0;
-        for (int i = 0; i < hash.length; i++) {
-            if (hash[i] > max) {
-                max = hash[i];
-                letter = i;
+    public String reorganizeString(String s) {
+        int n = s.length(), max = 0, maxIdx = 0;
+        int[] count = new int[26];
+        for (char c : s.toCharArray()) {
+            count[c - 'a']++;
+            if (max < count[c - 'a']) {
+                max = count[c - 'a'];
+                maxIdx = c - 'a';
             }
         }
         if (max > (n + 1) / 2) return "";
 
-        char[] res = new char[n];
+        char[] chars = new char[n];
         int idx = 0;
-        while (hash[letter] > 0) {
-            res[idx] = (char)(letter + 'a');
+        while (count[maxIdx] > 0) { // 优先首先安排放入频率最高的元素，剩下的元素插入顺序无关紧要
+            chars[idx] = (char)('a' + maxIdx);
             idx += 2;
-            hash[letter]--;
+            count[maxIdx]--;
         }
 
-        for (int i = 0; i < hash.length; i++) {
-            while (hash[i] > 0) {
-                if (idx >= res.length) idx = 1;
-                res[idx] = (char)(i + 'a');
+        for (int i = 0; i < 26; i++) {
+            while (count[i] > 0) {
+                if (idx >= n) idx = 1;
+                chars[idx] = (char)(i + 'a');
                 idx += 2;
-                hash[i]--;
+                count[i]--;
             }
         }
-        return String.valueOf(res);
+        return String.valueOf(chars);
     }
 
-    // S3: 跨着构造
+    // S2: 顺着构造(PQ)
     // time = O(nlogn), space = O(n)
-    public String reorganizeString3(String s) {
-        // corner case
-        if (s == null || s.length() == 0) return "";
+    public String reorganizeString2(String s) {
+        int[] count = new int[26];
+        for (char c : s.toCharArray()) count[c - 'a']++;
 
-        // 统计词频
-        HashMap<Character, Integer> map = new HashMap<>();
-        for (char ch : s.toCharArray()) {
-            map.put(ch, map.getOrDefault(ch, 0) + 1);
+        PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] != o2[0] ? o2[0] - o1[0] : o1[1] - o2[1]);
+
+        for (int i = 0; i < 26; i++) {
+            if (count[i] == 0) continue;
+            pq.offer(new int[]{count[i], i});
         }
 
-        // 搞成pair来根据词频排序
-        List<Pair> arr = new ArrayList<>();
-        for (char ch : s.toCharArray()) {
-            arr.add(new Pair(map.get(ch), ch));
+        StringBuilder sb = new StringBuilder();
+        while (!pq.isEmpty()) {
+            int k = Math.min(2, pq.size()); // k可能是一个1
+            List<int[]> temp = new ArrayList<>(); // 暂存p
+            for (int i = 0; i < k; i++) {
+                int[] cur = pq.poll();
+                int freq = cur[0];
+                char c = (char)(cur[1] + 'a');
+                sb.append(c);
+                freq--;
+                // 不能马上放回pq,否则会出现问题，如果有个char频次特别多，马山放回去又会被拿出来，所以要最后再塞回去
+                if (freq > 0) temp.add(new int[]{freq, cur[1]});
+            }
+            if (k == 1 && temp.size() > 0) return ""; // a并没有取完！构造失败！{1 : a} ok  {2 : a} x
+            for (int[] x : temp) pq.offer(x);
+        }
+        return sb.toString();
+    }
+
+    // S3: 跳着构造
+    // time = O(nlogn), space = O(n)
+    public String reorganizeString3(String s) {
+        int[] count = new int[26];
+        for (char c : s.toCharArray()) count[c - 'a']++;
+
+        List<int[]> arr = new ArrayList<>(); // {freq, char}
+        for (char c : s.toCharArray()) {
+            if (count[c - 'a'] == 0) continue;
+            arr.add(new int[]{count[c - 'a'], c - 'a'});
         }
 
         // 注意：写lambda expression时要考虑freq相等的情况如何去排序呢？a ： 5， b : 5 不能交错排序！！！
-        Collections.sort(arr, (o1, o2) -> o1.freq != o2.freq ? o2.freq - o1.freq : o1.c - o2.c);
+        Collections.sort(arr, (o1, o2) -> o1[0] != o2[0] ? o2[0] - o1[0] : o1[1] - o2[1]); // freq高的在前面
 
-        // 逐个现在odd位填充，再在even位填充
-        int n = s.length();
+        // 逐个先在odd位填充，再在even位填充
+        int n = s.length(), i = 0; // res里填充哪个位置
         char[] res = new char[n];
-        int i = 0; // res里填充哪个位置
-        for (Pair p : arr) {
-            // 填充一个隔一个
-            res[i] = p.c;
-            if (i > 0 && res[i] == res[i - 1]) return ""; // 相邻填充两元素如果相等，表示无解！！！
+        for (int[] x : arr) {
+            int cnt = x[0];
+            char c = (char)('a' + x[1]);
+            res[i] = c;
+            if (i >= 1 && res[i] == res[i - 1]) return ""; // 相邻填充两元素如果相等，表示无解！！！
             i += 2;
             if (i >= n) i = 1;
         }
@@ -166,4 +142,12 @@ public class LC767_ReorganizeString {
  * res = ababacacb
  * ref: LC1054 一模一样， LC1953
  * 2种做法: 跨着构造，顺序构造！！！
+ *
+ * 为什么要优先排列频次最高的？否则遇到下面的例子就会出错：
+ * 输入：
+ * "vvvlo"
+ * 输出：
+ * "lvovv"
+ * 预期结果：
+ * "vlvov"
  */

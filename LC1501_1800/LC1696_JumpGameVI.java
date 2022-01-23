@@ -45,10 +45,12 @@ public class LC1696_JumpGameVI {
 /**
  * dp[i]: the maximum score you can get when you arrive at nums[i]
  * max{dp[i-k], dp[i-k+1], [i-k+2], ..., dp[i-1]} + nums[i] => dp[i]
+ * k个元素里挑一个最大值
  * O(NK) => 10^5 * 10^5 => TLE
  * 更新dp[i]与dp[i+1]时很多区间是重复的
  * sliding window maximum，长度为k，始终求sliding window里的最大值 ref:239 [deque] 原始模板题
  * deque：monotonic decreasing queue
  * [8 7 6 5] i -> [8 7 6 5 i] => [8 7 7] 保持递减，小的老人立马淘汰
  * window也是会向后移动，有些大的元素会出局 => O(n) 每个元素只会出入window一次
+ * 还有一类dp，dp[i]的更新取决于它的前k个区间的和 => 再对dp做一个presum，这样可以O(1)时间把sum求出来
  */

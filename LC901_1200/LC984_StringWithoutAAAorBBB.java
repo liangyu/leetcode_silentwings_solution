@@ -53,5 +53,7 @@ public class LC984_StringWithoutAAAorBBB {
  * aabaabaabaabaabaabaabaa
  * a > b * 2 + 2
  * 套路解：aab aab aab ... ab ab ab ab ...
+ * 如果a比b多，我们尽量每回合多塞点a，是为了让后面的回合里a和b的总数趋等
+ * 每次若干个a，再加个b，后面趋等的话，只要输入ab即可。
  * ref: LC1405 是本题的升阶版
  */

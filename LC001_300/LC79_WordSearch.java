@@ -25,40 +25,34 @@ public class LC79_WordSearch {
      * @return
      */
     // time = O(m * n * 3^k), space = O(m * n) * k
-    private static final int[][] DIRECTIONS = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    private int[][] directions = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
     public boolean exist(char[][] board, String word) {
-        // corner case
-        if (board == null || board.length == 0) return false;
-        if (word == null || word.length() == 0) return true;
-
         int m = board.length, n = board[0].length;
         boolean[][] visited = new boolean[m][n];
+
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                if (dfs(board, i, j, word, 0, visited)) return true;
+                if (dfs(board, i, j, visited, word, 0)) return true;
             }
         }
         return false;
     }
 
-    private boolean dfs(char[][] board, int i, int j, String word, int idx, boolean[][] visited) {
+    private boolean dfs(char[][] board, int x, int y, boolean[][] visited, String word, int curPos) {
         int m = board.length, n = board[0].length;
-        // base case - success
-        if (idx == word.length()) return true;
+        // base case
+        if (curPos == word.length()) return true;
+        if (x < 0 || x >= m || y < 0 || y >= n) return false;
+        if (visited[x][y]) return false;
+        if (board[x][y] != word.charAt(curPos)) return false;
 
-        // base case - fail
-        if (i < 0 || i >= m || j < 0 || j >= n || visited[i][j] || board[i][j] != word.charAt(idx)) {
-            return false;
+        visited[x][y] = true;
+        for (int[] dir : directions) {
+            int i = x + dir[0];
+            int j = y + dir[1];
+            if (dfs(board, i, j, visited, word, curPos + 1)) return true;
         }
-
-        boolean res = false;
-        visited[i][j] = true;
-        for (int[] dir : DIRECTIONS) {
-            int ii = i + dir[0];
-            int jj = j + dir[1];
-            res = res || dfs(board, ii, jj, word, idx + 1, visited);
-        }
-        visited[i][j] = false;
-        return res;
+        visited[x][y] = false;
+        return false;
     }
 }

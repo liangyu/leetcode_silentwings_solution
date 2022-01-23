@@ -47,4 +47,6 @@ public class LC1332_RemovePalindromicSubsequences {
  * We can delete all characters 'a' in the 1st operation,
  * and then all characters 'b' in the 2nd operation.
  * So return 2 in this case
+ * 题目中只包含两种不同的字符，由于相同的字符组成的子序列一定是回文子序列
+ * 最多只需要删除 2 次即可删除所有的字符
  */

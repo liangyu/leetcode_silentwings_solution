@@ -27,30 +27,25 @@ public class LC158_ReadNCharactersGivenRead4IICallmultipletimes {
      * @param n
      * @return
      */
+    /**
+     * The read4 API is defined in the parent class Reader4.
+     *     int read4(char[] buf4);
+     */
     // time = O(n), space = O(1)
-    private int count = 0, pointer = 0;
-    private char[] temp = new char[4];
+    char[] readBuf = new char[4];
+    int count = 0, i = 0;
     public int read(char[] buf, int n) {
-        int index = 0;
-
-        while (index < n) {
-            if (pointer == 0) count = read4(temp);
-            if (count == 0) break;
-            while (index < n && pointer < count) {
-                buf[index++] = temp[pointer++];
+        int j = 0;
+        for (j = 0; j < n; j++) {
+            if (count == 0) {
+                count = read4(readBuf);
+                i = 0;
+                if (count == 0) break;
             }
-            if (pointer == count) pointer = 0;
+            buf[j] = readBuf[i];
+            i++;
+            count--;
         }
-        return index;
-    }
-
-    // helper function
-    private int read4(char[] temp) {
-        char[] res = new char[4];
-        int index = 0;
-        for (int i = 0; i < temp.length; i++) {
-            res[index++] = temp[i];
-        }
-        return index;
+        return j;
     }
 }
