@@ -23,7 +23,7 @@ public class LC354_RussianDollEnvelopes {
      * @param envelopes
      * @return
      */
-    // S1: DP
+    // S1: DP (TLE!!!)
     // time = O(n^2), space = O(n)
     public int maxEnvelopes(int[][] envelopes) {
         // corner case
@@ -79,7 +79,8 @@ public class LC354_RussianDollEnvelopes {
 /**
  * length: 1 3 4 6 8 9
  * 任何的一个合法序列一定是它的一个subsequence；反之则不一定，因为我们还要考虑width
- * length: (1, 7) (3, 6) (4, 2) (6, 8) (8, 9) (9, 10)
+ * length: (1, 7) (3, 6) (4, 3) (4, 2) (6, 8) (8, 9) (9, 10)
+ *           7      6      3       2     8      9      10
  * 找一个第二维度递增的最长子序列 => LCS
  * dp[i]: the maximum length of Russian doll sequence if ith envelop is the largest one
  * dp[i] = 1
@@ -93,5 +94,7 @@ public class LC354_RussianDollEnvelopes {
  * 1 3 (5) 7     4 => 1 3 (4) 7   找第一个>=4的换掉， 把原来的元素变小一点，更有利于以后接更多的元素
  * 用二分法来找第一个比4大的元素
  * 宽度按降序排列的好处是LIS序列里肯定就不会包括长度相同的(因为长度相等元素宽度在降维之后变成降序，二者最多取其一)，
+ * 比如(4, 3) (4, 2)，我们不会因为把(4,2)放在前面，导致求宽度LIS的时候出现(4,2),(4,3)都吸收进LIS里而造成不同元素间长度相等的情况！！！
+ * 所以通过降序排列，就能保证在(4,2),(4,3)之间只会取(4,2)这一个！
  * 因此可以放心求LIS，这个想法很妙，记住即可。
  */

@@ -89,7 +89,6 @@ public class LC767_ReorganizeString {
 
         List<int[]> arr = new ArrayList<>(); // {freq, char}
         for (char c : s.toCharArray()) {
-            if (count[c - 'a'] == 0) continue;
             arr.add(new int[]{count[c - 'a'], c - 'a'});
         }
 
@@ -100,7 +99,6 @@ public class LC767_ReorganizeString {
         int n = s.length(), i = 0; // res里填充哪个位置
         char[] res = new char[n];
         for (int[] x : arr) {
-            int cnt = x[0];
             char c = (char)('a' + x[1]);
             res[i] = c;
             if (i >= 1 && res[i] == res[i - 1]) return ""; // 相邻填充两元素如果相等，表示无解！！！

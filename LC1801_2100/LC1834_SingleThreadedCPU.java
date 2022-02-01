@@ -42,11 +42,11 @@ public class LC1834_SingleThreadedCPU {
         int curTime = 0, idx = 0;
         int[] res = new int[n];
         for (int[] task : jobs) {
-            while (!pq.isEmpty() && curTime < task[0]) {
-                res[idx++] = pq.peek()[1];
+            while (!pq.isEmpty() && curTime < task[0]) { // 当前时间还太早，当前任务还不能进来 -> CPU权利，挑任务做
+                res[idx++] = pq.peek()[1]; // 选择做顶端任务
                 curTime += pq.poll()[0];
             }
-            curTime = Math.max(curTime, task[0]);
+            curTime = Math.max(curTime, task[0]); // 跳出后，可能仍然小于job[0],时间直接跳转
             pq.offer(new int[]{task[1], task[2]});
         }
 
@@ -56,8 +56,11 @@ public class LC1834_SingleThreadedCPU {
 }
 /**
  * 任务池 -> 什么时候任务可以入池？
- * curTime >= enqueuTime[i] 一直到curTime < enqueuTime[i]
+ * curTime >= enqueuTime[i]  => 说明第i个任务可以入队列 -> 扔到任务池里
+ * 一直扔到curTime < enqueuTime[i] 没有更多任务可以入队了
+ * CPU在当前任务池里按照规则来挑
  * 按照时间顺序处理
  * 挑任务做，确定性规则
- * curTime +=
+ * curTime 干完任务后就会增加
+ * 再看谁能被拉进来，如果没有可以被拉进来的，那就继续在任务池里面挑
  */

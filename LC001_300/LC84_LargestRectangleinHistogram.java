@@ -40,13 +40,13 @@ public class LC84_LargestRectangleinHistogram {
     // time = O(n), space = O(n)
     public int largestRectangleArea2(int[] heights) {
         int[] nums = new int[heights.length + 2];
-        for (int i = 0; i < heights.length; i++) nums[i + 1] = heights[i];
+        for (int i = 0; i < heights.length; i++) nums[i + 1] = heights[i]; // 前后各自+1个0
 
         Stack<Integer> stack = new Stack<>();
-        stack.push(0);
+        stack.push(0); // 加入的其实就是nums[0]里的index 0，这样下面就从i = 1开始
 
         int area = 0;
-        for (int i = 1; i < nums.length; i++) {
+        for (int i = 1; i < nums.length; i++) { // nums里末尾的0会被遍历到，因为要让所有的stack元素统统pop出来！
             if (nums[i] >= nums[stack.peek()]) stack.push(i);
             else {
                 while (!stack.isEmpty() && nums[i] < nums[stack.peek()]) {

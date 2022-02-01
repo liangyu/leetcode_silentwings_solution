@@ -46,7 +46,7 @@ public class LC1902_DepthofBSTGivenInsertionOrder {
         // corner case
         if (order == null || order.size() == 0) return 0;
 
-        if (isMonotonic(order)) return order.size();
+        if (isMonotonic(order)) return order.size(); // 单链下去，直接深度就是arr.size()!
 
         int root = order.get(0);
         List<Integer> left = new ArrayList<>();
@@ -74,24 +74,23 @@ public class LC1902_DepthofBSTGivenInsertionOrder {
     // S2: TreeMap
     // time = O(nlogn), space = O(n)
     public int maxDepthBST2(int[] order) {
-        // corner case
-        if (order == null || order.length == 0) return 0;
-
-        TreeMap<Integer, Integer> map = new TreeMap<>(); // <val, depth>
+        int n = order.length;
+        TreeMap<Integer, Integer> map = new TreeMap<>();
         map.put(order[0], 1);
         int maxDepth = 1;
 
-        for (int i = 1; i < order.length; i++) {
+        for (int i = 1; i < n; i++) {
             int val = order[i];
 
-            Map.Entry<Integer, Integer> left = map.ceilingEntry(val);
-            Map.Entry<Integer, Integer> right = map.floorEntry(val);
+            // getting left and right nextdoor entries!
+            Integer left = map.floorKey(val);
+            Integer right = map.ceilingKey(val);
 
-            int leftDepth = 0, rightDepth = 0;
-            if (left != null) leftDepth = left.getValue();
-            if (right != null) rightDepth = right.getValue();
-
-            int depth = Math.max(leftDepth, rightDepth) + 1;
+            int lh = 0, rh = 0;
+            if (left != null) lh = map.get(left);
+            if (right != null) rh = map.get(right);
+            // the depth of our value is the highest of the two, plus one (since it's a child)
+            int depth = Math.max(lh, rh) + 1;
             maxDepth = Math.max(maxDepth, depth);
             map.put(val, depth);
         }

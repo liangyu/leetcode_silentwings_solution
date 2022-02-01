@@ -29,46 +29,20 @@ public class LC971_FlipBinaryTreeToMatchPreorderTraversal {
      * @return
      */
     // time = O(n), space = O(n)
-    private int cur = 0;
+    List<Integer> res;
+    int i = 0;
     public List<Integer> flipMatchVoyage(TreeNode root, int[] voyage) {
-        List<Integer> res = new ArrayList<>();
-        // corner case
-        if (root == null || voyage == null || voyage.length == 0) {
-            res.add(-1);
-            return res;
-        }
-
-        preOrder(root, voyage, res);
-
-        if (res.size() != 0 && res.get(0) == -1) {
-            res.clear();
-            res.add(-1);
-        }
-        return res;
+        res = new ArrayList<>();
+        return dfs(root, voyage) ? res : Arrays.asList(-1);
     }
 
-    private void preOrder(TreeNode root, int[] voyage, List<Integer> res) {
-        if (root == null) return;
-
-        if (root.val != voyage[cur]) {
-            res.clear();
-            res.add(-1);
-            return;
+    private boolean dfs(TreeNode node, int[] voyage) {
+        if (node == null) return true;
+        if (node.val != voyage[i++]) return false;
+        if (node.left != null && node.left.val != voyage[i]) { // need flip
+            res.add(node.val);
+            return dfs(node.right, voyage) && dfs(node.left, voyage);
         }
-
-        cur++;
-        if (cur < voyage.length && root.left != null && root.left.val != voyage[cur]) {
-            res.add(root.val);
-            preOrder(root.right, voyage, res);
-            preOrder(root.left, voyage, res);
-        } else {
-            preOrder(root.left, voyage, res);
-            preOrder(root.right, voyage, res);
-        }
-    }
-
-    private class TreeNode {
-        private int val;
-        private TreeNode left, right;
+        return dfs(node.left, voyage) && dfs(node.right, voyage);
     }
 }

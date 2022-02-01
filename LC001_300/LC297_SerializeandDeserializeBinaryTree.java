@@ -26,12 +26,12 @@ public class LC297_SerializeandDeserializeBinaryTree {
     // Encodes a tree to a single string.
     public String serialize(TreeNode root) {
         if (root == null) return "#";
-        return root.val + "," + serialize(root.left) + "," + serialize(root.right);
+        return root.val + "," + serialize(root.left) + "," + serialize(root.right); // 注意：root.right序列化后不要加','!!!
     }
 
     // Decodes your encoded data to tree.
     public TreeNode deserialize(String data) {
-        Queue<String> queue = new LinkedList<>();
+        Queue<String> queue = new LinkedList<>(); // queue里只要按照"根左右"的顺序读出string，交给dfs去做反序列化递归即可！！！
         int n = data.length();
         for (int i = 0; i < n; i++) {
             int j = i;

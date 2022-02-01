@@ -22,81 +22,69 @@ public class LC140_WordBreakII {
      * @return
      */
     // S1: Trie
-    // time = O(2^n), space = O(n)
+    // time = O(n * 2^n), space = O(n * 2^n)
+    TrieNode root;
+    boolean[] memo;
+    List<String> res;
     public List<String> wordBreak(String s, List<String> wordDict) {
-        List<String> res = new ArrayList<>();
-        // corner case
-        if (s == null || s.length() == 0) return res;
+        root = new TrieNode();
+        memo = new boolean[s.length()];
+        res = new ArrayList<>();
 
-        Trie trie = new Trie();
-
-        // step 1: build trie
-        for (String str : wordDict) {
-            trie.insert(str);
+        for (String word : wordDict) {
+            TrieNode node = root;
+            for (char c : word.toCharArray()) {
+                if (node.next[c - 'a'] == null) {
+                    node.next[c - 'a'] = new TrieNode();
+                }
+                node = node.next[c - 'a'];
+            }
+            node.isEnd = true;
         }
-        int[] mem = new int[21];
-        dfs(s, trie, 0, mem, new StringBuilder(), res);
+
+        List<String> words = new ArrayList<>();
+        dfs(s, 0, words);
         return res;
     }
 
-    private boolean dfs(String s, Trie trie, int idx, int[] mem, StringBuilder path, List<String> res) {
-        // base case - success
-        if (idx == s.length()) {
-            path.setLength(path.length() - 1);
-            res.add(path.toString());
+    private boolean dfs(String s, int cur, List<String> words) {  // s[cur:]
+        // base case
+        if (cur == s.length()) {
+            StringBuilder sb = new StringBuilder();
+            for (String x : words) sb.append(x).append(' ');
+            sb.setLength(sb.length() - 1);
+            res.add(sb.toString());
             return true;
         }
+        if (memo[cur]) return false;
 
-        if (mem[idx] == 1) return false;
-
-        TrieNode cur = trie.root;
+        TrieNode node = root;
         boolean flag = false;
-        int len = path.length();
-
-        for (int i = idx; i < s.length(); i++) {
+        for (int i = cur; i < s.length(); i++) {
             char ch = s.charAt(i);
-            if (cur.nexts[ch - 'a'] != null) {
-                cur = cur.nexts[ch - 'a'];
-                if (cur.isWord) {
-                    path.append(s.substring(idx, i + 1) + " ");
-                    if (dfs(s, trie, i + 1, mem, path, res)) flag = true;
-                    path.setLength(len);
+            if (node.next[ch - 'a'] != null) {
+                node = node.next[ch - 'a'];
+                if (node.isEnd) {
+                    words.add(s.substring(cur, i + 1));
+                    if (dfs(s, i + 1, words)) flag = true; // can't directly return, needs to find other solutions
+                    words.remove(words.size() - 1); // setback
                 }
-            } else break; // 注意：当trie的分支走不通时，要直接break放弃该分支！
+            } else break;
         }
-        if (!flag) mem[idx] = 1;
+        if (!flag) memo[cur] = true; // no successful cases were found!
         return flag;
     }
 
     private class TrieNode {
-        private char ch;
-        private TrieNode[] nexts;
-        private boolean isWord;
-        public TrieNode(char ch) {
-            this.ch = ch;
-            this.nexts = new TrieNode[26];
-            this.isWord = false;
-        }
-    }
-
-    private class Trie {
-        private TrieNode root;
-        public Trie() {
-            root = new TrieNode('\0');
-        }
-
-        private void insert(String word) {
-            TrieNode cur = root;
-            for (char ch : word.toCharArray()) {
-                if (cur.nexts[ch - 'a'] == null) {
-                    cur.nexts[ch - 'a'] = new TrieNode(ch);
-                }
-                cur = cur.nexts[ch - 'a'];
-            }
-            cur.isWord = true;
+        private TrieNode[] next;
+        private boolean isEnd;
+        public TrieNode() {
+            this.next = new TrieNode[26];
+            this.isEnd = false;
         }
     }
 }
 /**
+ * Trie 共用前缀
  * Trie总共最多也就10层，所以最多通过O(10)的时间就能确定哪些前缀是在Trie里面的，效率非常高
  */

@@ -56,12 +56,12 @@ public class LC472_ConcatenatedWords {
     // length of each word, and only try to form one word by using words in front of it.
 
     // S2: Trie
-    // time = O(sum(k) * logn + sum(k^2)), space = O(sum(k) * 26), k: 单词words[i] 的长度
+    // time = O(nlogn + sum(k)), space = O(sum(k) * 26), k: 单词words[i] 的长度
     TrieNode root;
     public List<String> findAllConcatenatedWordsInADict2(String[] words) {
         List<String> res = new ArrayList<>();
         root = new TrieNode();
-        Arrays.sort(words, (o1, o2) -> o1.length() - o2.length()); // O(sum(k) * logn)
+        Arrays.sort(words, (o1, o2) -> o1.length() - o2.length()); // O(nlogn)
 
         for (String word : words) { // O(n)
             if (word.length() != 0 && check(word)) res.add(word);

@@ -31,7 +31,7 @@ public class LC208_ImplementTrie {
     // time = O(k), space = O(1)
     private TrieNode root;
     public LC208_ImplementTrie() {
-        root = new TrieNode('\0');
+        root = new TrieNode();
     }
 
     /** Inserts a word into the trie. */
@@ -39,11 +39,11 @@ public class LC208_ImplementTrie {
         TrieNode cur = root;
         for (char c : word.toCharArray()) {
             if (cur.nexts[c - 'a'] == null) {
-                cur.nexts[c - 'a'] = new TrieNode(c);
+                cur.nexts[c - 'a'] = new TrieNode();
             }
             cur = cur.nexts[c - 'a'];
         }
-        cur.isWord = true;
+        cur.isEnd = true;
     }
 
     /** Returns if the word is in the trie. */
@@ -53,7 +53,7 @@ public class LC208_ImplementTrie {
             if (cur.nexts[c - 'a'] == null) return false;
             cur = cur.nexts[c - 'a'];
         }
-        return cur.isWord;
+        return cur.isEnd;
     }
 
     /** Returns if there is any word in the trie that starts with the given prefix. */
@@ -67,13 +67,11 @@ public class LC208_ImplementTrie {
     }
 
     private class TrieNode {
-        private char ch;
         private TrieNode[] nexts;
-        private boolean isWord;
-        public TrieNode(char ch) {
-            this.ch = ch;
+        private boolean isEnd;
+        public TrieNode() {
             this.nexts = new TrieNode[26];
-            this.isWord = false;
+            this.isEnd = false;
         }
     }
 }

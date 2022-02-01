@@ -42,7 +42,7 @@ public class LC1707_MaximumXORWithanElementFromArray {
         TrieNode root = new TrieNode();
         int i = 0;
         for (int[] q : que) {
-            while (i < nums.length && nums[i] <= q[1]) {
+            while (i < nums.length && nums[i] <= q[1]) { // 随着query的进行，不断在之前的基础上继续加元素入trie即可。
                 TrieNode node = root;
                 for (int k = 31; k >= 0; k--) {
                     if (node.next[(nums[i] >> k) & 1] == null) {
@@ -52,7 +52,7 @@ public class LC1707_MaximumXORWithanElementFromArray {
                 }
                 i++;
             }
-            if (i == 0) {
+            if (i == 0) {  // 注意corner case: 没有任何一个元素<=它。
                 res[q[2]] = -1;
                 continue;
             }

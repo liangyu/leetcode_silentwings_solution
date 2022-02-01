@@ -34,7 +34,7 @@ public class LC1405_LongestHappyString {
         StringBuilder sb = new StringBuilder();
         while (!pq.isEmpty()) {
             if (pq.size() == 1) {
-                int k = Math.min(pq.peek()[0], 2); // at most a, b and c
+                int k = Math.min(pq.peek()[0], 2); // at most a, b and c,不一定全部要用完！
                 for (int i = 0; i < k; i++) sb.append((char)pq.peek()[1]);
                 return sb.toString();
             }
@@ -42,7 +42,7 @@ public class LC1405_LongestHappyString {
             int[] x = pq.poll();
             int[] y = pq.poll();
 
-            int k = Math.min(1 + x[0] - y[0], 2);
+            int k = Math.min(1 + x[0] - y[0], 2); // 如果x[0] == y[0]，x也只能放1个，否则放2个
             for (int i = 0; i < k; i++) sb.append((char)x[1]);
             sb.append((char)y[1]);
 
@@ -63,4 +63,6 @@ public class LC1405_LongestHappyString {
  * 1. each round, pick two letters of highest frequency
  * 2. output one b, output as many a as possible
  *    a a b -> use more a and b, 一旦降到频次相等，剩下的轮流放即可
+ *    a a b | a a b
+ *    a a b | b b a ??? 可能吗？ 不可能！最多只会a,b相同，不会出现bba的情况
  */

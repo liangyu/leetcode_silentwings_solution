@@ -66,8 +66,8 @@ public class LC1284_MinimumNumberofFlipstoConvertBinaryMatrixtoZeroMatrix {
         int m = mat.length, n = mat[0].length;
         int res = Integer.MAX_VALUE;
 
-        if (check(mat, 0)) return 0;
-        for (int k = 1; k <= (m * n); k++) {
+        if (check(mat, 0)) return 0; // k = 0 的case要单独考虑！！！
+        for (int k = 1; k <= (m * n); k++) { // Gospers hack的k必须从1开始！！！k不能为0！k == 0 的case单独考虑！
             // Gospers-Hack -> interate all the m-bit state where there are k 1-bits
             int state = (1 << k) - 1;
             while (state < (1 << m * n)) {
@@ -84,11 +84,12 @@ public class LC1284_MinimumNumberofFlipstoConvertBinaryMatrixtoZeroMatrix {
  * 每个元素以它为主元素最多flip 1 次，2次就完全没有意义，因为这样就还原了。被动被翻转可以很多次。
  * 跟操作顺序无关，只跟次数有关。
  * 1 <= m, n <= 3  => 3 * 3  => 2^9 = 512,穷举所有可能
- * 每个位置主动翻不翻，被动翻不翻看上下左右翻不翻
+ * 每个位置主动翻不翻，被动翻不翻看上下左右翻不翻,1个元素也就check 5次，最多5次翻转
  * check下是不是都为0
- * 2^9*5*9
+ * 最多 = 2^9*5*9
  * 暴力题，所有策略中找出所有翻转次数最少的
  * 暴力枚举所有可能，9个位置，要么翻，要么不翻
+ * state每一位代表每个位置，1010，1表示主不主动翻转，0代表不主动翻转！
  * 稍微再优化一点：不用把所有的state都跑完
  * 按照主动翻转次数从小到多来遍历这个state
  * 0000 0001 0010 0011 0100 0101

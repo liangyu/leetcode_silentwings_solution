@@ -93,4 +93,63 @@ public class LC1763_LongestNiceSubstring {
         }
         return new int[]{len ,start};
     }
+
+    // S3: bitmask
+    // time = O(n^2), space = O(1)
+    public String longestNiceSubstring3(String s) {
+        int n = s.length(), maxLen = 0;
+        String res = "";
+        for (int i = 0; i < n; i++) {
+            int a = 0, b = 0;
+            for (int j = i; j < n; j++) {
+                char c = s.charAt(j);
+                if (Character.isLowerCase(c)) {
+                    a |= 1 << (c - 'a');
+                } else b |= 1 << (c - 'A');
+                if (a == b && j - i + 1 > maxLen) {
+                    maxLen = j - i + 1;
+                    res = s.substring(i, j + 1);
+                }
+            }
+        }
+        return res;
+    }
+
+    // S4: divide & conquer (最优解！！！)
+    // time = O(n), space = O(1)
+    private int maxPos, maxLen;
+    public String longestNiceSubstring4(String s) {
+        this.maxPos = 0;
+        this.maxLen = 0;
+        dfs(s, 0, s.length() - 1);
+        return s.substring(maxPos, maxPos + maxLen);
+    }
+
+    private void dfs(String s, int start, int end) {
+        if (start >= end) return;
+
+        int a = 0, b = 0;
+        for (int i = start; i <= end; i++) {
+            char c = s.charAt(i);
+            if (Character.isLowerCase(c)) a |= 1 << (c - 'a');
+            if (Character.isUpperCase(c)) b |= 1 << (c - 'A');
+        }
+        if (a == b) {
+            if (end - start + 1 > maxLen) {
+                maxPos = start;
+                maxLen = end - start + 1;
+            }
+            return;
+        }
+
+        // not successful
+        int valid = a & b; // get the common pos mask
+        int j = start;
+        while (j <= end) { // explore all possible nice strings and dfs
+            int i = j;
+            while (j <= end && (valid & (1 << Character.toLowerCase(s.charAt(j)) - 'a')) != 0) j++;
+            dfs(s, i, j - 1);
+            j++;
+        }
+    }
 }

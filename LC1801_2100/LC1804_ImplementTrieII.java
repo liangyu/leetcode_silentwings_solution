@@ -32,67 +32,66 @@ public class LC1804_ImplementTrieII {
     // time = O(k), space = O(1)
     private TrieNode root;
     public LC1804_ImplementTrieII() {
-        root = new TrieNode('\0');
+        root = new TrieNode();
     }
 
     public void insert(String word) {
-        TrieNode cur = root;
-        for (char ch : word.toCharArray()) {
-            if (cur.nexts[ch - 'a'] == null) {
-                cur.nexts[ch - 'a'] = new TrieNode(ch);
+        TrieNode node = root;
+        for (char c : word.toCharArray()) {
+            if (node.next[c - 'a'] == null) {
+                node.next[c - 'a'] = new TrieNode();
             }
-            cur = cur.nexts[ch - 'a'];
-            cur.prefixCount++;
+            node = node.next[c - 'a'];
+            node.count1++;
         }
-        cur.wordCount++;
+        node.count2++;
     }
 
     public int countWordsEqualTo(String word) {
-        TrieNode cur = root;
-        for (char ch : word.toCharArray()) {
-            if (cur.nexts[ch - 'a'] == null) return 0;
-            cur = cur.nexts[ch - 'a'];
+        TrieNode node = root;
+        for (char c : word.toCharArray()) {
+            if (node.next[c - 'a'] == null) return 0;
+            node = node.next[c - 'a'];
         }
-        return cur.wordCount;
+        return node.count2;
     }
 
     public int countWordsStartingWith(String prefix) {
-        TrieNode cur = root;
-        for (char ch : prefix.toCharArray()) {
-            if (cur.nexts[ch - 'a'] == null) return 0;
-            cur = cur.nexts[ch - 'a'];
+        TrieNode node = root;
+        for (char c : prefix.toCharArray()) {
+            if (node.next[c - 'a'] == null) return 0;
+            node = node.next[c - 'a'];
         }
-        return cur.prefixCount;
+        return node.count1; // 注意：prefix的case，我们这里返回的是count1 !!!
     }
 
     public void erase(String word) {
-        Stack<TrieNode> stack = new Stack<>();
-        TrieNode cur = root;
-        for (char ch : word.toCharArray()) {
-            stack.push(cur);
-            if (cur.nexts[ch - 'a'] == null) return;
-            cur = cur.nexts[ch - 'a'];
+        TrieNode node = root;
+        for (char c : word.toCharArray()) {
+            if (node.next[c - 'a'] == null) return;
+            node.next[c - 'a'].count1--;
+            if (node.next[c - 'a'].count1 == 0) {
+                node.next[c - 'a'] = null;
+                return;
+            }
+            node = node.next[c - 'a'];
         }
-        cur.wordCount--;
-        for (int i = word.length() - 1; i>= 0; i--) {
-            char ch = word.charAt(i);
-            TrieNode parent = stack.pop();
-            TrieNode child = parent.nexts[ch - 'a'];
-            child.prefixCount--;
-            if (child.prefixCount == 0) parent.nexts[ch - 'a'] = null;
-        }
+        node.count2--;
     }
 
     private class TrieNode {
-        private char ch;
-        private TrieNode[] nexts;
-        private int prefixCount;
-        private int wordCount;
-        public TrieNode(char ch) {
-            this.ch = ch;
-            this.nexts = new TrieNode[26];
-            this.prefixCount = 0;
-            this.wordCount = 0;
+        private TrieNode[] next;
+        private int count1; // prefix count
+        private int count2; // word count
+        public TrieNode() {
+            this.next = new TrieNode[26];
+            this.count1 = 0;
+            this.count2 = 0;
         }
     }
 }
+/**
+ * 对于erase(word)操作，我们将该单词沿途所经过的所有节点的count1都减1，
+ * 如果某个节点减1之后的count1变成了0，说明该支路往下都只属于这个word，可以直接将次节点删除。
+ * 另外，记得将该单词最后一个字母的节点的count2减1（如果该节点还存在的话）。
+ */

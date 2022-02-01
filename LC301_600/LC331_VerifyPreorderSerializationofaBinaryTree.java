@@ -26,20 +26,22 @@ public class LC331_VerifyPreorderSerializationofaBinaryTree {
      * @param preorder
      * @return
      */
-    // time = O(n), space = O(n)
+    // time = O(n), space = O(1)
     public boolean isValidSerialization(String preorder) {
         // corner case
         if (preorder == null || preorder.length() == 0) return true;
 
-        String[] strs = preorder.split(",");
-        int delta = 1; // 两者差1，如果看到一个◯的话就 + 1，如果看到一个#就 - 1，期待最后出来的时候delta = 0,因为#比◯多一个。
-        for (String s : strs) { // 中间过程delta不能小于0，这就意味着#多了。中间过程 = 0行不行？不行。比如9，#，#，1。
-            if (s.equals("#")) delta--;
-            else {
-                if (delta <= 0) return false;
-                delta++;
+        int n = preorder.length(), count = 0;
+        for (int i = 0; i < n; i++) {
+            if (preorder.charAt(i) != ',' && preorder.charAt(i) != '#') {
+                while (i < n && preorder.charAt(i) != ',') i++; // move to ','
+                count--;
+            } else { // "#"
+                count++;
+                i++; // move to ','
             }
+            if (i < n - 1 && count > 0) return false;
         }
-        return delta == 0;
+        return count == 1;
     }
 }

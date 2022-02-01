@@ -29,6 +29,7 @@ public class LC310_MinimumHeightTrees {
      * @param edges
      * @return
      */
+    // S1: bfs
     // time = O(n), space = O(n)
     public List<Integer> findMinHeightTrees(int n, int[][] edges) {
         List<Integer> res = new ArrayList<>();
@@ -60,6 +61,47 @@ public class LC310_MinimumHeightTrees {
             }
         }
         res.addAll(set);
+        return res;
+    }
+
+    // S2: Toplogical Sort
+    // time = O(n), space = O(n)
+    public List<Integer> findMinHeightTrees2(int n, int[][] edges) {
+        List<Integer> res = new ArrayList<>();
+        if (n == 1) return Arrays.asList(0);
+        if (n == 2) return Arrays.asList(0, 1);
+
+        List<Integer>[] graph = new List[n];
+        int[] indegree = new int[n];
+        for (int i = 0; i < n; i++) graph[i] = new ArrayList<>();
+        for (int[] x : edges) {
+            int a = x[0], b = x[1];
+            graph[a].add(b);
+            graph[b].add(a);
+            indegree[a]++;
+            indegree[b]++;
+        }
+
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 1) queue.offer(i);
+        }
+
+        int count = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            while (size-- > 0) {
+                int cur = queue.poll();
+                count++;
+                for (int next : graph[cur]) {
+                    indegree[next]--;
+                    if (indegree[next] == 1) queue.offer(next);
+                }
+            }
+            if (count == n - 1 || count == n - 2) break;
+        }
+
+        while (!queue.isEmpty()) res.add(queue.poll());
         return res;
     }
 }

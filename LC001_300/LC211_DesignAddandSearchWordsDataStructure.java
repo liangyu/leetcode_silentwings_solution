@@ -22,18 +22,17 @@ public class LC211_DesignAddandSearchWordsDataStructure {
     /** Initialize your data structure here. */
     private TrieNode root;
     public LC211_DesignAddandSearchWordsDataStructure() {
-        root = new TrieNode('\0');
+        root = new TrieNode();
     }
 
     // time = O(k) = O(1), space = O(k)
     public void addWord(String word) {
-        char[] chars = word.toCharArray();
-        TrieNode cur = root;
-        for (char ch : chars) {
-            if (cur.nexts[ch - 'a'] == null) cur.nexts[ch - 'a'] = new TrieNode(ch);
-            cur = cur.nexts[ch - 'a'];
+        TrieNode node = root;
+        for (char c : word.toCharArray()) {
+            if (node.next[c - 'a'] == null) node.next[c - 'a'] = new TrieNode();
+            node = node.next[c - 'a'];
         }
-        cur.isWord = true;
+        node.isEnd = true;
     }
 
     // time = O(26^k) = O(1), space = O(k)
@@ -41,30 +40,30 @@ public class LC211_DesignAddandSearchWordsDataStructure {
         return dfs(word, root, 0);
     }
 
-    private boolean dfs(String word, TrieNode cur, int idx) {
-        int len = word.length();
-        if (cur == null) return false;
-        if (idx == len) return cur.isWord; // 有可能cur == null，导致NullPointerException，所以要放在check null的base case之后
+    private boolean dfs(String word, TrieNode node, int idx) {
+        // base case
+        if (node == null) return false;
+        if (idx == word.length()) return node.isEnd;
 
-        char ch = word.charAt(idx);
-        if (ch >= 'a' && ch <= 'z') {  // case 1: lower case 'a' ~ 'z'
-            return dfs(word, cur.nexts[ch - 'a'], idx + 1);
-        } else { // case 2: '.'
-            for (TrieNode next : cur.nexts) {
-                if (dfs(word, next, idx + 1)) return true;
+        if (word.charAt(idx) != '.') return dfs(word, node.next[word.charAt(idx) - 'a'], idx + 1);
+        else {
+            boolean flag = false;
+            for (int k = 0; k < 26; k++) {
+                if (dfs(word, node.next[k], idx + 1)) {
+                    flag = true;
+                    break;
+                }
             }
-            return false;
+            return flag;
         }
     }
 
     private class TrieNode {
-        private char ch;
-        private TrieNode[] nexts;
-        private boolean isWord;
-        public TrieNode(char ch) {
-            this.ch = ch;
-            this.nexts = new TrieNode[26];
-            this.isWord = false;
+        private TrieNode[] next;
+        private boolean isEnd;
+        public TrieNode() {
+            this.next = new TrieNode[27];
+            this.isEnd = false;
         }
     }
 }

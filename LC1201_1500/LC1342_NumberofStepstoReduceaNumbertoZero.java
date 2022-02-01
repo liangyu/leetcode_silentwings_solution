@@ -16,11 +16,10 @@ public class LC1342_NumberofStepstoReduceaNumbertoZero {
      * @return
      */
     // time = O(logn), space = O(1)
-    public int numberOfSteps (int num) {
+    public int numberOfSteps(int num) {
         int count = 0;
         while (num > 0) {
-            if (num % 2 == 0) num /= 2;
-            else num--;
+            num = (num % 2 == 0) ? num / 2 : num - 1;
             count++;
         }
         return count;

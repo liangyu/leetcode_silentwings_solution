@@ -1,5 +1,5 @@
 package LC2101_2400;
-
+import java.util.*;
 public class LC2147_NumberofWaystoDivideaLongCorridor {
     /**
      * Along a long library corridor, there is a line of seats and decorative plants. You are given a 0-indexed string
@@ -31,6 +31,7 @@ public class LC2147_NumberofWaystoDivideaLongCorridor {
      * @param corridor
      * @return
      */
+    // S1
     // time = O(n), space = O(n)
     public int numberOfWays(String corridor) {
         int n = corridor.length(), count = 0;
@@ -54,4 +55,33 @@ public class LC2147_NumberofWaystoDivideaLongCorridor {
         }
         return (int) res;
     }
+
+    // S2
+    // time = O(n), space = O(n)
+    public int numberOfWays2(String corridor) {
+        int n = corridor.length();
+        long M = (long)(1e9 + 7);
+        List<Integer> pos = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            if (corridor.charAt(i) == 'S') pos.add(i);
+        }
+
+        if (pos.size() == 0 || pos.size() % 2 != 0) return 0;
+
+        long res = 1;
+        for (int i = 2; i + 2 <= pos.size(); i+= 2) {
+            long diff = pos.get(i) - pos.get(i - 1);
+            res *= diff;
+            res %= M;
+        }
+        return (int) res;
+    }
 }
+/**
+ * 本题的思想非常简单，就是将每两个沙发作为一组，然后查看每组之间有几个植物。
+ * 这些植物之间、植物与两侧的沙发之间都可以插板。
+ * 然后用乘法原理计算总的策略数目。
+ * 本题如果在原数组上操作，会显得有些繁琐。
+ * 直接将沙发的index拿出来放在一个新数组里，这样每相邻两个元素一组，每组之间的间隔就一目了然。
+ * pos[0,1,4,6]
+ */

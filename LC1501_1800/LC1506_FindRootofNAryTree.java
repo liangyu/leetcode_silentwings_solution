@@ -66,7 +66,6 @@ public class LC1506_FindRootofNAryTree {
         public int val;
         public List<Node> children;
 
-
         public Node() {
             children = new ArrayList<Node>();
         }

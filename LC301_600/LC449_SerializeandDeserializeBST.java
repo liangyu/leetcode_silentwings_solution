@@ -25,47 +25,77 @@ public class LC449_SerializeandDeserializeBST {
      */
     // time = O(n), space = O(n)
     // Encodes a tree to a single string.
+    StringBuilder sb;
+    // Encodes a tree to a single string.
     public String serialize(TreeNode root) {
-        // corner case
-        if (root == null) return "";
-
-        StringBuilder sb = new StringBuilder();
-        preOrder(root, sb);
-
-        String res = sb.toString();
-        return res.substring(1);
-    }
-
-    private void preOrder(TreeNode root, StringBuilder sb) {
-        if (root == null) return; // 这里由于是bst，所以不需要通过增加"#"来判断是否到了leaf下的null
-
-        sb.append("," + root.val);
-        preOrder(root.left, sb);
-        preOrder(root.right, sb);
+        sb = new StringBuilder();
+        dfs(root);
+        return sb.toString();
     }
 
     // Decodes your encoded data to tree.
     public TreeNode deserialize(String data) {
-        // corner case
         if (data == null || data.length() == 0) return null;
 
         String[] strs = data.split(",");
         Queue<Integer> queue = new LinkedList<>();
-        for (String s : strs) queue.offer(Integer.parseInt(s));
+        for (String s : strs) queue.offer(Integer.valueOf(s));
         return buildTree(queue);
     }
 
     private TreeNode buildTree(Queue<Integer> queue) {
         if (queue.isEmpty()) return null;
 
+        Queue<Integer> sq = new LinkedList<>();
+
         TreeNode root = new TreeNode(queue.poll());
-        Queue<Integer> smallQ = new LinkedList<>();
-        while (!queue.isEmpty() && queue.peek() < root.val) {
-            smallQ.offer(queue.poll());
+        while (!queue.isEmpty()) {
+            if (queue.peek() < root.val) sq.offer(queue.poll());
+            else break;
         }
 
-        root.left = buildTree(smallQ);
+        root.left = buildTree(sq);
         root.right = buildTree(queue);
+        return root;
+    }
+
+    private void dfs(TreeNode node) {
+        if (node == null) return;
+
+        sb.append(node.val).append(',');
+        dfs(node.left);
+        dfs(node.right);
+    }
+
+    // S2: dfs
+    // Encodes a tree to a single string.
+    public String serialize2(TreeNode root) {
+        if (root == null) return "";
+        String res = root.val + "," + serialize(root.left) + "," + serialize(root.right);
+        return res;
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize2(String data) {
+        String[] strs = data.split(",");
+        Queue<Integer> queue = new LinkedList<>();
+        for (String s : strs) {
+            if (s.length() != 0) queue.offer(Integer.parseInt(s));
+        }
+        return dfs(queue);
+    }
+
+    private TreeNode dfs(Queue<Integer> queue) {
+        if (queue.isEmpty()) return null;
+
+        Queue<Integer> sq = new LinkedList<>();
+        TreeNode root = new TreeNode(queue.poll());
+        while (!queue.isEmpty()) {
+            if (queue.peek() < root.val) sq.offer(queue.poll());
+            else break;
+        }
+        root.left = dfs(sq);
+        root.right = dfs(queue);
         return root;
     }
 }

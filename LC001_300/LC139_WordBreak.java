@@ -22,7 +22,7 @@ public class LC139_WordBreak {
      * @return
      */
     // S1: DP
-    // time = O(n^2), space = O(n)
+    // time = O(n^3), space = O(n)
     public boolean wordBreak(String s, List<String> wordDict) {
         // corner case
         if (s == null || s.length() == 0) return true;
@@ -44,68 +44,59 @@ public class LC139_WordBreak {
 
     // S2: Trie
     // time = O(n^2), space = O(n)
+    TrieNode root;
+    boolean[] memo;
     public boolean wordBreak2(String s, List<String> wordDict) {
-        // corner case
-        if (s == null || s.length() == 0 || wordDict == null || wordDict.size() == 0) return false;
+        root = new TrieNode();
+        memo = new boolean[s.length()];
 
-        Trie trie = new Trie();
         for (String word : wordDict) {
-            trie.insert(word);
+            TrieNode node = root;
+            for (char c : word.toCharArray()) {
+                if (node.next[c - 'a'] == null) {
+                    node.next[c - 'a'] = new TrieNode();
+                }
+                node = node.next[c - 'a'];
+            }
+            node.isEnd = true;
         }
 
-        return dfs(s, 0, trie, new int[301]);
+        return dfs(s, 0);
     }
 
-    private boolean dfs(String s, int idx, Trie trie, int[] mem) {
+    private boolean dfs(String s, int cur) {  // s[cur:]
         // base case
-        if (idx == s.length()) return true;
+        if (cur == s.length()) return true;
+        if (memo[cur]) return false;
 
-        if (mem[idx] == 1) return false;
-
-        TrieNode cur = trie.root;
-        for (int i = idx; i < s.length(); i++) {
+        TrieNode node = root;
+        for (int i = cur; i < s.length(); i++) {
             char ch = s.charAt(i);
-            if (cur.nexts[ch - 'a'] != null) {
-                cur = cur.nexts[ch - 'a'];
-                if (cur.isWord && dfs(s, i + 1, trie, mem)) {
-                    return true;
-                }
+            if (node.next[ch - 'a'] != null) {
+                node = node.next[ch - 'a'];
+                if (node.isEnd && dfs(s, i + 1)) return true;
             } else break;
         }
-        mem[idx] = 1;
+        memo[cur] = true;
         return false;
     }
 
     private class TrieNode {
-        private char ch;
-        private TrieNode[] nexts;
-        private boolean isWord;
-        public TrieNode(char ch) {
-            this.ch = ch;
-            this.nexts = new TrieNode[26];
-            this.isWord = false;
-        }
-    }
-
-    private class Trie {
-        private TrieNode root;
-        public Trie() {
-            this.root = new TrieNode('\0');
-        }
-
-        private void insert(String s) {
-            TrieNode cur = root;
-            for (char ch : s.toCharArray()) {
-                if (cur.nexts[ch - 'a'] == null) {
-                    cur.nexts[ch - 'a'] = new TrieNode(ch);
-                }
-                cur = cur.nexts[ch - 'a'];
-            }
-            cur.isWord = true;
+        private TrieNode[] next;
+        private boolean isEnd;
+        public TrieNode() {
+            this.next = new TrieNode[26];
+            this.isEnd = false;
         }
     }
 }
 /**
+ * 非常好的NP问题
+ * 找前缀
+ * 遍历字典来一个个match?
+ * => 传统dfs+trie
+ * 如果你有一堆字符串的集合，首选想到字典树
+ * 这样在集合里搜索会很高效
  * abc
  * abd
  * acb

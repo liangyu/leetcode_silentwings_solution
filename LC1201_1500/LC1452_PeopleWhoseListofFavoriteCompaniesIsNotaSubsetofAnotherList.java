@@ -63,7 +63,7 @@ public class LC1452_PeopleWhoseListofFavoriteCompaniesIsNotaSubsetofAnotherList 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < favoriteCompanies.get(i).size(); j++) {
                 map.putIfAbsent(favoriteCompanies.get(i).get(j), new BitSet(100));
-                map.get(favoriteCompanies.get(i).get(j)).set(i);
+                map.get(favoriteCompanies.get(i).get(j)).set(i); // 对每个公司的bitset，第i位都把它置1
             }
         }
 
@@ -74,7 +74,7 @@ public class LC1452_PeopleWhoseListofFavoriteCompaniesIsNotaSubsetofAnotherList 
             for (String s : favoriteCompanies.get(i)) {
                 bs.and(map.get(s));
             }
-            if (bs.cardinality() == 1) res.add(i);
+            if (bs.cardinality() == 1) res.add(i); // 求完and交集之后结果只有1个人喜欢这公司，那势必就只有我自己，满足条件！！！
         }
         return res;
     }
@@ -84,6 +84,7 @@ public class LC1452_PeopleWhoseListofFavoriteCompaniesIsNotaSubsetofAnotherList 
  * n * n * m = 100 * 100 * 50 = 5 * 10^6
  * 暴力做是可以过的
  * S2: 不需要考虑所有的j => 只要考虑那些persons in all companyList[i]
+ * i喜欢的公司有哪些人喜欢，只有这些人的公司名单才有可能覆盖i
  * [google, FB, Amazon] => [google] * [FB] * [Amazon]
  * 搞出每个公司有哪些人喜欢，对每个公司喜欢的人取个交集
  * 求交集：bit mask

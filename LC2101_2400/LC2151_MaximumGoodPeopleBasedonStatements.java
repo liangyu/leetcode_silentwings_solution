@@ -57,4 +57,27 @@ public class LC2151_MaximumGoodPeopleBasedonStatements {
         }
         return true;
     }
+
+    // S1.2: bitmask + Ghosper's hack
+    // time = O(2^n), space = O(n)
+    public int maximumGood2(int[][] statements) {
+        int n = statements.length, res = 0;
+        for (int k = n; k >= 1; k--) {
+            int state = (1 << k) - 1;
+            while (state < (1 << n)) {
+                if (isValid(statements, state)) return k;
+                int c = state & -state;
+                int r = state + c;
+                state = (((r ^ state) >> 2) / c) | r;
+            }
+        }
+        return res;
+    }
 }
+/**
+ * 1. good people's statements must be consistent
+ * 2. good people verified must be in the combo
+ * 3. bad people verified must not be in the combo
+ * Ghosper's hack
+ * 优先遍历那些1-bit比较多的二进制数
+ */

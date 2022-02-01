@@ -115,6 +115,8 @@ public class LC2045_SecondMinimumTimetoReachDestination {
         while (!queue.isEmpty()) {
             int[] top = queue.poll();
             int cur = top[0], t = top[1];
+            // 这里虽然表明已经访问了2次，但是当前poll出来的未必就是第2次！！！所以不能直接return t, 而是要return dist[cur]!
+            // if (cur == n && visited[cur] == 2) return dist[cur];
             int tt;
             int round = t / change;
             if (round % 2 == 0) tt = t + time;
@@ -125,7 +127,6 @@ public class LC2045_SecondMinimumTimetoReachDestination {
                     dist[nxt] = tt;
                     visited[nxt]++;
                     queue.offer(new int[]{nxt, tt});
-
                     if (nxt == n && visited[nxt] == 2) return tt;
                 }
             }
