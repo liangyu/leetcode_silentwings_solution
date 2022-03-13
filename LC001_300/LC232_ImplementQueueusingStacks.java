@@ -33,6 +33,7 @@ public class LC232_ImplementQueueusingStacks {
      * All the calls to pop and peek are valid.
      */
     /** Initialize your data structure here. */
+    // time = O(1), space = O(n)
     private Stack<Integer> stack1;
     private Stack<Integer> stack2;
     public LC232_ImplementQueueusingStacks() {
@@ -62,3 +63,41 @@ public class LC232_ImplementQueueusingStacks {
         return stack1.isEmpty();
     }
 }
+
+// S2
+// time = O(1), space = O(n)
+class MyQueue {
+    Stack<Integer> s1; // push
+    Stack<Integer> s2; // pop
+    public MyQueue() {
+        s1 = new Stack<>();
+        s2 = new Stack<>();
+    }
+
+    public void push(int x) {
+        s1.push(x);
+    }
+
+    public int pop() {
+        if (s2.isEmpty()) {
+            while (!s1.isEmpty()) s2.push(s1.pop());
+        }
+        return s2.pop();
+    }
+
+    public int peek() {
+        if (s2.isEmpty()) {
+            while (!s1.isEmpty()) s2.push(s1.pop());
+        }
+        return s2.peek();
+    }
+
+    public boolean empty() {
+        return s1.isEmpty() && s2.isEmpty();
+    }
+}
+/**
+ * x1  x2x3x4x5x6
+ * stack: x10, x11, ... -> 永远做push
+ * stack:               -> 永远做pop
+ */

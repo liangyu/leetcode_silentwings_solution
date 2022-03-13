@@ -31,26 +31,28 @@ public class LC332_ReconstructItinerary {
     HashMap<String, List<String>> map;
     public List<String> findItinerary(List<List<String>> tickets) {
         map = new HashMap<>();
-        Collections.sort(tickets, (o1, o2) -> o1.get(1).compareTo(o2.get(1))); // O(nlogn)
+        Collections.sort(tickets, (o1, o2) -> o2.get(1).compareTo(o1.get(1)));
 
-        for (List<String> ticket : tickets) { // O(n)
-            String a = ticket.get(0), b = ticket.get(1);
-            map.putIfAbsent(a, new LinkedList<>());
-            map.get(a).add(b);
+        for (List<String> ticket : tickets) {
+            String from = ticket.get(0), to = ticket.get(1);
+            map.putIfAbsent(from, new ArrayList<>());
+            map.get(from).add(to);
         }
-        List<String> path = new LinkedList<>();
+
+        List<String> path = new ArrayList<>();
         dfs("JFK", path);
+        Collections.reverse(path); // reverse: start + path2 + path1
         return path;
     }
 
     private void dfs(String start, List<String> path) {
-        while (map.getOrDefault(start, new LinkedList<>()).size() > 0) {
-            String next = map.get(start).get(0);
-            map.get(start).remove(0);
+        // path: path 1 + path2 + start 两步走：第一步走到底，第二步走个环
+        while (map.getOrDefault(start, new ArrayList<>()).size() > 0) {
+            String next = map.get(start).get(map.get(start).size() - 1);
+            map.get(start).remove(map.get(start).size() - 1);
             dfs(next, path);
         }
-
-        path.add(0, start);
+        path.add(start);
     }
 
     // S2: Heap

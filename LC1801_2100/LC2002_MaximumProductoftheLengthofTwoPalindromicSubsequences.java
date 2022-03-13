@@ -56,6 +56,7 @@ public class LC2002_MaximumProductoftheLengthofTwoPalindromicSubsequences {
     }
 
     // S2: bit mask + dp
+    // time = O(2^n * n^2), space = O(n^2)
     public int maxProduct2(String s) {
         // corner case
         if (s == null || s.length() == 0) return 0;
@@ -78,9 +79,9 @@ public class LC2002_MaximumProductoftheLengthofTwoPalindromicSubsequences {
 
         for (int len = 2; len <= n; len++) {
             for (int i = 0; i + len - 1 < n; i++) {
-                int j = i + len - 1;
+                int j = i + len - 1; // when len == 1 -> i == j
                 if (sb.charAt(i) == sb.charAt(j)) {
-                    dp[i][j] = dp[i + 1][j - 1] + 2;
+                    dp[i][j] = dp[i + 1][j - 1] + 2; // i + len - 1 >= 1 => i + len >= 2 -> len >= 2
                 } else { // i, j 不可能同时在回文串中
                     dp[i][j] = Math.max(dp[i + 1][j], dp[i][j - 1]);
                 }

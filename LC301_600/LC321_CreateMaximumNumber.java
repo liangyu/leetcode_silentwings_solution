@@ -1,5 +1,5 @@
 package LC301_600;
-
+import java.util.*;
 public class LC321_CreateMaximumNumber {
     /**
      * You are given two integer arrays nums1 and nums2 of lengths m and n respectively. nums1 and nums2 represent the
@@ -78,9 +78,74 @@ public class LC321_CreateMaximumNumber {
         return false;
     }
 
+    // S1.2
+    // time = O(k * (m + n)), space = O(m + n)
+    public int[] maxNumber2(int[] nums1, int[] nums2, int k) {
+        int m = nums1.length, n = nums2.length;
+        List<Integer> res = new ArrayList<>();
+        for (int i = 0; i <= k; i++) { // O(k)
+            if (i > m || k - i > n) continue;
+            List<Integer> p1 = findMax(nums1, i); // O(m)
+            List<Integer> p2 = findMax(nums2, k - i); // O(n)
+            List<Integer> temp = merge(p1, p2); // O(m + n)
+            if (!max(res, 0, temp, 0)) res = new ArrayList<>(temp);
+        }
+        int[] ans = new int[res.size()];
+        for (int i = 0; i < res.size(); i++) ans[i] = res.get(i);
+        return ans;
+    }
+
+    private List<Integer> findMax(int[] nums, int k) {
+        List<Integer> res = new ArrayList<>();
+
+        int n = nums.length, drop = n - k;
+        for (int i = 0; i < n; i++) {
+            while (res.size() > 0 && drop > 0 && nums[i] > res.get(res.size() - 1)) {
+                res.remove(res.size() - 1);
+                drop--;
+            }
+            res.add(nums[i]);
+        }
+        while (drop-- > 0) res.remove(res.size() - 1);
+        return res;
+    }
+
+    private List<Integer> merge(List<Integer> p1, List<Integer> p2) {
+        int m = p1.size(), n = p2.size();
+        List<Integer> res = new ArrayList<>();
+
+        int i = 0, j = 0;
+        while (i < m && j < n) {
+            if (p1.get(i) > p2.get(j)) {
+                res.add(p1.get(i++));
+            } else if (p1.get(i) < p2.get(j)) {
+                res.add(p2.get(j++));
+            } else {
+                if (max(p1, i, p2, j)) res.add(p1.get(i++));
+                else res.add(p2.get(j++));
+            }
+        }
+        while (i < m) res.add(p1.get(i++));
+        while (j < n) res.add(p2.get(j++));
+        return res;
+    }
+
+    private boolean max(List<Integer> p1, int i, List<Integer> p2, int j) {
+        int m = p1.size(), n = p2.size();
+        while (i < m && j < n) {
+            if (p1.get(i) == p2.get(j)) {
+                i++;
+                j++;
+            } else if (p1.get(i) > p2.get(j)) return true;
+            else return false;
+        }
+        if (i < m) return true;
+        return false;
+    }
+
     // S2: dp (TLE!!!)
     // time = O(m * n * k), space = O(m * n * k)
-    public int[] maxNumber2(int[] nums1, int[] nums2, int k) {
+    public int[] maxNumber3(int[] nums1, int[] nums2, int k) {
         int m = nums1.length, n = nums2.length;
         String[][][] dp = new String[m + 1][n + 1][k + 1];
         for (int i = 0; i <= m; i++) {

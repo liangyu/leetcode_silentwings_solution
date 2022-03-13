@@ -59,4 +59,5 @@ public class LC1675_MinimizeDeviationinArray {
  * 2,2,3,[4] 按照从大到小替补
  * 2,2,[3],2 => 3 - 2
  * 遍历range的最大值
+ * O(32n * log(32n))
  */

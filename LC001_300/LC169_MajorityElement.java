@@ -26,16 +26,11 @@ public class LC169_MajorityElement {
     // 不难证明，如果存在元素e出现频率超过半数，那么数组中最后剩下的就只有e。
     // time = O(n), space = O(1)
     public int majorityElement(int[] nums) {
-        // corner case
-        if (nums == null || nums.length == 0) {
-            throw new IllegalArgumentException();
-        }
-
         int count = 0, res = 0;
         for (int num : nums) {
-            if (count == 0) res = num;
-            if (res != num) count--;
-            else count++;
+            if (count == 0) res = num; // 刚开始相对数目为0的时候，挑一个做众数的candidate
+            if (res != num) count--; // 出现不同的数，抵消一部分当前的众数规模
+            else count++; // 出现相同的数，则进一步增加众数的规模
         }
         return res;
     }

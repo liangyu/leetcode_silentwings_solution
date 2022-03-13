@@ -25,13 +25,11 @@ public class LC80_RemoveDuplicatesfromSortedArrayII {
         if (nums == null) return 0;
         if (nums.length <= 2) return nums.length;
 
-        int idx = 1;
-        for (int i = 2; i < nums.length; i++) {
-            if (nums[i] != nums[idx - 1]) {
-                idx++;
-                nums[idx] = nums[i];
-            }
+        int n = nums.length, j = 1;
+        for (int i = 2; i < n; i++) {
+            if (nums[i] == nums[j] && nums[i] == nums[j - 1]) continue;
+            nums[++j] = nums[i];
         }
-        return idx + 1;
+        return j + 1;
     }
 }

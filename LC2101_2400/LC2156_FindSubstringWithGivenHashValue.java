@@ -31,6 +31,7 @@ public class LC2156_FindSubstringWithGivenHashValue {
      * @param hashValue
      * @return
      */
+    // S1
     // time = O(n), space = O(1)
     public String subStrHash(String s, int power, int modulo, int k, int hashValue) {
         long cur = 0, pk = 1;
@@ -43,4 +44,30 @@ public class LC2156_FindSubstringWithGivenHashValue {
         }
         return s.substring(res, res + k);
     }
+
+    // S2
+    // time = O(n), space = O(1)
+    public String subStrHash2(String s, int power, int modulo, int k, int hashValue) {
+        long cur = 0, pk = 1;
+        int n = s.length(), res = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            cur = (cur * power + s.charAt(i) - 'a' + 1) % modulo;
+            if (i + k >= n) pk = pk * power % modulo;
+            else cur = (cur - (s.charAt(i + k) - 'a' + 1) * pk % modulo + modulo) % modulo;
+            if (cur == hashValue) res = i;
+        }
+        return s.substring(res, res + k);
+    }
 }
+/**
+ * rolling hash 裸题
+ * abcdef => 0*26^5+1*26^4+2*26^3+3*26^2+4*26^1+5*26^0  26进制
+ * abcd...每个字符对应数字
+ * 本题高位在右边，与上面正好相反 => 从右往左来遍历
+ * xxxxx [abcded] xxxxxx  sliding window
+ * xxxxx [bcdefg] xxxxxx
+ * 位数比较长，每次重新算不合算
+ * 提前处理下幂次的运算
+ * 最高位砍掉，剩下整体抬升一位，再在最后面加上新引进的字符
+ * 43234-> 4323 * 10 + 1 => 14323 (注意，高位在右边，读起来要从右往左来看)
+ */

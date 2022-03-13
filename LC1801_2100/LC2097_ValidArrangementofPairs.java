@@ -24,40 +24,47 @@ public class LC2097_ValidArrangementofPairs {
      * @return
      */
     // time = O(nlogn), space = O(n)
+    HashMap<Integer, Integer> in, out;
+    HashMap<Integer, List<Integer>> next;
     public int[][] validArrangement(int[][] pairs) {
-        int n = pairs.length;
-        List<int[]> res = new ArrayList<>();
+        in = new HashMap<>();
+        out = new HashMap<>();
+        next = new HashMap<>();
 
-        HashMap<Integer, List<Integer>> map = new HashMap<>();
-        HashMap<Integer, Integer> count = new HashMap<>();
-        for (int[] p : pairs) {
-            int a = p[0], b = p[1];
-            map.putIfAbsent(a, new ArrayList<>());
-            map.get(a).add(b);
-            count.put(a, count.getOrDefault(a, 0) + 1);
-            count.put(b, count.getOrDefault(b, 0) - 1);
+        for (int[] pair : pairs) {
+            int a = pair[0], b = pair[1];
+            in.put(b, in.getOrDefault(b, 0) + 1);
+            out.put(a, out.getOrDefault(a, 0) + 1);
+            next.putIfAbsent(a, new ArrayList<>());
+            next.get(a).add(b);
         }
 
         int start = -1;
-        for (int key : count.keySet()) {
-            if (count.get(key) > 0) start = key;
+        for (int x : next.keySet()) {
+            if (out.getOrDefault(x, 0) - in.getOrDefault(x, 0) == 1) start = x;
+        }
+        if (start == -1) { // no open end
+            start = pairs[0][0];
         }
 
-        if (start == -1) start = pairs[0][0];
-        dfs(map, start, res);
+        List<Integer> path = new ArrayList<>(); // {point1, point2, ...}
+        dfs(start, path);
+        Collections.reverse(path);
 
-        int[][] ans = new int[n][2];
-        for (int i = 0; i < n; i++) ans[i] = res.get(n - 1 - i);
-        return ans;
+        int[][] res = new int[path.size() - 1][2];
+        for (int i = 0; i < path.size() - 1; i++) {
+            res[i] = new int[]{path.get(i), path.get(i + 1)};
+        }
+        return res;
     }
 
-    private void dfs(HashMap<Integer, List<Integer>> map, int cur, List<int[]> res) {
-        while (map.getOrDefault(cur, new ArrayList<>()).size() > 0) {
-            int next = map.get(cur).get(map.get(cur).size() - 1);
-            map.get(cur).remove(map.get(cur).size() - 1);
-            dfs(map, next, res);
-            res.add(new int[]{cur, next}); // 不断绕圈，最后才会到达最终出口
+    private void dfs(int start, List<Integer> path) {
+        while (next.getOrDefault(start, new ArrayList<>()).size() > 0) {
+            int nextStart = next.get(start).get(next.get(start).size() - 1);
+            next.get(start).remove(next.get(start).size() - 1);
+            dfs(nextStart, path);
         }
+        path.add(start);
     }
 }
 /**

@@ -18,10 +18,13 @@ public class LC426_ConvertBinarySearchTreetoSortedDoublyLinkedList {
      * @return
      */
     // time = O(n), space = O(n)
-    private Node prev = null, head = null;
+    Node head, prev;
     public Node treeToDoublyList(Node root) {
         // corner case
         if (root == null) return root;
+
+        head = null;
+        prev = null;
 
         inorder(root);
         prev.right = head;
@@ -29,17 +32,17 @@ public class LC426_ConvertBinarySearchTreetoSortedDoublyLinkedList {
         return head;
     }
 
-    private void inorder(Node cur) {
-        if (cur == null) return;
+    private void inorder(Node node) {
+        if (node == null) return;
 
-        inorder(cur.left);
-        if (prev != null) {
-            prev.right = cur;
-            cur.left = prev;
-        } else head = cur;
-
-        prev = cur;
-        inorder(cur.right);
+        inorder(node.left);
+        if (head == null) head = node;
+        else {
+            prev.right = node;
+            node.left = prev;
+        }
+        prev = node;
+        inorder(node.right);
     }
 
     class Node {
@@ -60,3 +63,8 @@ public class LC426_ConvertBinarySearchTreetoSortedDoublyLinkedList {
         }
     };
 }
+/**
+ * node.right = next;
+ * node.left = prev;
+ */
+

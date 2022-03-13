@@ -25,23 +25,25 @@ public class LC124_BinaryTreeMaximumPathSum {
      */
     // S1: DFS
     // time = O(n), space = O(n)
-    private int res = Integer.MIN_VALUE;
+    int res = Integer.MIN_VALUE;
     public int maxPathSum(TreeNode root) {
-        // corner case
-        if (root == null) return 0;
-
-        dfs(root);
+        maxDownPath(root);
         return res;
     }
 
-    private int dfs(TreeNode node) {
+    private int maxDownPath(TreeNode node) { // starting from node downward only, the max-sum path
         if (node == null) return 0;
 
-        int leftSum = dfs(node.left);
-        int rightSum = dfs(node.right);
+        int leftSum = maxDownPath(node.left);
+        int rightSum = maxDownPath(node.right);
 
-        res = Math.max(res, node.val + Math.max(0, leftSum) + Math.max(0, rightSum));
-        return node.val + Math.max(0, Math.max(leftSum, rightSum));
+        int maxTurnSum = node.val;
+        if (leftSum >= 0) maxTurnSum += leftSum;
+        if (rightSum >= 0) maxTurnSum += rightSum;
+        res = Math.max(res, maxTurnSum);
+
+        if (leftSum < 0 && rightSum < 0) return node.val;
+        else return Math.max(leftSum, rightSum) + node.val;
     }
 
     // S2: ResultType

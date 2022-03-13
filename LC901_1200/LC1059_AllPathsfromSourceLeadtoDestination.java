@@ -32,45 +32,32 @@ public class LC1059_AllPathsfromSourceLeadtoDestination {
     // S1
     // time = O(V + E), space = O(V + E)
     public boolean leadsToDestination(int n, int[][] edges, int source, int destination) {
-        // corner case
-        if (edges == null || edges.length == 0) {
-            if (source == destination) return true;
-            return false;
-        }
-
-        HashMap<Integer, List<Integer>> map = new HashMap<>();
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) graph[i] = new ArrayList<>();
         for (int[] edge : edges) {
-            map.putIfAbsent(edge[0], new ArrayList<>());
-            map.get(edge[0]).add(edge[1]);
+            int a = edge[0], b = edge[1];
+            graph[a].add(b);
         }
 
         int[] status = new int[n];
-
-        for (int key : map.keySet()) {
-            if (containsCycle(map, status, source, destination)) return false;
-        }
-        return true;
+        return dfs(graph, source, destination, status);
     }
 
-    private boolean containsCycle(HashMap<Integer, List<Integer>> map, int[] status, int cur, int destination) {
-        if (status[cur] == 1) return true;
-        if (status[cur] == 2) return false;
+    private boolean dfs(List<Integer>[] graph, int cur, int t, int[] status) {
+        if (status[cur] == 2) return true;
+        if (status[cur] == 1) return false;
 
         status[cur] = 1;
-
-        if (map.containsKey(cur)) {
-            for (int next : map.get(cur)) {
-                if (containsCycle(map, status, next, destination)) return true;
-            }
-        } else {
-            if (cur == destination) {
-                status[cur] = 2;
-                return false;
-            }
-            return true;
+        for (int next : graph[cur]) {
+            if (!dfs(graph, next, t, status)) return false;
         }
+
         status[cur] = 2;
-        return false;
+        if (graph[cur].size() == 0) {
+            if (cur == t) return true;
+            return false;
+        }
+        return true;
     }
 
     // S2:

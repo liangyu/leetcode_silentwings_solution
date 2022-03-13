@@ -22,25 +22,29 @@ public class LC1081_SmallestSubsequenceofDistinctCharacters {
         // corner case
         if (s == null || s.length() == 0) return "";
 
-        HashMap<Character, Integer> map = new HashMap<>();
+        int[] freq = new int[26];
+        for (char c : s.toCharArray()) freq[c - 'a']++;
+
+        Stack<Character> stack = new Stack<>();
         HashSet<Character> set = new HashSet<>();
-        StringBuilder sb = new StringBuilder();
 
-        for (char c : s.toCharArray()) map.put(c, map.getOrDefault(c, 0) + 1);
-
-        for (char c : s.toCharArray()) {
-            if (set.contains(c)) map.put(c, map.get(c) - 1);
+        int n = s.length();
+        for (int i = 0; i < n; i++) {
+            char c = s.charAt(i);
+            if (set.contains(c)) freq[c - 'a']--;
             else {
-                while (sb.length() > 0 && sb.charAt(sb.length() - 1) > c && map.get(sb.charAt(sb.length() - 1)) > 0) {
-                    set.remove(sb.charAt(sb.length() - 1));
-                    sb.setLength(sb.length() - 1);
+                while (!stack.isEmpty() && stack.peek() > c && freq[stack.peek() - 'a'] > 0) {
+                    set.remove(stack.pop());
                 }
-                sb.append(c);
-                map.put(c, map.get(c) - 1);
+                stack.push(c);
+                freq[c - 'a']--;
                 set.add(c);
             }
         }
-        return sb.toString();
+
+        StringBuilder sb = new StringBuilder();
+        while (!stack.isEmpty()) sb.append(stack.pop());
+        return sb.reverse().toString();
     }
 }
 /**

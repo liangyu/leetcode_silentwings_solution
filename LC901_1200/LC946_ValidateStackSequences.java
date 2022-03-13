@@ -24,18 +24,24 @@ public class LC946_ValidateStackSequences {
      */
     // time = O(n), space = O(n)
     public boolean validateStackSequences(int[] pushed, int[] popped) {
-        // corner case
-        if (pushed == null || popped == null) return false;
-
         Stack<Integer> stack = new Stack<>();
-        int j = 0, len = pushed.length;
-        for (int p : pushed) {
-            stack.push(p);
-            while (!stack.isEmpty() && j < len && stack.peek() == popped[j]) {
+
+        int n = pushed.length, j = 0;
+        for (int i = 0; i < n; i++) {
+            stack.push(pushed[i]);
+            while (j < n && !stack.isEmpty() && stack.peek() == popped[j]) {
                 stack.pop();
                 j++;
             }
         }
-        return j == len;
+        return j == popped.length;
     }
 }
+/**
+ * push和pop相互交叠，检查有无矛盾
+ * 你盯着pop的第一个元素看
+ * 1 2 3 4x 5 6 4
+ * 4 4 6 5 3 2 1
+ * 如果有多个4，如何保证弹出的4是正确的那个4呢？
+ * 看到能先消掉的就先相互消掉
+ */

@@ -40,7 +40,7 @@ public class LC1601_MaximumNumberofAchievableTransferRequests {
     }
 
     private boolean check(int s, int n, int[][] requests) {
-        int[] building = new int[20]; // 看每幢楼的净输入
+        int[] building = new int[n]; // 看每幢楼的净输入
 
         int m = requests.length;
         for (int i = 0; i < m; i++) {

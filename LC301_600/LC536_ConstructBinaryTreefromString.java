@@ -27,32 +27,25 @@ public class LC536_ConstructBinaryTreefromString {
         if (s == null || s.length() == 0) return null;
 
         Stack<TreeNode> stack = new Stack<>();
-        for (int i = 0; i < s.length(); i++) {
-            int j = i;
-            char c = s.charAt(i);
-            if (c == ')') {
-                stack.pop();
-            } else if (c >= '0' && c <= '9' || c == '-') {
-                while (i + 1 < s.length() && s.charAt(i + 1) >= '0' && s.charAt(i + 1) <= '9') {
-                    i++;
-                }
-                TreeNode cur = new TreeNode(Integer.valueOf(s.substring(j, i + 1)));
-                if (!stack.isEmpty()) {
-                    TreeNode parent = stack.peek();
-                    if (parent.left != null) parent.right = cur;
-                    else parent.left = cur;
-                }
+        int n = s.length();
+        TreeNode cur = null;
+
+        for (int i = 0; i < n; i++) {
+            if (s.charAt(i) == '(') {
                 stack.push(cur);
+                cur = null; // new branch start, cur is always pointing to the parent node, when started cur = null
+            } else if (s.charAt(i) == ')') {
+                if (stack.peek().left == null) stack.peek().left = cur;
+                else stack.peek().right = cur;
+                cur = stack.pop(); // cur is assigned with the new parent node from the stack
+            } else {
+                int j = i;
+                while (i < n && s.charAt(i) != '(' && s.charAt(i) != ')') i++;
+                // create a new node for numbers and sign，注意负号也是可以转化的，比如"-423" -> -423
+                cur = new TreeNode(Integer.parseInt(s.substring(j, i)));
+                i--;
             }
         }
-        return stack.peek();
-    }
-
-    class TreeNode {
-        int val;
-        TreeNode left, right;
-        public TreeNode (int val) {
-            this.val = val;
-        }
+        return cur;
     }
 }

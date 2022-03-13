@@ -74,6 +74,34 @@ public class LC1776_CarFleetII {
         }
         return res;
     }
+
+    // S2: Stack
+    // time = O(n), space = O(n)
+    public double[] getCollisionTimes2(int[][] cars) {
+        int n = cars.length;
+        double[] res = new double[n];
+        Arrays.fill(res, -1);
+        Stack<Integer> stack = new Stack<>();
+
+        for (int i = n - 1; i >= 0; i--) {
+            // 碰不到，栈顶不是一个有效的collision candidate
+            while (!stack.isEmpty() && cars[stack.peek()][1] >= cars[i][1]) stack.pop();
+
+            while (!stack.isEmpty()) {
+                int k = stack.peek();
+                double curTime = 1.0 * (cars[k][0] - cars[i][0]) / (cars[i][1] - cars[k][1]);
+                if (curTime < res[k] || res[k] == -1) {
+                    res[i] = curTime;
+                    break;
+                }
+                // 否则就没有来得及和k碰撞，而是k与它前面的车先碰撞了，当前的cars i再与之碰撞，
+                // 所以跟k无关，直接pop k
+                stack.pop(); // car i won't collide with car k, it may collide with the cars after car k (below stack top)
+            }
+            stack.push(i);
+        }
+        return res;
+    }
 }
 /**
  * 追击问题：t = ds/dv

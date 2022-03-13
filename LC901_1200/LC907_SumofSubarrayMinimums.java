@@ -88,4 +88,5 @@ public class LC907_SumofSubarrayMinimums {
  * 这样的话，类似[3,4,4,3,4,4,3]这样的subarray，只会在考察第一个3的时候被计入，而在考察其他的3的时候不会被计入。
  * 特别注意：如果一个数没有next smaller element，那么意味着它的左边界是可以到n；
  * 如果一个数没有prev smaller/equal element，那么意味着它的左边界是可以到-1.
+ * [
  */

@@ -19,57 +19,23 @@ public class LC341_FlattenNestedListIterator {
     Stack<NestedInteger> stack;
     public LC341_FlattenNestedListIterator(List<NestedInteger> nestedList) {
         stack = new Stack<>();
-        for (int i = nestedList.size() - 1; i >= 0; i--) {
-            stack.push(nestedList.get(i));
-        }
+        int n = nestedList.size();
+        for (int i = n - 1; i >= 0; i--) stack.push(nestedList.get(i));
     }
 
     @Override
     public Integer next() {
-        return stack.pop().getInteger();
+        return stack.pop().getInteger(); // 访问完就要弹出，不能再留在栈内！
     }
 
     @Override
     public boolean hasNext() {
-        while (!stack.isEmpty()) {
-            NestedInteger ni = stack.peek();
-            if (ni.isInteger()) return true;
-
-            stack.pop();
-            for (int i = ni.getList().size() - 1; i >= 0; i--) {
-                stack.push(ni.getList().get(i));
-            }
+        while (!stack.isEmpty() && !stack.peek().isInteger()) {
+            List<NestedInteger> list = stack.pop().getList(); // 注意这里是用pop()而不是peek(),把栈顶元素破开！
+            int n = list.size();
+            for (int i = n - 1; i >= 0; i--) stack.push(list.get(i));
         }
-        return false;
-    }
-
-    // S2: Two Stacks
-    // time = O(D), space = O(n)  D: the maximum nesting depth
-    Stack<Integer> stack1;
-    Stack<Integer> stack2;
-    public LC341_FlattenNestedListIterator(List<NestedInteger> nestedList) {
-        stack1 = new Stack<>();
-        stack2 = new Stack<>();
-
-        helper(nestedList);
-        while (!stack1.isEmpty()) stack2.push(stack1.pop());
-    }
-
-    @Override
-    public Integer next() {
-        return stack2.pop();
-    }
-
-    @Override
-    public boolean hasNext() {
-        return !stack2.isEmpty();
-    }
-
-    private void helper(List<NestedInteger> nestedList) {
-        for (NestedInteger ni : nestedList) {
-            if (ni.isInteger()) stack1.push(ni.getInteger());
-            else helper(ni.getList());
-        }
+        return !stack.isEmpty();
     }
 
     /**
@@ -90,3 +56,9 @@ public class LC341_FlattenNestedListIterator {
      * }
      */
 }
+/**
+ * 与遍历二叉树有点像
+ * hasNext(), next()不能一下子都遍历完
+ * stack:[1,1] -> [1],[1]
+ * 用一个stack,破拆后倒着放
+ */

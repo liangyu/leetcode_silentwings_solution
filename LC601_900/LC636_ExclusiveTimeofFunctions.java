@@ -57,7 +57,7 @@ public class LC636_ExclusiveTimeofFunctions {
 
                 if (!stack.isEmpty()) {
                     int prevId = stack.peek()[0];
-                    res[prevId] -= duration; // 处理完一个就去掉
+                    res[prevId] -= duration; // 处理完一个就去掉，提前预扣
                 }
             }
         }
@@ -66,4 +66,7 @@ public class LC636_ExclusiveTimeofFunctions {
 }
 /**
  * 看到这种先要处理一个东西，没处理完就处理另一个东西，回头再来处理 -> stack
+ * 怎么处理中段时间
+ * 如何合理去掉，什么时候去掉
+ * 一处理完一个就直接去掉
  */

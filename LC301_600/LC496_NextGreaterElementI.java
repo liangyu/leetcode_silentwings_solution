@@ -33,15 +33,16 @@ public class LC496_NextGreaterElementI {
         HashMap<Integer, Integer> map = new HashMap<>();
         Stack<Integer> stack = new Stack<>();
 
-        for (int x : nums2) {
-            if (stack.isEmpty() || !stack.isEmpty() && x <= stack.peek()) stack.push(x);
-            else {
-                while (!stack.isEmpty() && stack.peek() < x) map.put(stack.pop(), x);
-                stack.push(x);
+        int m = nums1.length, n = nums2.length;
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && nums2[stack.peek()] < nums2[i]) {
+                map.put(nums2[stack.pop()], nums2[i]);
             }
+            stack.push(i);
         }
-        int[] res = new int[nums1.length];
-        for (int i = 0; i < nums1.length; i++) {
+
+        int[] res = new int[m];
+        for (int i = 0; i < m; i++) {
             res[i] = map.getOrDefault(nums1[i], -1);
         }
         return res;
@@ -60,9 +61,10 @@ public class LC496_NextGreaterElementI {
  * next smaller element
  * prev smaller element
  * 每个元素最多只会遍历2次
- * 维护一个单调递减的栈，即当nums[i]小于栈顶元素时就不断入栈。
+ * 维护一个单调递减的栈，即当nums[i]小于栈顶元素时就不断入栈，这个时候的nums[i]是不存在next greater element的。
  * 当发现nums[i]大于栈顶元素时，说明nums[i]就是此栈顶元素所遇到的第一个greater number，
  * 把这个信息记录在一个Hash Map里，然后把栈顶元素退栈；
  * 重复上述操作直至nums[i]小于栈顶元素，再将其入栈并继续遍历nums。
  * follow-up: next smaller -> 单调递增栈
+ * previous greater -> 从后往前扫，一模一样的算法
  */

@@ -47,7 +47,6 @@ public class LC411_MinimumUniqueWordAbbreviation {
             if (word.length() == m) set.add(word);
         }
 
-
         List<int[]> masks = new ArrayList<>();
         for (int state = 0; state < (1 << m); state++) {
             // 优先看长度比较短的缩写 -> 排序 -> 有点风险

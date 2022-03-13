@@ -138,5 +138,11 @@ public class LC265_PaintHouseII {
  *      ..
  * i, j
  * dp[i][j]: the minimum cost of painting houses [0:j] ending with cost[i][j]
- * ref: LC1289
+ * ref: LC1289 与本题几乎完全一样，代码很相似
+ * 状态转移层次清晰
+ * 把房子拆开来一个个看，我在处理第i个房子的时候，只关心第i-1个房子的状态
+ * 至于i-2,i-3等房子我都不用管
+ * 状态的个数是有限的
+ * 很容易想到是动态规划
+ * 如果再复杂一点，可能还要再加一层循环
  * */

@@ -54,4 +54,11 @@ public class LC862_ShortestSubarraywithSumatLeastK {
  * 因为当前的i是最靠后，那么所有队里中已有的presum大于presum[i]的元素都是没有意义的，
  * 完全可以被i取代（即依然保证at least K同时能使subarray更短）．
  * 所以每次处理一个presum[i]时，遵循上述两个步骤，就能保证队列存储的是一个递增的index序列，而且对应的presum也是递增的．
+ *
+ * 假设现在来了一个presum[i + 1], 这个时候要找presum[j] <= presum[i + 1] - k  => presum[i + 1] - presum[j] >= k;
+ * 由于之前比presum[i]还大的presum[j]如果还在的话，与presum[i]相比根本没有优势，
+ * 因为如果要满足上述不等式条件的话，因为presum[j] >= presum[i]，
+ * 所以上面不等式presum[i + 1] - presum[i] >= k 要比 presum[i + 1] - presum[j] >= k 更容易得到满足，
+ * 并且同时 index[i] > index[j]，相比这些j选择i不但不等式更容易满足，同时 i + 1 - i 得到的subarray长度还更短，何乐而不为呢？
+ * 所以这些比presum[i]更大的presum[j]就完全没有存在的必要了，直接可以在deque尾部抛弃掉！！！
  */

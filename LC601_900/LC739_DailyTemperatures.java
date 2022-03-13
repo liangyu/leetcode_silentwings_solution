@@ -23,15 +23,10 @@ public class LC739_DailyTemperatures {
         int[] res = new int[n];
         Stack<Integer> stack = new Stack<>();
         for (int i = 0; i < n; i++) {
-            if (stack.isEmpty()) stack.push(i);
-            else if (temperatures[i] <= temperatures[stack.peek()]) stack.push(i);
-            else {
-                while (!stack.isEmpty() && temperatures[i] > temperatures[stack.peek()]) {
-                    res[stack.peek()] = i - stack.peek();
-                    stack.pop();
-                }
-                stack.push(i);
+            while (!stack.isEmpty() && temperatures[i] > temperatures[stack.peek()]) {
+                res[stack.peek()] = i - stack.pop();
             }
+            stack.push(i);
         }
         return res;
     }
@@ -44,6 +39,10 @@ public class LC739_DailyTemperatures {
 
         for (int i = n - 2; i >= 0; i--) {
             int j = i + 1;
+            // 注意：必须判断res[j] != 0 否则while会陷入一个死循环
+            // res[j]就指向大于temperatures[j]的下一个元素的index，所以j += res[j]不会越界
+            // 目的就是为了寻找在i右边大于i的元素，既然j比i要小，那么可以直接跳到刚好比j大的元素上继续向右找
+            // 如果跳出while loop依然没有得到比i大的j，那么必然res[i] = 0
             while (res[j] != 0 && temperatures[j] <= temperatures[i]) j += res[j];
             if (temperatures[j] > temperatures[i]) res[i] = j - i;
         }

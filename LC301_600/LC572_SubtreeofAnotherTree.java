@@ -23,7 +23,6 @@ public class LC572_SubtreeofAnotherTree {
      */
     // S1: recursion
     // time = O(n), space = O(n)
-    // time = O(n), space = O(n)
     public boolean isSubtree(TreeNode root, TreeNode subRoot) {
         if (root == null) return subRoot == null;
 
@@ -81,6 +80,23 @@ public class LC572_SubtreeofAnotherTree {
         arr.add(node.val);
         convert(node.left, arr);
         convert(node.right, arr);
+    }
+
+    // S3: Serialization
+    // time = O(n), space = O(n)
+    public boolean isSubtree3(TreeNode s, TreeNode t) {
+        // Write your code here
+        if (s == null || t == null) return s == t;
+
+        String source = serialize(s);
+        String target = serialize(t);
+        return source.indexOf(target) != -1;
+    }
+
+    private String serialize(TreeNode root) {
+        if (root == null) return "#";
+        // 注意：为了防止出现[12],[2]这样的case "12,#,#" vs "2,#,#",我们要区分它们，在前面加一个","！！！
+        return "," + root.val + "," + serialize(root.left) + "," + serialize(root.right);
     }
 }
 /**

@@ -28,17 +28,17 @@ public class LC146_LRUCache {
      * @param capacity
      */
     // time = O(1), space = O(k)   k: capacity
-    private int size, capacity;
-    private Node head, tail;
-    private HashMap<Integer, Node> map;
+    HashMap<Integer, Node> map;
+    Node head, tail;
+    int size, capacity;
     public LC146_LRUCache(int capacity) {
-        this.capacity = capacity;
-        this.size = 0;
+        map = new HashMap<>();
         head = new Node(0, 0);
         tail = new Node(0, 0);
         head.next = tail;
         tail.prev = head;
-        map = new HashMap<>();
+        this.size = 0;
+        this.capacity = capacity;
     }
 
     public int get(int key) {
@@ -57,8 +57,6 @@ public class LC146_LRUCache {
                 Node lastNode = tail.prev;
                 lastNode.prev.next = tail;
                 tail.prev = lastNode.prev;
-                lastNode.prev = null;
-                lastNode.next = null;
                 map.remove(lastNode.key);
             }
             map.put(key, node);
@@ -66,16 +64,8 @@ public class LC146_LRUCache {
         } else {
             Node node = map.get(key);
             node.val = value;
+            map.put(key, node);
             moveToHead(node);
-        }
-    }
-
-    private class Node {
-        private int key, val;
-        private Node prev, next;
-        public Node(int key, int val) {
-            this.key = key;
-            this.val = val;
         }
     }
 
@@ -89,7 +79,25 @@ public class LC146_LRUCache {
         // move to head
         node.next = head.next;
         node.prev = head;
+        head.next.prev = node;
         head.next = node;
-        node.next.prev = node;
+    }
+
+    private class Node {
+        private int key, val;
+        private Node prev, next;
+        public Node(int key, int val) {
+            this.key = key;
+            this.val = val;
+        }
     }
 }
+/**
+ * key1,key2,key3,...,key10,key3,key2,key11 -> discard the first one
+ * 谁在前，最近访问的时间越早
+ * 比较方便的取出它，比较方便的加到后面去 => list
+ * list                vector
+ * pushback()          push_back()
+ * *iter               arr[10]
+ * next(iter,10)
+ */

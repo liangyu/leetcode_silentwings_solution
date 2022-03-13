@@ -68,3 +68,11 @@ public class LC225_ImplementStackusingQueues {
         return queue.isEmpty();
     }
 }
+/**
+ * x1x2x3x4y -> yx1x2x3x4
+ * 把前面这些元素一个个都取出来，塞后面去
+ * 每次进来一个新元素，都把它放到top
+ * newest x1x2x3x4...xk
+ * 队列里的元素从新到旧
+ * 关键：每次push之后都把新元素转移到最前面去！！！
+ */

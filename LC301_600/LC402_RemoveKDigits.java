@@ -29,7 +29,7 @@ public class LC402_RemoveKDigits {
             int digit = c - '0';
             if (stack.isEmpty() || stack.peek() <= digit) stack.push(digit);
             else {
-                while (!stack.isEmpty() && stack.peek() > digit && count < k) {
+                while (!stack.isEmpty() && stack.peek() > digit && count < k) {  // "112", k = 1 -> "11", 所以这里是 >，不是>=
                     stack.pop();
                     count++;
                 }

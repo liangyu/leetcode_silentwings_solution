@@ -48,17 +48,24 @@ public class LC239_SlidingWindowMaximum {
     // S2: Deque (最优解）
     // time = O(n), space = O(n)
     public int[] maxSlidingWindow2(int[] nums, int k) {
-        // corner case
-        if (nums == null || nums.length == 0 || k <= 0) return new int[0];
+        int n = nums.length;
+        int[] res = new int[n - k + 1];
+        Deque<Integer> deque = new LinkedList<>();
 
-        int[] res = new int[nums.length - k + 1];
-        Deque<Integer> deque = new LinkedList<>(); // deque stores the index of the array
         int idx = 0;
-
-        for (int i = 0; i < nums.length; i++) {
+        for (int i = 0; i < n; i++) {
+            // step 1: maintain a monotonically decreasing deque
             while (!deque.isEmpty() && nums[deque.peekLast()] <= nums[i]) deque.pollLast();
+
+            // step 2: add the new element into the deque to keep it monotonically decreasing
             deque.offerLast(i);
-            while (!deque.isEmpty() && deque.peekFirst() <= i - k) deque.pollFirst(); // head is outdated
+
+            // step 3: check if the head of the deque is outdated or not
+            if (!deque.isEmpty() && deque.peekFirst() <= i - k) deque.pollFirst();
+
+            // step 4: retrieve the head of the deque as max value if deque size is k
+            // 注意这里条件是i >= k - 1,不再是deque.size() == k
+            // 因为很多元素因为要维持一个单调递减deque被poll掉了，因为它们用不着了！！！
             if (i >= k - 1) res[idx++] = nums[deque.peekFirst()];
         }
         return res;

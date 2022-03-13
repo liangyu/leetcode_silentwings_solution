@@ -24,19 +24,29 @@ public class LC6_ZigZagConversion {
      */
     // time = O(n), space = O(n)
     public String convert(String s, int numRows) {
-        // corner case
-        if (s == null || s.length() == 0) return "";
-        if (numRows <= 1) return s;
+        if (numRows == 1) return s;
 
-        StringBuilder[] sb = new StringBuilder[numRows];
-        for (int i = 0; i < numRows; i++) sb[i] = new StringBuilder("");
+        StringBuilder[] arr = new StringBuilder[numRows];
+        for (int i = 0; i < numRows; i++) arr[i] = new StringBuilder();
 
-        for (int i = 0; i < s.length(); i++) {
-            int idx = i % (2 * numRows - 2);
-            idx = idx < numRows ? idx : 2 * numRows - 2 - idx;
-            sb[idx].append(s.charAt(i));
+        int n = s.length(), p = numRows * 2 - 2;
+        for (int i = 0; i < n; i++) {
+            int idx = i % p;
+            idx = idx < numRows ? idx : p - idx;
+            arr[idx].append(s.charAt(i));
         }
-        for (int i = 1; i < numRows; i++) sb[0].append(sb[i]);
-        return sb[0].toString();
+
+        String res = "";
+        for (int i = 0; i < numRows; i++) {
+            res += arr[i].toString();
+        }
+        return res;
     }
 }
+/**
+ * 观察这个数列的周期性。一个周期的元素数目M=numRows*2-2，因此这个数列的周期数目是N=(len(s)-1)/M+1。
+ * 注意这种根据M计算Ｎ的的技巧。
+ * 在CUDA编程中，确定block数目的计算和此很相似。
+ * 在每个周期中，第一行是第０个元素，第二行是第１和M-1个元素，第三行是第２和Ｍ-2个元素，直至最后一行是第numRows-1个元素。
+ * 所以我们只要按行遍历，在每一行中将Ｎ个周期里对应该行的数字都找出来。
+ */

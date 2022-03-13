@@ -22,8 +22,8 @@ public class LC42_TrappingRainWater {
      * Constraints:
      *
      * n == height.length
-     * 0 <= n <= 3 * 104
-     * 0 <= height[i] <= 105
+     * 0 <= n <= 3 * 10^4
+     * 0 <= height[i] <= 10^5
      *
      * @param height
      * @return
@@ -50,6 +50,47 @@ public class LC42_TrappingRainWater {
                 res += rightMax - height[right];
                 right--;
             }
+        }
+        return res;
+    }
+
+    // S2: three pass
+    // time = O(n), space = O(n)
+    public int trap2(int[] height) {
+        int n = height.length;
+        int[] leftMost = new int[n]; // leftMost[i]: the highest bar to the left of i
+        int[] rightMost = new int[n];
+
+        for (int i = 1; i < n; i++) {
+            leftMost[i] = Math.max(leftMost[i - 1], height[i - 1]);
+        }
+
+        for (int i = n - 2; i >= 0; i--) {
+            rightMost[i] = Math.max(rightMost[i + 1], height[i + 1]);
+        }
+
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            int h = Math.min(leftMost[i], rightMost[i]) - height[i];
+            res += Math.max(h * 1, 0);
+        }
+        return res;
+    }
+
+    // S3: monotonic stack
+    // time = O(n), space = O(n)
+    public int trap3(int[] height) {
+        Stack<Integer> stack = new Stack<>();
+        int n = height.length, res = 0;
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && height[stack.peek()] < height[i]) {
+                int base = height[stack.pop()];
+                if (stack.isEmpty()) continue;
+                int h = Math.min(height[stack.peek()], height[i]) - base;
+                int w = i - stack.peek() - 1;
+                res += h * w;
+            }
+            stack.push(i);
         }
         return res;
     }

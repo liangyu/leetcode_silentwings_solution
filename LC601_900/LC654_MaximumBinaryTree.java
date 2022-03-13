@@ -53,16 +53,17 @@ public class LC654_MaximumBinaryTree {
 
         for (int i = 0; i < n; i++) {
             TreeNode node = new TreeNode(nums[i]);
-            while (!stack.isEmpty() && stack.peek().val < nums[i]) node.left = stack.pop();
+            while (!stack.isEmpty() && stack.peek().val < nums[i]) node.left = stack.pop(); // 不停替换，只取最后的一个
+            // 找到了根，只能拼到右子树里，而上面的node.left其实也在这个peek node的右子树里
             if (!stack.isEmpty()) stack.peek().right = node;
             stack.push(node);
         }
-        while (stack.size() > 1) stack.pop();
+        while (stack.size() > 1) stack.pop(); // 退到后来，只有最大值不会被pop出栈，一定会留在栈底！
         return stack.peek();
     }
 }
 /**
- * 我们维护一个单调递减的序列。
+ * 我们维护一个"单调递减"的序列。
  * 如果当前数组元素里都是递减的，那么他们必然组成连续的右节点的关系。
  * 此时突然出现了一个较大的数A，那么A的左节点必然连接目前栈里面恰好比A小的那个元素。
  * 所以你需要不停地腾退栈顶元素，并且把最后一个恰好比A小的那个元素B接到A的左节点上。

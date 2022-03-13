@@ -8,6 +8,10 @@ public class LC84_LargestRectangleinHistogram {
      * Input: [2,1,5,6,2,3]
      * Output: 10
      *
+     * Constraints:
+     *
+     * 1 <= heights.length <= 10^5
+     * 0 <= heights[i] <= 10^4
      * @param heights
      * @return
      */

@@ -44,16 +44,16 @@ public class LC71_SimplifyPath {
         for (String s : strs) {
             if (s.equals("..")) {
                 if (!stack.isEmpty()) stack.pop();
-            } else if (!s.equals(".") && !s.equals("")) stack.push(s);
+            } else {
+                if (s.length() > 0 && !s.equals(".")) stack.push(s);
+            }
         }
 
-        String res = "";
+        StringBuilder sb = new StringBuilder();
         while (!stack.isEmpty()) {
-            res = "/" + stack.pop() + res;
+            sb.insert(0, stack.pop()).insert(0, "/");
         }
-
-        if (res.length() == 0) return "/";
-        return res;
+        return sb.length() == 0 ? "/" : sb.toString();
     }
 }
 /**

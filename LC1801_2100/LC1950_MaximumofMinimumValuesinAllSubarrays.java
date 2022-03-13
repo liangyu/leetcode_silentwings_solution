@@ -47,6 +47,8 @@ public class LC1950_MaximumofMinimumValuesinAllSubarrays {
             set.add(cur[1]);
         }
 
+        // 注意：有些res的元素还是空的0，没有fill，这个时候由于subarray越大，越容易include小的元素而使min更小，所以应该向i大的方向去兼容。
+        // 因为要到达下一个fill的res[i]，其长度不能超过这个i上，超过i就会落到和i+1一样的境地。
         for (int i = n - 2; i >= 0; i--) res[i] = Math.max(res[i], res[i + 1]);
         return res;
     }
@@ -58,30 +60,32 @@ public class LC1950_MaximumofMinimumValuesinAllSubarrays {
         if (nums == null || nums.length == 0) return new int[0];
 
         int n = nums.length;
-        int[] left = new int[n];
+        int[] res = new int[n];
         Stack<Integer> stack = new Stack<>();
+        int[] prevSmaller = new int[n];
+        Arrays.fill(prevSmaller, -1);
+        int[] nextSmaller = new int[n];
+        Arrays.fill(nextSmaller, n);
+
+        // find nextSmaller
         for (int i = 0; i < n; i++) {
-            while (!stack.isEmpty() && nums[stack.peek()] >= nums[i]) stack.pop();
-            left[i] = stack.isEmpty() ? -1 : stack.peek();
+            while (!stack.isEmpty() && nums[stack.peek()] > nums[i]) nextSmaller[stack.pop()] = i;
             stack.push(i);
         }
 
         stack.clear();
-        int[] right = new int[n];
+        // find prevSmaller
         for (int i = n - 1; i >= 0; i--) {
-            while (!stack.isEmpty() && nums[stack.peek()] >= nums[i]) stack.pop();
-            right[i] = stack.isEmpty() ? n : stack.peek();
+            while (!stack.isEmpty() && nums[stack.peek()] > nums[i]) prevSmaller[stack.pop()] = i;
             stack.push(i);
         }
 
-        int[] res = new int[n];
         for (int i = 0; i < n; i++) {
-            int len = right[i] - left[i] - 2;
-            res[len] = Math.max(res[len], nums[i]);
+            int a = prevSmaller[i], b = nextSmaller[i];
+            res[b - a - 2] = Math.max(res[b - a - 2], nums[i]); // 注意这里要求max，不能无脑更新为nums[i]
         }
-        for (int i = n - 2; i >= 0; i--) {
-            res[i] = Math.max(res[i], res[i + 1]);
-        }
+
+        for (int i = n - 2; i >= 0; i--) res[i] = Math.max(res[i], res[i + 1]);
         return res;
     }
 }

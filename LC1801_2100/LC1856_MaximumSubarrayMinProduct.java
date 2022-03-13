@@ -70,17 +70,17 @@ public class LC1856_MaximumSubarrayMinProduct {
     }
 }
 /**
- * subArray sum * subArray minVal => O(n^2)
+ * subarray sum * subarray minVal => O(n^2)
  * 关键是找minVal
  * 倒过来想
  * 1 [5 3 2 4 6] 0 x
  * a      ^      b
- *        9 subArrays => 求一个最大的subArray sum * minVal, sum越大越好，val > 0 => subArray越大越好 => 范围越大越好
+ *        9 subarrays => 求一个最大的subarray sum * minVal, sum越大越好，val > 0 => subarray越大越好 => 范围越大越好
  * 找prev smaller 和 next smaller
  * nums[i]: prev smaller element / next smaller element => 单调栈 LC496 / 503 -> O(n) one pass
  * 做一个预处理，再扫一遍
  * sum = nums[a+1:b-1] => presum[b-1]-presum[a]
  * min = nums[i]
- * time = O(n) 比LC907更简单，比如遇到重复元素怎么办，这里有重复的2没关系，照样可以继续推动边界，不影响最小值依然是2
- * 遍历subArray找最小值 -> O(n^2)，遍历最小值找subArray -> O(n) => 选择后者，与LC907非常类似，一起做！
+ * time = O(n) 比LC907更简单，比如遇到重复元素怎么办，这里有重复的2没关系，照样可以继续推动边界，不影响最小值依然是2,subarray越长越好
+ * 遍历subarray找最小值 -> O(n^2)，遍历最小值找subArray -> O(n) => 选择后者，与LC907非常类似，一起做！
  */

@@ -26,31 +26,21 @@ public class LC1209_RemoveAllAdjacentDuplicatesinStringII {
     // S1: stack
     // time = O(n), space O(n)
     public String removeDuplicates(String s, int k) {
-        // corner case
-        if (s == null || s.length() == 0 || k <= 0) return "";
-
-        Stack<Pair> stack = new Stack<>();
-
+        Stack<int[]> stack = new Stack<>();
         for (char c : s.toCharArray()) {
-            if (stack.isEmpty() || c != stack.peek().ch) stack.push(new Pair(c, 1));
-            else stack.push(new Pair(c, stack.peek().val + 1));
+            if (stack.isEmpty() || c - 'a' != stack.peek()[0]) stack.push(new int[]{c - 'a', 1});
+            else stack.push(new int[]{c - 'a', stack.peek()[1] + 1});
 
-            if (stack.peek().val == k) {
+            if (stack.peek()[1] == k) {
                 for (int i = 0; i < k; i++) stack.pop();
             }
         }
-        StringBuilder sb = new StringBuilder();
-        while (!stack.isEmpty()) sb.append(stack.pop().ch);
-        return sb.reverse().toString();
-    }
 
-    private class Pair {
-        private char ch;
-        private int val;
-        public Pair(char ch, int val) {
-            this.ch = ch;
-            this.val = val;
+        StringBuilder sb = new StringBuilder();
+        while (!stack.isEmpty()) {
+            sb.append((char)(stack.pop()[0] + 'a'));
         }
+        return sb.reverse().toString();
     }
 }
 /**

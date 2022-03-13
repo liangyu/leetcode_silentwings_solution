@@ -14,11 +14,48 @@ public class LC498_DiagonalTraverse {
      *
      * Output:  [1,2,4,7,5,3,6,8,9]
      *
-     * @param matrix
+     * @param mat
      * @return
      */
+    // S1
+    // time = O(m * n), space = O(1)
+    public int[] findDiagonalOrder(int[][] mat) {
+        int m = mat.length, n = mat[0].length;
+        int[] res = new int[m * n];
+        int[][] directions = new int[][]{{-1, 1}, {1, -1}};
+
+        int x = 0, y = 0, k = 0;
+        for (int i = 0; i < m * n; i++) {
+            res[i] = mat[x][y];
+
+            x += directions[k][0];
+            y += directions[k][1];
+            if (y >= n) {
+                x += 2;
+                y = n - 1;
+                k = 1 - k;
+            }
+
+            if (x >= m) {
+                x = m - 1;
+                y += 2;
+                k = 1 - k;
+            }
+            if (x < 0) {
+                x = 0;
+                k = 1 - k;
+            }
+            if (y < 0) {
+                y = 0;
+                k = 1 - k;
+            }
+        }
+        return res;
+    }
+
+    // S2
     // time = O(m * n), space = O(1)   每个元素遍历一次，所以时间是O(m * n)
-    public int[] findDiagonalOrder(int[][] matrix) {
+    public int[] findDiagonalOrder2(int[][] matrix) {
         // corner case
         if (matrix == null || matrix.length == 0 || matrix[0] == null || matrix[0].length == 0) return new int[0];
 

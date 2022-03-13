@@ -47,13 +47,13 @@ public class LC255_VerifyPreorderSequenceinBinarySearchTree {
         // corner case
         if (preorder == null || preorder.length == 0) return true;
 
-        Stack<Integer> stack = new Stack<>();
+        Stack<Integer> stack = new Stack<>(); // 维护一个单调递减栈，里面的元素都是根节点的左子树
         int a_max = Integer.MIN_VALUE;
 
         for (int num : preorder) {
             if (num < a_max) return false;
-            while (!stack.isEmpty() && stack.peek() < num) a_max = stack.pop();
-            stack.push(num);
+            while (!stack.isEmpty() && stack.peek() < num) a_max = stack.pop(); // 一直退到左子树全部退完
+            stack.push(num); // 开始压入右子树
         }
         return true;
     }
@@ -74,9 +74,10 @@ public class LC255_VerifyPreorderSequenceinBinarySearchTree {
     }
 }
 /**
+ * S2: stack
  * for every pair {a, b} && a < b, we need a < c for every c after b
  * a_max < b => c
- * 5 4 3 2 1 4 => 5 4 4 => 用栈来维护一个递减的序列
+ * 5 4 3 2 [1 4] => 5 4 4 => 用栈来维护一个递减的序列 -> 1,4是个逆序对 -> 1退栈, (2,4)依然是逆序对,提升了a的bar
  * 一旦遍历的过程中出现了preOrder[i]>Stack.top()，那就说明出现了递增序列，需要不断退栈直至保证栈本身仍然是递减的。
  * 在退栈的过程中，就不断遇到a < b的情况，借机可以抬高a。
  */

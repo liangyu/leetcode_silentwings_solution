@@ -35,3 +35,11 @@ public class LC540_SingleElementinaSortedArray {
         return nums[left];
     }
 }
+/**
+ * corner case:
+ * nums只有1个元素，那么不进入while loop, return nums[0]
+ * nums不能只有2个元素，不满足题意
+ * nums至少有3个元素，那么掉入else，right = mid - 1之后就会出现left == right，没问题
+ * nums有4个元素，依然可以正常进入else
+ * nums有5个元素，mid = 2 -> right = mid - 2之后left == right，也没问题！
+ */

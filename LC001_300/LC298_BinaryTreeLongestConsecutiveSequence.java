@@ -17,6 +17,7 @@ public class LC298_BinaryTreeLongestConsecutiveSequence {
      * @param root
      * @return
      */
+    // S1: dfs
     // time = O(n), space = O(n)
     private int res = 0;
     public int longestConsecutive(TreeNode root) {
@@ -38,6 +39,7 @@ public class LC298_BinaryTreeLongestConsecutiveSequence {
     }
 
     // S2: dfs
+    // time = O(n), space = O(n)
     int ans = 0;
     public int longestConsecutive2(TreeNode root) {
         dfs(root);

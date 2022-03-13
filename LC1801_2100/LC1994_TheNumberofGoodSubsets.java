@@ -45,7 +45,7 @@ public class LC1994_TheNumberofGoodSubsets {
             int encode = encoding(num); // check encode是否是state的一个子集
             if (encode == -1) continue; // 4, 9 这类就标记下为-1，就不往下走了
             for (int state = (1 << n) - 1; state >= 1; state--) {
-                if (state - encode == (state ^ encode)) { // 判断encode是否为state的一个子集的方法！！！
+                if ((encode & state) == encode) { // 判断encode是否为state的一个子集的方法！！！
                     dp[state] += dp[state - encode] * count;
                     dp[state] %= M;
                 }
@@ -57,8 +57,8 @@ public class LC1994_TheNumberofGoodSubsets {
         }
 
         long power2 = 1;
-        if (map.containsKey(1)) {
-            for (int i = 0; i < map.get(1); i++) power2 = power2 * 2 % M;
+        for (int i = 0; i < map.getOrDefault(1, 0); i++) {
+            power2 = power2 * 2 % M;
         }
         return (int)(res * power2 % M);
     }
@@ -136,4 +136,5 @@ public class LC1994_TheNumberofGoodSubsets {
  *     }
  *     dp = dp_new;
  * }
+ * time = O(30 * 10^20) = 30720 = 10^4
  */

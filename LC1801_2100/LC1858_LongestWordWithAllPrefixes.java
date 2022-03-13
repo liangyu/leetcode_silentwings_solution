@@ -41,48 +41,74 @@ public class LC1858_LongestWordWithAllPrefixes {
         return res;
     }
 
-    // S2: Trie
+    // S2: Trie + dfs
     // time = O(n * k), space = O(26 * k) = O(1), k: the length of the longest word in the array
+    TrieNode root;
+    String res = "";
     public String longestWord2(String[] words) {
-        // corner case
-        if (words == null || words.length == 0) return "";
-
-        TrieNode root = new TrieNode(); // 不需要通过排序来建trie
+        root = new TrieNode();
         for (String word : words) {
-            TrieNode cur = root;
-            for (char ch : word.toCharArray()) {
-                if (cur.nexts[ch - 'a'] == null) {
-                    cur.nexts[ch - 'a'] = new TrieNode();
-                }
-                cur = cur.nexts[ch - 'a'];
+            TrieNode node = root;
+            for (char c : word.toCharArray()) {
+                if (node.next[c - 'a'] == null) node.next[c - 'a'] = new TrieNode();
+                node = node.next[c - 'a'];
             }
-            cur.isWord = true;
+            node.isEnd = true;
+        }
+
+        dfs(root, new StringBuilder());
+        return res;
+    }
+
+    private void dfs(TrieNode node, StringBuilder sb) {
+        if (sb.length() > res.length()) res = sb.toString();
+
+        for (int i = 0; i < 26; i++) {
+            if (node.next[i] == null) continue;
+            if (!node.next[i].isEnd) continue;
+            sb.append((char)('a' + i));
+            dfs(node.next[i], sb);
+            sb.setLength(sb.length() - 1);
+        }
+    }
+
+    private class TrieNode {
+        private TrieNode[] next;
+        private boolean isEnd;
+        public TrieNode() {
+            this.next = new TrieNode[26];
+            this.isEnd = false;
+        }
+    }
+
+    // S3: Trie + two pass
+    // time = O(n * k), space = O(26 * k) = O(1), k: the length of the longest word in the array
+    public String longestWord3(String[] words) {
+        TrieNode root = new TrieNode();
+        for (String word : words) {
+            TrieNode node = root;
+            for (char c : word.toCharArray()) {
+                if (node.next[c - 'a'] == null) node.next[c - 'a'] = new TrieNode();
+                node = node.next[c - 'a'];
+            }
+            node.isEnd = true;
         }
 
         String res = "";
         for (String word : words) {
-            TrieNode cur = root;
+            TrieNode node = root;
             boolean flag = true; // 设置一个flag来判断是否是因为走到底而跳出for loop还是因为array中没有prefix而跳出！
-            for (char ch : word.toCharArray()) {
-                if (!cur.nexts[ch - 'a'].isWord) { // isWord == false意味着array里不存在当前位置的prefix，则一定不符合条件！
+            for (char c : word.toCharArray()) {
+                if (!node.next[c - 'a'].isEnd) { // isEnd == false意味着array里不存在当前位置的prefix，则一定不符合条件！
                     flag = false; // 打上标记，阻止进入下面的if语句进行答案筛选，这里根本不是一个备选项
                     break;
                 }
-                cur = cur.nexts[ch - 'a'];
+                node = node.next[c - 'a'];
             }
             if (flag && (word.length() > res.length() || (word.length() == res.length() && word.compareTo(res) < 0))) {
                 res = word;
             }
         }
         return res;
-    }
-
-    private class TrieNode {
-        private TrieNode[] nexts;
-        private boolean isWord;
-        public TrieNode() {
-            this.nexts = new TrieNode[26];
-            this.isWord = false;
-        }
     }
 }

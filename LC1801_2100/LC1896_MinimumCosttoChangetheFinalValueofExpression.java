@@ -40,64 +40,56 @@ public class LC1896_MinimumCosttoChangetheFinalValueofExpression {
      */
     // time = O(n), space = O(n)
     public int minOperationsToFlip(String expression) {
-        // corner case
-        if (expression == null || expression.length() == 0) return 0;
-
-        Pair cur = new Pair(-1, -1);
+        int[] cur = new int[]{-1, -1}; // {val, flip}
         char op = '#';
-        Stack<Pair> s1 = new Stack<>();
-        Stack<Character> s2 = new Stack<>();
+        Stack<int[]> s1 = new Stack<>(); // node{val, flip}
+        Stack<Character> s2 = new Stack<>(); // op
 
-        for (char ch : expression.toCharArray()) {
-            if (ch == '&' || ch == '|') op = ch;
-            else if (ch == '0' || ch == '1') {
-                Pair next = new Pair(ch - '0', 1); // flip the leaf node -> must be 1 operations -> flip = 1
+        for (char c : expression.toCharArray()) {
+            if (c == '&' || c == '|') op = c;
+            else if (c == '0' || c == '1') {
+                int[] next = new int[]{c - '0', 1}; // flip the leaf node -> must be 1 operations -> flip = 1
                 int val = evalVal(op, cur, next);
                 int flip = evalFlip(op, cur, next);
-                cur = new Pair(val, flip);
-            } else if (ch == '(') {
+                cur = new int[]{val, flip};
+            } else if (c == '(') {
                 s1.push(cur);
                 s2.push(op);
-                cur = new Pair(-1, -1);
+                cur = new int[]{-1, -1};
                 op = '#';
             } else {
-                Pair last = s1.pop();
+                int[] last = s1.pop();
                 op = s2.pop();
+
                 int val = evalVal(op, last, cur);
                 int flip = evalFlip(op, last, cur);
-                cur = new Pair(val, flip);
+                cur = new int[]{val, flip};
             }
         }
-        return cur.flip;
+        return cur[1];
     }
 
-    private int evalVal(char op, Pair a, Pair b) {
-        if (op == '#') return b.val; // -1 # 3 => 3
-        if (op == '&') return a.val & b.val;
-        else return a.val | b.val;
+    private int evalVal(char op, int[] a, int[] b) {
+        if (op == '#') return b[0];
+        if (op == '&') return a[0] & b[0];
+        else return a[0] | b[0];
     }
 
-    private int evalFlip(char op, Pair a, Pair b) {
-        if (op == '#') return b.flip; // -1 # 3 => 3
+    private int evalFlip(char op, int[] a, int[] b) {
+        if (op == '#') return b[1];
+
         if (op == '|') {
-            if (a.val + b.val == 0) return Math.min(a.flip, b.flip);
-            else if (a.val + b.val == 1) return 1;
-            else if (a.val + b.val == 2) return Math.min(a.flip, b.flip) + 1;
+            if (a[0] + b[0] == 0) return Math.min(a[1], b[1]);
+            if (a[0] + b[0] == 1) return 1;
+            if (a[0] + b[0] == 2) return Math.min(a[1], b[1]) + 1;
         }
+
         if (op == '&') {
-            if (a.val + b.val == 0) return Math.min(a.flip, b.flip) + 1;
-            else if (a.val + b.val == 1) return 1;
-            else if (a.val + b.val == 2) return Math.min(a.flip, b.flip);
+            if (a[0] + b[0] == 0) return Math.min(a[1], b[1]) + 1;
+            if (a[0] + b[0] == 1) return 1;
+            if (a[0] + b[0] == 2) return Math.min(a[1], b[1]);
         }
         return 0;
-    }
-
-    private class Pair {
-        private int val, flip;
-        public Pair(int val, int flip) {
-            this.val = val;
-            this.flip = flip;
-        }
     }
 }
 /**

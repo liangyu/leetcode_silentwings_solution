@@ -53,6 +53,7 @@ public class LC334_IncreasingTripletSubsequence {
 }
 /**
  * ref: LC300
+ * 立足中间，向2边扩展
  * 遍历中间元素，想知道j左边元素最小是多少，是的话就ok，再看j右边最大的，让不等号尽量成立
  * 都可以均摊是O(1)来实现
  * 从左往右撸一遍

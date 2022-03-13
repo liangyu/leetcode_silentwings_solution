@@ -1,5 +1,5 @@
 package LC1801_2100;
-
+import java.util.*;
 public class LC1966_BinarySearchableNumbersinanUnsortedArray {
     /**
      * Consider a function that implements an algorithm similar to Binary Search. The function has two input parameters:
@@ -56,6 +56,35 @@ public class LC1966_BinarySearchableNumbersinanUnsortedArray {
             if (min == nums[i] && maxLeft[i] == nums[i]) res++;
         }
         return res;
+    }
+
+    // S2: stack
+    // time = O(n), space = O(n)
+    public int binarySearchableNumbers2(int[] nums) {
+        int n = nums.length;
+        int[] prevGreater = new int[n];
+        int[] nextSmaller = new int[n];
+        Arrays.fill(prevGreater, -1);
+        Arrays.fill(nextSmaller, n);
+        Stack<Integer> stack = new Stack<>();
+
+        // 注意: Both prevGreater and nextSmaller are strictly greater and smaller!!!
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && nums[stack.peek()] > nums[i]) nextSmaller[stack.pop()] = i;
+            stack.push(i);
+        }
+
+        stack.clear();
+        for (int i = n - 1; i >= 0; i--) {
+            while (!stack.isEmpty() && nums[stack.peek()] < nums[i]) prevGreater[stack.pop()] = i;
+            stack.push(i);
+        }
+
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            if (prevGreater[i] == -1 && nextSmaller[i] == n) count++; // 只有同时不存在prevGreater和nextSmaller的那些数才能被搜到！
+        }
+        return count;
     }
 }
 /**

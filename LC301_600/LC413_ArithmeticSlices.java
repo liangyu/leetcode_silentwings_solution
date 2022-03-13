@@ -16,11 +16,30 @@ public class LC413_ArithmeticSlices {
      *
      * return: 3, for 3 arithmetic slices in A: [1, 2, 3], [2, 3, 4] and [1, 2, 3, 4] itself.
      *
-     * @param A
+     * @param nums
      * @return
      */
-    // time = O(n), space = O(1)
+    // S1:
+    // time = O(n), space = O(n)
     public int numberOfArithmeticSlices(int[] nums) {
+        int n = nums.length;
+        if (n == 1) return 0;
+        int diff = nums[0] - nums[1], count = 0, res = 0;
+
+        for (int i = 2; i < n; i++) {
+            if (nums[i - 1] - nums[i] == diff) count++;
+            else {
+                diff = nums[i - 1] - nums[i];
+                count = 0;
+            }
+            res += count;
+        }
+        return res;
+    }
+
+    // S2: DP
+    // time = O(n), space = O(1)
+    public int numberOfArithmeticSlices2(int[] nums) {
         // corner case
         if (nums == null || nums.length == 0) return 0;
 

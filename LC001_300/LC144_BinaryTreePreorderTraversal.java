@@ -11,7 +11,7 @@ public class LC144_BinaryTreePreorderTraversal {
      * @param root
      * @return
      */
-    // S!: iteration
+    // S1: iteration
     // time = O(n), space = O(n)
     public List<Integer> preorderTraversal(TreeNode root) {
         List<Integer> res = new ArrayList<>();

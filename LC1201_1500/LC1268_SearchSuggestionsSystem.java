@@ -30,8 +30,110 @@ public class LC1268_SearchSuggestionsSystem {
      * @param searchWord
      * @return
      */
-    // time = O((m + n) * logn + m^2), space = O(n)
+    // S1: Trie
+    // time = O(n * k + m), space = O(n * k)  n * k: 所有字符串的长度之和
+    TrieNode root;
     public List<List<String>> suggestedProducts(String[] products, String searchWord) {
+        List<List<String>> res = new ArrayList<>();
+        root = new TrieNode();
+
+        // build trie
+        for (String s : products) {
+            TrieNode node = root;
+            for (char c : s.toCharArray()) {
+                if (node.next[c - 'a'] == null) {
+                    node.next[c - 'a'] = new TrieNode();
+                }
+                node = node.next[c - 'a'];
+            }
+            node.count++;
+        }
+
+        // traverse the trie with all possibilities
+        TrieNode node = root;
+        StringBuilder sb = new StringBuilder();
+        int n = searchWord.length();
+        for (int i = 0; i < n; i++) {
+            char c = searchWord.charAt(i);
+
+            // can't find the next char
+            if (node.next[c - 'a'] == null) {
+                for (int j = i; j < n; j++) res.add(new ArrayList<>());
+                break;
+            }
+
+            // can find the next char
+            node = node.next[c - 'a']; // node need to be kept at the curent level, as it needs to move to next char level
+            sb.append(c);
+
+            // dfs -> find all possible words based on the current prefix in the sb
+            List<String> path = new ArrayList<>();
+            dfs(node, path, sb);
+
+            while (path.size() > 3) path.remove(path.size() - 1);
+            res.add(new ArrayList<>(path));
+        }
+        return res;
+    }
+
+    private void dfs(TrieNode node, List<String> path, StringBuilder sb) {
+        if (node.count > 0) {
+            for (int k = 0; k < node.count; k++) path.add(sb.toString());
+        }
+
+        for (int i = 0; i < 26; i++) {
+            if (path.size() > 3) break;
+            if (node.next[i] == null) continue;
+            sb.append((char)('a' + i));
+            dfs(node.next[i], path, sb);
+            sb.setLength(sb.length() - 1);
+        }
+    }
+
+    private class TrieNode {
+        private TrieNode[] next;
+        private int count;
+        public TrieNode() {
+            this.next = new TrieNode[26];
+            this.count = 0;
+        }
+    }
+
+    // S2: Sort + B.S.
+    // time = O((m + n) * logn), space = O(n * k + m)
+    public List<List<String>> suggestedProducts2(String[] products, String searchWord) {
+        List<List<String>> res = new ArrayList<>();
+
+        Arrays.sort(products); // O(nlogn)
+
+        int n = products.length;
+        StringBuilder sb = new StringBuilder();
+        for (char c : searchWord.toCharArray()) { // O(m)
+            sb.append(c);
+            int idx = upperBound(products, sb.toString()); // O(logn)
+            List<String> path = new ArrayList<>();
+            for (int i = idx; i < Math.min(idx + 3, n); i++) {
+                if (products[i].length() < sb.length()) break;
+                if (products[i].substring(0, sb.length()).equals(sb.toString())) path.add(products[i]);
+            }
+            res.add(new ArrayList<>(path));
+        }
+        return res;
+    }
+
+    private int upperBound(String[] nums, String t) {
+        int left = 0, right = nums.length - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid].compareTo(t) < 0) left = mid + 1;
+            else right = mid;
+        }
+        return nums[left].compareTo(t) >= 0 ? left : left + 1;
+    }
+
+    // S3: TreeMap
+    // time = O((m + n) * logn + m^2), space = O(n)
+    public List<List<String>> suggestedProducts3(String[] products, String searchWord) {
         List<List<String>> res = new ArrayList<>();
         // corner case
         if (products == null || products.length == 0 || searchWord == null || searchWord.length() == 0) return res;

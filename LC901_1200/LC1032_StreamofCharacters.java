@@ -36,33 +36,34 @@ public class LC1032_StreamofCharacters {
     public LC1032_StreamofCharacters(String[] words) {
         root = new TrieNode();
         sb = new StringBuilder();
-        for (String word : words) {
-            addWord(word);
-        }
+        for (String word : words) insert(word);
     }
-    // time = O(m), space = O(m)   m: max word length
+
     public boolean query(char letter) {
         sb.append(letter);
         return find();
     }
 
-    private void addWord(String word) {
+    private void insert(String word) { // 反着建树！
         TrieNode node = root;
-        for (int i = word.length() - 1; i >= 0; i--) {
-            char ch = word.charAt(i);
-            if (node.next[ch - 'a'] == null) node.next[ch - 'a'] = new TrieNode();
-            node = node.next[ch - 'a'];
+        int n = word.length();
+        for (int i = n - 1; i >= 0; i--) {
+            char c = word.charAt(i);
+            if (node.next[c - 'a'] == null) {
+                node.next[c - 'a'] = new TrieNode();
+            }
+            node = node.next[c - 'a'];
         }
-        node.isWord = true;
+        node.isEnd = true;
     }
 
-    private boolean find() {
+    private boolean find() { // 反过来查！
         int i = sb.length() - 1;
         TrieNode node = root;
         while (i >= 0) {
             if (node.next[sb.charAt(i) - 'a'] != null) {
                 node = node.next[sb.charAt(i) - 'a'];
-                if (node.isWord) return true;
+                if (node.isEnd) return true;
                 i--;
             } else return false;
         }
@@ -71,10 +72,10 @@ public class LC1032_StreamofCharacters {
 
     private class TrieNode {
         private TrieNode[] next;
-        private boolean isWord;
+        private boolean isEnd;
         public TrieNode() {
-            next = new TrieNode[26];
-            isWord = false;
+            this.next = new TrieNode[26];
+            this.isEnd = false;
         }
     }
 }

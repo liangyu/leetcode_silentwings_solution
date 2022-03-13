@@ -22,35 +22,62 @@ public class LC114_FlattenBinaryTreetoLinkedList {
      */
     // S1: recursion
     // time = O(n), space = O(n)
-    private TreeNode prev = null;
     public void flatten(TreeNode root) {
-        // corner case
         if (root == null) return;
+        if (root.left == null) {
+            flatten(root.right);
+            return;
+        }
+
+        TreeNode h1 = root.left;
+        TreeNode h2 = root.right;
 
         flatten(root.left);
         flatten(root.right);
-        root.right = prev;
+
+        root.right = h1;
+        root.left = null;
+
+        while (h1.right != null) {
+            h1 = h1.right;
+        }
+        h1.right = h2;
+    }
+
+    // S2: dfs
+    // time = O(n), space = O(n)
+    TreeNode prev = null;
+    public void flatten1(TreeNode root) {
+        if (root == null) return;
+
+        flatten(root.right);
+        flatten(root.left);
+        root.right = prev; // 跨越子树的时候，只能通过prev来连接，比如例子中4 -> 5的时候，否则只能得到一半的左子树，右子树就不见了！
         root.left = null;
         prev = root;
     }
 
     // S2: iteration (最优解！！！）
     // time = O(n), space = O(1)
-    public void flatten2(TreeNode root) {
+    public void flatten3(TreeNode root) {
         // corner case
         if (root == null) return;
 
-        TreeNode cur = root;
-        while (cur != null) {
-            if (cur.left == null) cur = cur.right;
-            else {
-                TreeNode prev = cur.left;
-                while (prev.right != null) prev = prev.right;
-                prev.right = cur.right;
-                cur.right = cur.left;
-                cur.left = null;
-                cur = cur.right;
-            }
+        Stack<TreeNode> stack = new Stack<>();
+        stack.push(root);
+
+        while (!stack.isEmpty()) {
+            TreeNode cur = stack.pop();
+            if (cur.right != null) stack.push(cur.right);
+            if (cur.left != null) stack.push(cur.left);
+
+            // 等到叶子节点，比如4的时候，上面没有入栈，这时4就在这里指向了栈顶的右子树中的5！
+            if (!stack.isEmpty()) cur.right = stack.peek();
+            cur.left = null;
         }
     }
 }
+/**
+ * flattern就是拉直的过程，这个命令是可以重复利用的。
+ * 注意边界条件，如果左边为空的话，要单独考虑！
+ */
