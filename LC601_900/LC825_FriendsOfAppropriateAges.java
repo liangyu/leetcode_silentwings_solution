@@ -75,4 +75,5 @@ public class LC825_FriendsOfAppropriateAges {
  * age[B] > age[A]   => age[B] <= age[A]  => 0.5*age[A] + 7 < age[A]  -> age[A] > 14 => age[A] >= 15
  * age[B] > 100 && age[A] < 100
  * 条件 3 是蕴含在条件 2 中的，即如果满足条件 3 那么一定满足条件 2。
+ * 暴力枚举所有年龄 1 <= ages[i] <= 120
  */

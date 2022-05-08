@@ -27,6 +27,7 @@ public class LC1823_FindtheWinneroftheCircularGame {
      * @param k
      * @return
      */
+    // S1: Math
     // time = O(n), space = O(1)
     public int findTheWinner(int n, int k) {
         int res = 0;
@@ -34,6 +35,23 @@ public class LC1823_FindtheWinneroftheCircularGame {
             res = (res + k) % i;
         }
         return res + 1;
+    }
+
+    // S2: Simulation
+    // time = O(n), space = O(n)
+    public int findTheWinner2(int n, int k) {
+        List<Integer> nums = new ArrayList<>();
+        for (int i = 1; i <= n; i++) nums.add(i);
+        int idx = k - 1;
+
+        while (n > 1) {
+            nums.remove(idx); // remove people id = k while the real idx = k - 1!!!
+            n--;
+            idx += k - 1;
+            if (idx < n) continue;
+            else idx = (idx - n) % nums.size();
+        }
+        return nums.get(0);
     }
 }
 /**

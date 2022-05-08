@@ -32,12 +32,12 @@ public class LC54_SpiralMatrix {
             for (int i = rowBegin; i <= rowEnd; i++) res.add(matrix[i][colEnd]);
             colEnd--;
 
-            if (rowBegin <= rowEnd) {
+            if (rowBegin <= rowEnd) {  // 注意：这里要加上判断，否则不用继续下去！！！
                 for (int i = colEnd; i >= colBegin; i--) res.add(matrix[rowEnd][i]);
             }
             rowEnd--;
 
-            if (colBegin <= colEnd) {
+            if (colBegin <= colEnd) { // 注意：这里要加上判断，否则不用继续下去！！！
                 for (int i = rowEnd; i >= rowBegin; i--) res.add(matrix[i][colBegin]);
             }
             colBegin++;

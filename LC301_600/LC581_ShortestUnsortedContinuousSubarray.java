@@ -21,19 +21,28 @@ public class LC581_ShortestUnsortedContinuousSubarray {
      */
     // time = O(n), space - O(1)
     public int findUnsortedSubarray(int[] nums) {
-        // corner case
-        if (nums == null || nums.length <= 1) return 0;
-
-        int len = nums.length;
-        int start = 0, end = -1;
-        int max = nums[0], min = nums[len - 1];
-
-        for (int i = 0; i < len; i++) {
-            if (nums[i] < max) end = i;
-            else max = nums[i];
-            if (nums[len - 1 - i] > min) start = len - 1 - i;
-            else min = nums[len - 1 - i];
+        int n = nums.length;
+        int max = nums[0], r = 0;
+        for (int i = 0; i < n; i++) {
+            if (nums[i] < max) r = i;
+            max = Math.max(max, nums[i]);
         }
-        return end - start + 1;
+
+        int min = nums[n - 1], l = n - 1;
+        for (int i = n - 1; i >= 0; i--) {
+            if (nums[i] > min) l = i;
+            min = Math.min(min, nums[i]);
+        }
+        return r > l ? r - l + 1 : 0;
     }
 }
+/**
+ * 1. 从小到大排序
+ * 2. 左边最后一个元素 <= 右侧最小值
+ *
+ * 找出这样一个right_bound：位于该数左边的所有数的最大值，要比这个数大，这说明这个数在排序后需要变换位置。
+ * 怎么找呢？将数组从左到右过一遍，实时保存最大值即可，不断刷新这个right_bound。
+ * 同理，找到这样一个left_bound：位于该数右边的所有数的最小值，要比这个数小，这说明这个数在排序后需要变换位置。
+ * 也是讲数组从右往左过一遍，实时保存最小值。
+ * 最后当right_bound>left_bound时，结果就是 right_bound-left_bound+1
+ */

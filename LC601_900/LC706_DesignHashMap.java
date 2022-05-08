@@ -53,6 +53,44 @@ public class LC706_DesignHashMap {
             this.val = val;
         }
     }
+
+    // S2
+    class MyHashMap {
+        int n = 19997;
+        List<int[]>[] buckets;
+        public MyHashMap() {
+            buckets = new List[n];
+            for (int i = 0; i < n; i++) buckets[i] = new ArrayList<>();
+        }
+
+        public void put(int key, int value) {
+            int t = key % n;
+            int k = find(buckets[t], key);
+            if (k == -1) buckets[t].add(new int[]{key, value});
+            else buckets[t].get(k)[1] = value;
+        }
+
+        public int get(int key) {
+            int t = key % n;
+            int k = find(buckets[t], key);
+            if (k == -1) return -1;
+            return buckets[t].get(k)[1];
+        }
+
+        public void remove(int key) {
+            int t = key % n;
+            int k = find(buckets[t], key);
+            if (k != -1) buckets[t].remove(k);
+        }
+
+        private int find(List<int[]> bucket, int key) {
+            int t = key % n;
+            for (int i = 0; i < bucket.size(); i++) {
+                if (bucket.get(i)[0] == key) return i;
+            }
+            return -1;
+        }
+    }
 }
 
 /**

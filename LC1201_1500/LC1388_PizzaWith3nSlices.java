@@ -30,19 +30,17 @@ public class LC1388_PizzaWith3nSlices {
         return Math.max(helper(slices, 0, n - 2, n / 3), helper(slices, 1, n - 1, n / 3));
     }
 
-    private int helper(int[] nums, int start, int end, int k) {
-        int n = end - start + 1, res = 0;
-        int[][][] dp = new int[n][k + 1][2];
-        dp[0][1][1] = nums[start];
-        for (int i = start + 1; i <= end; i++) {
-            int x = i - start;
+    private int helper(int[] nums, int a, int b, int k) {
+        int n = b - a + 1;
+        int[][][] dp = new int[n + 1][k + 1][2];
+
+        for (int i = 1; i <= n; i++) {
             for (int j = 1; j <= k; j++) {
-                dp[x][j][0] = Math.max(dp[x - 1][j][0], dp[x - 1][j][1]);
-                dp[x][j][1] = dp[x - 1][j - 1][0] + nums[i];
-                if (j == k) res = Math.max(res, Math.max(dp[x][j][0], dp[x][j][1]));
+                dp[i][j][0] = Math.max(dp[i - 1][j][0], dp[i - 1][j][1]);
+                dp[i][j][1] = dp[i - 1][j - 1][0] + nums[i - 1 + a];
             }
         }
-        return res;
+        return Math.max(dp[n][k][0], dp[n][k][1]);
     }
 
     // S1.2: DP
@@ -52,14 +50,35 @@ public class LC1388_PizzaWith3nSlices {
         return Math.max(helper2(slices, 0, n - 2, n / 3), helper2(slices, 1, n - 1, n / 3));
     }
 
-    private int helper2(int[] nums, int start, int end, int k) {
-        int n = end - start + 1;
-        int[][] dp = new int[k + 1][2];
-        dp[1][1] = nums[start];
-        for (int i = start + 1; i <= end; i++) {
-            for (int j = k; j > 0; j--) {
+    private int helper2(int[] nums, int a, int b, int k) {
+        int[][] dp = new int[k + 1][2]; // dp[i][j]: the maximum when picking i slices and the current slice's status is j
+
+        for (int i = a; i <= b; i++) {
+            for (int j = Math.min(k, i - a + 1); j >= 1; j--) {
                 dp[j][0] = Math.max(dp[j][0], dp[j][1]);
                 dp[j][1] = dp[j - 1][0] + nums[i];
+            }
+        }
+        return Math.max(dp[k][0], dp[k][1]);
+    }
+
+    // S1.3
+    public int maxSizeSlices3(int[] slices) {
+        int n = slices.length;
+        return Math.max(helper3(slices, 0, n - 2, n / 3), helper3(slices, 1, n - 1, n / 3));
+    }
+
+    private int helper3(int[] nums, int a, int b, int k) {
+        int[][] dp = new int[k + 1][2];
+
+        for (int i = a; i <= b; i++) {
+            int[][] copy = new int[k + 1][2];
+            for (int j = 0; j <= k; j++) copy[j] = dp[j].clone();
+            // 按顺序则要先将之前i - 1的dp二维数组先保存下来，否则dp[i-1][j-1][0] 会被上一行的操作覆盖！！！
+            // 替代方案入S1.2，就是逆序来计算！！！
+            for (int j = 1; j <= Math.min(k, i - a + 1); j++) {
+                dp[j][0] = Math.max(copy[j][0], copy[j][1]);
+                dp[j][1] = copy[j - 1][0] + nums[i];
             }
         }
         return Math.max(dp[k][0], dp[k][1]);

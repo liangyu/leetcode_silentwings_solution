@@ -88,3 +88,15 @@ public class LC2203_MinimumWeightedSubgraphWiththeRequiredPaths {
         }
     }
 }
+/**
+ * 2条路径如果没有任何重叠，直接加和即可
+ * 路径万一有交叉怎么办？=> 交点
+ * 最显著的问题：交点之后，2条路都可以走，肯定会选最短的那条路径。
+ * 需要的路径模式：肯定是s1和s2在哪个地方交汇了，然后一起走到dest
+ * 表面上求2端路径最小化，其实是三段路径和的最小化
+ * 如果遍历M 0 - 10^5
+ * min{s1[i] + s2[i] + dest[i]}
+ * Dijkstra -> 适用single source, non-negative weight
+ * O(ElogE) 非稠密图上是非常高效的算法
+ * 构造一个反图，从dest作为source即可。
+ */

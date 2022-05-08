@@ -27,20 +27,29 @@ public class LC142_LinkedListCycleII {
     // time = O(n), space = O(1)
     public ListNode detectCycle(ListNode head) {
         // corner case
-        if (head == null || head.next == null) return null;
+        if (head == null) return head;
 
-        ListNode slow = head, fast = head, cur = head;
-
+        ListNode slow = head, fast = head;
         while (fast != null && fast.next != null) {
             slow = slow.next;
             fast = fast.next.next;
             if (slow == fast) break;
         }
+
         if (fast == null || fast.next == null) return null;
-        while (slow != cur) {
+
+        fast = head;
+        while (slow != fast) {
             slow = slow.next;
-            cur = cur.next;
+            fast = fast.next;
         }
-        return cur;
+        return slow;
     }
 }
+/**
+ * 本题的算法还有一个非常巧妙的应用：287. Find the Duplicate Number
+ * m + k1 * n + p
+ * m + k2 * n + p
+ * => m + k1 * n + p = 2 * (m + k2 * n + p)
+ * => (k1 - 2 * k2) * n = p + m => 若干圈
+ */

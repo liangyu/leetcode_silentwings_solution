@@ -81,7 +81,7 @@ public class LC28_ImplementstrStr {
         return s.charAt(i) - 'a';
     }
 
-    // S3: KMP
+    // S3: KMP1
     // time = O(n), space = O(n)
     public int strStr3(String haystack, String needle) {
         String s = haystack;
@@ -125,6 +125,30 @@ public class LC28_ImplementstrStr {
         }
         return dp;
     }
+
+    // S4: KMP2
+    // time = O(n), space = O(n)
+    public int strStr4(String s, String p) {
+        int n = s.length(), m = p.length();
+        s = "#" + s;
+        p = "#" + p;
+
+        int[] next = new int[m + 1];
+        for (int i = 2, j = 0; i <= m; i++) {
+            while (j > 0 & p.charAt(i) != p.charAt(j + 1)) {
+                j = next[j];
+            }
+            if (p.charAt(i) == p.charAt(j + 1)) j++;
+            next[i] = j;
+        }
+
+        for (int i = 1, j = 0; i <= n; i++) {
+            while (j > 0 && s.charAt(i) != p.charAt(j + 1)) j = next[j];
+            if (s.charAt(i) == p.charAt(j + 1)) j++;
+            if (j == m) return i - m; // 返回起始位置
+        }
+        return -1;
+    }
 }
 /**
  * s: target string
@@ -165,4 +189,8 @@ public class LC28_ImplementstrStr {
  *     dp[i] = j + (s.charAt(i) == p.charAt(j) ? 1 : 0);
  *     if (dp[i] == p.length()) return i - p.length() + 1; // starting point
  * }
+ *
+ * next[i]: 所有p[1~i]的相等的前缀和后缀中长度的最大值
+ * “非平凡前缀”：指除了最后一个字符以外，一个字符串的全部头部组合（前面连续的部分）。
+ * 注意： KMP算法中前后缀指的都是非平凡，即不包括整个串。
  */

@@ -39,6 +39,50 @@ public class LC828_CountUniqueCharactersofAllSubstringsofaGivenString {
         }
         return res;
     }
+
+    // S2
+    // time = O(26n), space = O(n)
+    public int uniqueLetterString2(String s) {
+        int n = s.length();
+        List<Integer>[] pos = new List[26];
+        for (int i = 0; i < 26; i++) pos[i] = new ArrayList<>();
+
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            int idx = s.charAt(i) - 'A';
+            pos[idx].add(i);
+            for (int k = 0; k < 26; k++) {
+                int m = pos[k].size();
+                if (m >= 2) res += pos[k].get(m - 1) - pos[k].get(m - 2);
+                else if (m == 1) res += pos[k].get(0) + 1;
+            }
+        }
+        return res;
+    }
+
+    // S3
+    // time = O(n), space = O(n)
+    public int uniqueLetterString3(String s) {
+        int n = s.length();
+        List<Integer>[] pos = new List[26];
+        for (int i = 0; i < 26; i++) {
+            pos[i] = new ArrayList<>();
+            pos[i].add(-1);
+        }
+        for (int i = 0; i < n; i++) {
+            pos[s.charAt(i) - 'A'].add(i);
+        }
+
+        for (int i = 0; i < 26; i++) pos[i].add(n);
+
+        int res = 0;
+        for (int k = 0; k < 26; k++) {
+            for (int i = 1; i < pos[k].size() - 1; i++) {
+                res += (pos[k].get(i) - pos[k].get(i - 1)) * (pos[k].get(i + 1) - pos[k].get(i));
+            }
+        }
+        return res;
+    }
 }
 /**
  * "ABCBD"
@@ -56,4 +100,26 @@ public class LC828_CountUniqueCharactersofAllSubstringsofaGivenString {
  *     | C | B
  *   B | C | B
  * A B | C | B
+ *
+ * A X A X B A X i
+ * c   b   d a
+ * A: a - b
+ * B: d + 1
+ * ...
+ * Z
+ * 对于任意一个以i为结尾的substring,遍历26遍就可以知道a...z对所有substring贡献多少分
+ * O(26n)
+ * 遍历数组里所有的元素
+ * 数组里的元素对subarray的属性是怎样的贡献
+ * X X X X A [X X A X X] A X X
+ *         j      i      k
+ * 左边界：i - j
+ * 右边界：k - i
+ * => (i - j) * (k - i)
+ * 不是遍历所有substring，而是看每个元素贡献给多少个substring
+ * count by element
+ * 找到triplet
+ * 如果只出现过1次或者2次，没有三元对
+ * => 小技巧，前面和后面都添加一个，-1和n
+ * (i + 1) * (n - i)
  */

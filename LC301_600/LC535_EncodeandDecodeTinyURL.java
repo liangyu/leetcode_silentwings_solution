@@ -39,6 +39,38 @@ public class LC535_EncodeandDecodeTinyURL {
     public String decode(String shortUrl) {
         return map.get(shortUrl);
     }
+
+    // S2: Hash
+    // time = O(1), space = O(1)
+    public class Codec {
+        HashMap<String, String> map;
+        String chars = "01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        // Encodes a URL to a shortened URL.
+        public String encode(String longUrl) {
+            map = new HashMap<>();
+            while (true) {
+                String shortUrl = "http://tinyurl.com/" + random_str(6);
+                if (!map.containsKey(shortUrl)) {
+                    map.put(shortUrl, longUrl);
+                    return shortUrl;
+                }
+            }
+        }
+
+        // Decodes a shortened URL to its original URL.
+        public String decode(String shortUrl) {
+            return map.get(shortUrl);
+        }
+
+        private String random_str(int k) {
+            Random random = new Random();
+            StringBuilder sb = new StringBuilder();
+            while (k-- > 0) {
+                sb.append(chars.charAt(random.nextInt(62)));
+            }
+            return sb.toString();
+        }
+    }
 }
 /**
  * 26 + 26 + 10 = 62
@@ -50,6 +82,20 @@ public class LC535_EncodeandDecodeTinyURL {
  * 000000A
  * ZZZZZZZ
  * => hash难写就用随机数
+ * 递增的62进制数
  * ace4EFa ace4EFb => 重复？再来一次
  * decode => hashmap存下来
+ *
+ * 随机化
+ * 0 - 9, a - z, A - Z
+ * k位62进制数
+ * p = (62^k - n) / (62^k)
+ * 1 / p
+ * 1 + (1 - p) + (1 - p)^2 + (1 - p)^3 + ...
+ * (1-p)*s = (1-p) + (1-p)^2 + ...
+ * s - (1-p)*s = s * p = 1  => s = 1/p
+ * s = p + 2 * (1-p) * p + 3 * (1-p)^2 * p + ...
+ * s/p = 1 * (1-p)^0 + 2 * (1-p)^1 + ...
+ * (1-p)*(s/p) = (1-p) + 2 * (1-p)^2 + ...
+ * (s/p)*(1-(1-p)) = 1 + (1-p) + (1-P)^2 + ... => s = 1 + (1-p) + (1-p)^2
  */

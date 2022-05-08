@@ -19,6 +19,7 @@ public class LC442_FindAllDuplicatesinanArray {
      * @param nums
      * @return
      */
+    // S1
     // time = O(n), space = O(1)
     public List<Integer> findDuplicates(int[] nums) {
         List<Integer> res = new ArrayList<>();
@@ -42,6 +43,19 @@ public class LC442_FindAllDuplicatesinanArray {
         int temp = nums[i];
         nums[i] = nums[j];
         nums[j] = temp;
+    }
+
+    // S2
+    // time = O(n), space = O(1)
+    public List<Integer> findDuplicates2(int[] nums) {
+        List<Integer> res = new ArrayList<>();
+
+        for (int x : nums) {
+            int p = Math.abs(x) - 1; // 0-index
+            nums[p] *= -1;
+            if (nums[p] > 0) res.add(Math.abs(x));
+        }
+        return res;
     }
 }
 /**

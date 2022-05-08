@@ -61,13 +61,15 @@ public class LC658_FindKClosestElements {
         if (arr == null || arr.length == 0 || k <= 0) return res;
 
         int n = arr.length;
+        // 比较的是k + 1的size的区间
         int left = 0, right = n - k;
         while (left < right) {
             int mid = left + (right - left) / 2;
+            // 比较的是k + 1的size的区间
             if (x - arr[mid] > arr[mid + k] - x) {
                 left = mid + 1; // 左端点太远，向右收缩
-            } else right = mid; // 此时mid是个有效解
-        }
+            } else right = mid; // mid此时是真正我们要搜的k-size窗口的左端点靠右边的极限了，也就是左端点不能超越mid
+        } // 这里的left, right指的都是真正k-size window的左端点的左，右极限
         for (int i = left; i < left + k; i++) {
             res.add(arr[i]);
         }

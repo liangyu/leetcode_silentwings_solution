@@ -23,6 +23,7 @@ public class LC714_BestTimetoBuyandSellStockwithTransactionFee {
      * @param fee
      * @return
      */
+    // S1: dp
     // time = O(n), space = O(1)
     public int maxProfit(int[] prices, int fee) {
         // corner case
@@ -37,4 +38,28 @@ public class LC714_BestTimetoBuyandSellStockwithTransactionFee {
         }
         return sold;
     }
+
+    // S2: state machine DP
+    // time = O(n), space = O(n)
+    public int maxProfit2(int[] prices, int fee) {
+        int n = prices.length;
+        int[][] dp = new int[n + 1][2];
+        for (int i = 0; i <= n; i++) Arrays.fill(dp[i], Integer.MIN_VALUE / 2);
+        dp[0][0] = 0;
+
+        int res = 0;
+        for (int i = 1; i <= n; i++) {
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i - 1]);
+            dp[i][1] = Math.max(dp[i - 1][1], dp[i - 1][0] - prices[i - 1] - fee);
+            res = Math.max(res, dp[i][0]);
+        }
+        return res;
+    }
 }
+/**
+ * hold:
+ * sold
+ *
+ * f(i,0): 走了i条边，处于状态0的最大价值
+ * f(i,1): 走了i条边，处于状态1的最大价值
+ */

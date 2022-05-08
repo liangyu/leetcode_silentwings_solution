@@ -26,6 +26,7 @@ public class LC1761_MinimumDegreeofaConnectedTrioinaGraph {
      * @param edges
      * @return
      */
+    // S1: adjacent matrix + adjacent list
     // time = O(n^3), space = O(n^2)
     public int minTrioDegree(int n, int[][] edges) {
         int[][] connect = new int[n + 1][n + 1];
@@ -52,6 +53,34 @@ public class LC1761_MinimumDegreeofaConnectedTrioinaGraph {
                     if (connect[b][c] == 1) {
                         res = Math.min(res, degree[a] + degree[b] + degree[c] - 6);
                     }
+                }
+            }
+        }
+        return res == Integer.MAX_VALUE ? -1 : res;
+    }
+
+    // S2: HashSet Array
+    // time = O(n^3), space = O(n^2)
+    public int minTrioDegree2(int n, int[][] edges) {
+        HashSet<Integer>[] graph = new HashSet[n];
+        for (int i = 0; i < n; i++) graph[i] = new HashSet<>();
+        int[] degree = new int[n];
+        for (int[] edge : edges) {
+            int a = edge[0] - 1, b = edge[1] - 1;
+            int x = Math.min(a, b);
+            int y = Math.max(a, b);
+            graph[x].add(y);
+            degree[x]++;
+            degree[y]++;
+        }
+
+        int res = Integer.MAX_VALUE;
+        for (int a = 0; a < n; a++) {
+            for (int b : graph[a]) {
+                for (int c : graph[a]) {
+                    if (b == c) continue;
+                    if (!graph[b].contains(c) && !graph[c].contains(b)) continue;
+                    res = Math.min(res, degree[a] + degree[b] + degree[c] - 6);
                 }
             }
         }

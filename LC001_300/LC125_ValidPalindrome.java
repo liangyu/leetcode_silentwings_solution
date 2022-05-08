@@ -21,24 +21,17 @@ public class LC125_ValidPalindrome {
      */
     // time = O(n), space = O(1)
     public boolean isPalindrome(String s) {
-        // corner case
-        if (s == null || s.length() == 0) return true;
-
-        s = s.toLowerCase();
-        int i = 0, j = s.length() - 1;
-
+        int n = s.length();
+        int i = 0, j = n - 1;
         while (i < j) {
-            while (i < j && !isValid(s.charAt(i))) i++; // 注意i < j不能相等或者越过
-            while (i < j && !isValid(s.charAt(j))) j--;
-            if (s.charAt(i) != s.charAt(j)) return false;
+            while (i < j && !Character.isLetterOrDigit(s.charAt(i))) i++;
+            while (i < j && !Character.isLetterOrDigit(s.charAt(j))) j--;
+            if (Character.toLowerCase(s.charAt(i)) != Character.toLowerCase(s.charAt(j))) {
+                return false;
+            }
             i++;
             j--;
         }
         return true;
-    }
-
-    private boolean isValid(char c) {
-        if (c >= 'a' && c <= 'z' || c >= '0' && c <= '9') return true;
-        return false;
     }
 }

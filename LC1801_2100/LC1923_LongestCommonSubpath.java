@@ -32,38 +32,43 @@ public class LC1923_LongestCommonSubpath {
      * @param paths
      * @return
      */
+    // S1: double rolling hash
     // time = O(m * k * logC), space = O(m * k)   C: 10^5
-    final long base = (long)(1e5 + 7);
     public int longestCommonSubpath(int n, int[][] paths) {
-        // corner case
-        if (paths == null || paths.length <= 1) return 0;
-
-        int left = 0, right = 100000;
+        int left = 0, right = (int) 1e5;
         while (left < right) {
-            int k = left + (right - left) / 2 + 1;
-            if (checkOK(paths, k)) { // if there is a common subarray of length k
-                left = k;
-            } else {
-                right = k - 1;
-            }
+            int mid = right - (right - left) / 2;
+            if (helper(paths, mid)) left = mid;
+            else right = mid - 1;
         }
-        return left; // 一定有收敛解
+        return left;
     }
 
-    private boolean checkOK(int[][] paths, int len) {
-        HashMap<Long, Integer> map = new HashMap<>();
-        long head = 1;
-        for (int i = 0; i < len - 1; i++) head = head * base;
+    private boolean helper(int[][] paths, int len) {
+        HashMap<Pair, Integer> map = new HashMap<>();
+        long base1 = 26, base2 = 31;
+        long power1 = 1, power2 = 1;
+        for (int i = 0; i < len - 1; i++) {
+            power1 = power1 * base1;
+            power2 = power2 * base2;
+        }
 
-        for (int k = 0; k < paths.length; k++) {  // O(m)
-            HashSet<Long> set = new HashSet<>();
-            long hash = 0;
+        int n = paths.length;
+        for (int i = 0; i < n; i++) {
+            HashSet<Pair> set = new HashSet<>();
+            long hash1 = 0, hash2 = 0;
 
-            for (int i = 0; i < paths[k].length; i++) { // O(k)
-                if (i >= len) hash -= paths[k][i - len] * head;
-                hash = hash * base + paths[k][i];
+            for (int j = 0; j < paths[i].length; j++) {
+                if (j >= len) { // remove the highest digit first when n is large as 10^5!!!
+                    hash1 = hash1 - paths[i][j - len] * power1;
+                    hash2 = hash2 - paths[i][j - len] * power2;
+                }
+                hash1 = hash1 * base1 + paths[i][j];
+                hash2 = hash2 * base2 + paths[i][j];
 
-                if (i >= len - 1 && !set.contains(hash)) { // 只有当 i >= len - 1时才是个有效的hash，才能加入set去查重
+                Pair hash = new Pair(hash1, hash2);
+
+                if (j >= len - 1 && !set.contains(hash)) {
                     set.add(hash);
                     map.put(hash, map.getOrDefault(hash, 0) + 1);
                 }
@@ -71,9 +76,31 @@ public class LC1923_LongestCommonSubpath {
         }
 
         for (int val : map.values()) {
-            if (val == paths.length) return true; // 有一个就ok
+            if (val == n) return true;
         }
         return false;
+    }
+
+    private class Pair {
+        private long i, j;
+        public Pair(long i, long j) {
+            this.i = i;
+            this.j = j;
+        }
+
+        @Override
+        public int hashCode() {
+            return (int) i * 31 + (int) j;
+        }
+
+        public boolean equals(Object o) {
+            if (o == null) return false;
+            if (o instanceof Pair) {
+                Pair that = (Pair) o;
+                return this.i == that.i && this.j == that.j;
+            }
+            return false;
+        }
     }
 }
 /**

@@ -25,28 +25,28 @@ public class LC895_MaximumFrequencyStack {
      The total number of FreqStack.push and FreqStack.pop calls will not exceed 150000 across all test cases.
      */
     // time = O(1), space = O(n)
-    HashMap<Integer, Integer> freq = new HashMap<>();
-    HashMap<Integer, Stack<Integer>> group;
-    int maxfreq;
+    HashMap<Integer, List<Integer>> map;
+    HashMap<Integer, Integer> count;
+    int maxFreq = 0;
     public LC895_MaximumFrequencyStack() {
-        freq = new HashMap<>();
-        group = new HashMap<>();
-        maxfreq = 0;
+        map = new HashMap<>();
+        count = new HashMap<>();
     }
 
-    public void push(int x) {
-        freq.put(x, freq.getOrDefault(x, 0) + 1);
-        if (freq.get(x) > maxfreq) maxfreq = freq.get(x);
-        group.putIfAbsent(freq.get(x), new Stack<>());
-        group.get(freq.get(x)).push(x);
+    public void push(int val) {
+        int freq = count.getOrDefault(val, 0);
+        map.putIfAbsent(freq + 1, new ArrayList<>());
+        map.get(freq + 1).add(val);
+        count.put(val, count.getOrDefault(val, 0) + 1);
+        maxFreq = Math.max(maxFreq, freq + 1);
     }
 
     public int pop() {
-        int top = group.get(maxfreq).pop();
-        freq.put(top, freq.get(top) - 1);
-        // 只要maxfreq对应的stack为空，那么maxfreq一定就-1，因为个数是1个1个减的
-        //  [[5],[7],[5],[7],[4],[5]] -> 555 77 4 -> 55 77 4 -> 5 77 4 -> 5 7 4
-        if (group.get(maxfreq).size() == 0) maxfreq--;
-        return top;
+        int n = map.get(maxFreq).size();
+        int x = map.get(maxFreq).get(n - 1);
+        map.get(maxFreq).remove(n - 1);
+        if (map.get(maxFreq).size() == 0) maxFreq--;
+        count.put(x, count.get(x) - 1);
+        return x;
     }
 }

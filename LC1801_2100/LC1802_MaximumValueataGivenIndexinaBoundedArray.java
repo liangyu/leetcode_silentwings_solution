@@ -39,12 +39,15 @@ public class LC1802_MaximumValueataGivenIndexinaBoundedArray {
 
     private long count(long h, long n, long index) {
         long sum = 0;
+
+        // calculate left side
         if (h > index) sum += (h - index + h) * (index + 1) / 2;
         else {
             sum += index - h + 1;
             sum += (1 + h) * h / 2;
         }
 
+        // calculate right side
         if (h > n - index) sum += (h - (n - index) + 1 + h) * (n - index) / 2;
         else {
             sum += n - (index + h);

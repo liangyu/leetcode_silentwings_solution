@@ -30,22 +30,29 @@ public class LC824_GoatLatin {
      * @param sentence
      * @return
      */
-    // time = O(n^2), space = O(n)
+    // time = O(n), space = O(n)
     public String toGoatLatin(String sentence) {
-        // corner case
-        if (sentence == null || sentence.length() == 0) return "";
+        int n = sentence.length(), k = 0;
+        StringBuilder sb = new StringBuilder();
+        String vowel = "aeiouAEIOU";
 
-        String[] strs = sentence.split(" ");
-        HashSet<Character> set = new HashSet<>(Arrays.asList('a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'));
-        String res = "";
-        for (int i = 0; i < strs.length; i++) { // O(n)
-            String s = strs[i];
-            char c = s.charAt(0);
-            if (set.contains(c)) s += "ma";
-            else s = s.substring(1) + c + "ma";
-            for (int j = 0; j <= i; j++) s += "a";
-            res += " " + s;
+        for (int i = 0; i < n; i++) {
+            int j = i;
+            while (j < n && sentence.charAt(j) != ' ') j++;
+            String s = sentence.substring(i, j);
+
+            if (vowel.contains(String.valueOf(s.charAt(0)))) {
+                sb.append(s).append("ma");
+            } else {
+                sb.append(s.substring(1)).append(s.charAt(0)).append("ma");
+            }
+
+            for (int t = 0; t <= k; t++) sb.append('a');
+            sb.append(" ");
+            k++;
+            i = j;
         }
-        return res.substring(1);
+        sb.setLength(sb.length() - 1);
+        return sb.toString();
     }
 }

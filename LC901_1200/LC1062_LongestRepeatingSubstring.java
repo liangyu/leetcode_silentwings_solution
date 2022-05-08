@@ -63,7 +63,6 @@ public class LC1062_LongestRepeatingSubstring {
             pow_base_len = pow_base_len * base % M;
         }
 
-
         for (int i = 0; i < s.length(); i++) {
             hash = (hash * base + s.charAt(i) - 'a') % M;
             if (i >= len) hash = (hash - (s.charAt(i - len) - 'a') * pow_base_len % M + M) % M;

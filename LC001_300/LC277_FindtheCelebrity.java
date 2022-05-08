@@ -52,6 +52,22 @@ public class LC277_FindtheCelebrity {
         return candidate;
     }
 
+    // S2
+    // time = O(n), space = O(1)
+    public int findCelebrity2(int n) {
+        int i = 0, j = n - 1;
+        while (i < j) {
+            if (knows(i, j)) i++;
+            else j--;
+        }
+
+        for (i = 0; i < n; i++) {
+            if (i == j) continue;
+            if (!knows(i, j) || knows(j, i)) return -1;
+        }
+        return j;
+    }
+
     /* The knows API is defined in the parent class Relation.
       boolean knows(int a, int b); */
     public boolean knows(int a, int b) {

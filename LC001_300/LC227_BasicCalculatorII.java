@@ -128,10 +128,60 @@ public class LC227_BasicCalculatorII {
         for (int x : res) sum += x;
         return sum;
     }
+
+    // S3: stack
+    // time = O(n), space = O(n)
+    public int calculate4(String s) {
+        Stack<Integer> num = new Stack<>();
+        Stack<Character> op = new Stack<>();
+
+        int n = s.length();
+        HashMap<Character, Integer> map = new HashMap<>();
+        map.put('+', 1);
+        map.put('-', 1);
+        map.put('*', 2);
+        map.put('/', 2);
+
+        for (int i = 0; i < n; i++) {
+            char c = s.charAt(i);
+            if (c == ' ') continue;
+            if (Character.isDigit(c)) {
+                int j = i;
+                while (j < n && Character.isDigit(s.charAt(j))) j++;
+                int val = Integer.parseInt(s.substring(i, j));
+                num.push(val);
+                i = j - 1;
+            } else {
+                while (!op.isEmpty() && map.get(op.peek()) >= map.get(c)) eval(num, op);
+                op.push(c);
+            }
+        }
+
+        while (!op.isEmpty()) eval(num, op);
+        return num.peek();
+    }
+
+    private void eval(Stack<Integer> num, Stack<Character> op) {
+        int b = num.pop(), a = num.pop();
+        char c = op.pop();
+        int r = 0;
+
+        if (c == '+') r = a + b;
+        else if (c == '-') r = a - b;
+        else if (c == '*') r = a * b;
+        else r = a / b;
+        num.push(r);
+    }
 }
 /**
  * stack
  * +3, -2, +4, *5, -6, -1, +2/2
  * 字符串第一个前面可以人工加一个+号
  * 有括号就递归
+ *
+ * 运算表达式模板：
+ * 1. 数：压入栈中
+ * 2. (: 压入栈中
+ * 3. ): 则 ()中间部分算完
+ * 4. 运算符：while 栈顶op的优先级 >= 当前op的优先级，则操作栈顶
  */

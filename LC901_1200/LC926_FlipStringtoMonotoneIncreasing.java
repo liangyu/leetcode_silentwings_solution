@@ -67,4 +67,11 @@ public class LC926_FlipStringtoMonotoneIncreasing {
  * 2、第i+1个字符为0，且翻转，d[i+1]=d[i]+1
  * 3、第i+1个字符为1，且不翻转，d[i+1]=d[i]
  * 4、第i+1个字符为1，且翻转，d[i+1]=前i个字符中1的个数+1
+ *
+ * Skip 0's until we encounter the first 1.
+ * Keep track of number of 1's in onesCount (Prefix).
+ * Any 0 that comes after we encounter 1 can be a potential candidate for flip. Keep track of it in flipCount.
+ * If flipCount exceeds oneCount - (Prefix 1's flipped to 0's)
+ * a. Then we are trying to flip more 0's (suffix) than number of 1's (prefix) we have.
+ * b. Its better to flip the 1's instead.
  */

@@ -32,74 +32,62 @@ public class LC1976_NumberofWaystoArriveatDestination {
      */
     // time = O(n^3), space = O(n^2)
     private long M = (long)(1e9 + 7);
-    private long[] dist;
+    private long[] dist; // dist[i]: the shortest dist from 0 to i
+    private List<long[]>[] graph;
     private long[] memo;
-    private HashMap<Integer, List<int[]>> map;
     public int countPaths(int n, int[][] roads) {
-        // corner case
-        if (roads == null || roads.length == 0) return n == 1 ? 1 : 0;
-
-        map = new HashMap<>();
-        for (int[] r : roads) {
-            map.putIfAbsent(r[0], new ArrayList<>());
-            map.putIfAbsent(r[1], new ArrayList<>());
-            map.get(r[0]).add(new int[]{r[1], r[2]});
-            map.get(r[1]).add(new int[]{r[0], r[2]});
+        dist = new long[n];
+        graph = new List[n];
+        for (int i = 0; i < n; i++) graph[i] = new ArrayList<>();
+        for (int[] road : roads) {
+            int u = road[0], v = road[1], len = road[2];
+            graph[u].add(new long[]{v, len});
+            graph[v].add(new long[]{u, len});
         }
 
-        dist = new long[n];
-        Arrays.fill(dist, -1);
+        Arrays.fill(dist, -1); // 不能设置为0，0作为dist是有意义的
 
-        PriorityQueue<Pair> pq = new PriorityQueue<>((o1, o2) -> (int) (o1.dist - o2.dist));
-        pq.offer(new Pair(0, 0));// [dist, node]
+        PriorityQueue<long[]> pq = new PriorityQueue<>((o1, o2) -> Long.compare(o1[0], o2[0])); // {dist, city}
+
+        pq.offer(new long[]{0, 0});
 
         while (!pq.isEmpty()) {
-            Pair p = pq.poll();
-            long d = p.dist;
-            int cur = p.id;
-            if (dist[cur] != -1) continue;
-            dist[cur] = d;
+            long[] cur = pq.poll();
+            long d = cur[0];
+            int c = (int) cur[1];
 
-            if (map.containsKey(cur)) {
-                for (int[] next : map.get(cur)) {
-                    int node = next[0], weight = next[1];
-                    if (dist[node] != -1) continue;
-                    pq.offer(new Pair(d + weight, node)); // pq中pair的d必须用long,因为会越界！！！
-                }
+            if (dist[c] != -1) continue;
+            dist[c] = d;
+
+            for (long[] x : graph[c]) {
+                int next = (int) x[0];
+                long len = x[1];
+                if (dist[next] != -1) continue;
+                pq.offer(new long[]{d + len, next});
             }
         }
 
+        // dist[i] 都已经被赋值了
         memo = new long[n];
         Arrays.fill(memo, -1);
-        return (int)dfs(n - 1, dist[n - 1]);
+        return (int) dfs(n - 1, dist[n - 1]);
     }
 
     private long dfs(int cur, long d) {
         // base case
         if (d != dist[cur]) return 0;
         if (cur == 0) return 1;
-
         if (memo[cur] != -1) return memo[cur];
 
-        long count = 0;
-        if (map.containsKey(cur)) {
-            for (int[] next : map.get(cur)) {
-                int node = next[0], weight = next[1];
-                count += dfs(node, d - weight);
-                count %= M;
-            }
+        long total = 0;
+        for (long[] x : graph[cur]) {
+            int next = (int) x[0];
+            long len = x[1];
+            total += dfs(next, d - len);
+            total %= M;
         }
-        memo[cur] = count;
-        return count;
-    }
-
-    private class Pair {
-        private long dist;
-        private int id;
-        public Pair(long dist, int id) {
-            this.dist = dist;
-            this.id = id;
-        }
+        memo[cur] = total;
+        return total;
     }
 }
 /**

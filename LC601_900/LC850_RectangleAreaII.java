@@ -211,6 +211,41 @@ public class LC850_RectangleAreaII {
             }
         }
     }
+
+    // S4: Sweep Line
+    // time = O(n^2 * logn), space = O(m + n)
+    public int rectangleArea4(int[][] rectangles) {
+        List<Integer> xs = new ArrayList<>();
+        for (int[] r : rectangles) {
+            xs.add(r[0]);
+            xs.add(r[2]);
+        }
+
+        Collections.sort(xs);
+        long M = (long)(1e9 + 7), res = 0;
+        int n = xs.size();
+        for (int i = 0; i < n - 1; i++) res += helper(rectangles, xs.get(i), xs.get(i + 1));
+        return (int)(res % M);
+    }
+
+    private long helper(int[][] rts, int a, int b) {
+        List<int[]> ys = new ArrayList<>();
+        for (int[] r : rts) {
+            if (r[0] <= a && r[2] >= b) ys.add(new int[]{r[1], r[3]});
+        }
+        Collections.sort(ys, ((o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o1[1] - o2[1]));
+
+        long res = 0, start = -1, end = -1;
+        for (int[] y : ys) {
+            if (y[0] > end) {
+                res += end - start;
+                start = y[0];
+                end = y[1];
+            } else if (y[1] > end) end = y[1];
+        }
+        res += end - start;
+        return res * (b - a);
+    }
 }
 /**
  * 2d diff array

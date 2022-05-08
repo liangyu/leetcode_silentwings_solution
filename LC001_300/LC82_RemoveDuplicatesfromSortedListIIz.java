@@ -16,6 +16,7 @@ public class LC82_RemoveDuplicatesfromSortedListIIz {
      * @param head
      * @return
      */
+    // S1
     // time = O(n), space = O(1)
     public ListNode deleteDuplicates(ListNode head) {
         // corner case
@@ -34,11 +35,29 @@ public class LC82_RemoveDuplicatesfromSortedListIIz {
         return dummy.next;
     }
 
-    private class ListNode {
-        private int val;
-        private ListNode next;
-        public ListNode(int val) {
-            this.val = val;
+    // S2:
+    // time = O(n), space = O(1)
+    public ListNode deleteDuplicates2(ListNode head) {
+        if (head == null || head.next == null) return head;
+
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+        ListNode cur = dummy;
+
+        while (cur != null && cur.next != null) {
+            ListNode p = cur.next;
+            int count = 1;
+            while (p != null && p.next != null && p.val == p.next.val) {
+                count++;
+                p = p.next;
+            }
+            if (count > 1) cur.next = p.next;
+            else cur = cur.next;
         }
+        return dummy.next;
     }
 }
+/**
+ * 注意实现上的小技巧。对于... dummy->B1->B2->C1->C2-> D....，我们做法是立足dummy，看到有若干个相同数值的B1、B2，就跳过他们，
+ * 令dummy->next = C1。同样地，继续立足dummy，看到有若干个相同数值的C1、C2，就跳过他们，令dummy->next = D。
+ */

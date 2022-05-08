@@ -36,7 +36,7 @@ public class LC10_RegularExpressionMatching {
 
         // for dp[0][j] case
         for (int j = 2; j <= n; j++) {
-            dp[0][j] = p.charAt(j) == '*' && dp[0][j - 2];
+            dp[0][j] = p.charAt(j) == '*' && dp[0][j - 2]; // 注意：这里要用到dp[0][0],所以dp[0][0] = true要在上面设定好！
         }
 
         for (int i = 1; i <= m; i++) {

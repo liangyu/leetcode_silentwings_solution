@@ -17,21 +17,21 @@ public class LC905_SortArrayByParity {
      * @param nums
      * @return
      */
-    // time = O(n), space = O(n)
+    // time = O(n), space = O(1)
     public int[] sortArrayByParity(int[] nums) {
-        // corner case
-        if (nums == null || nums.length == 0) return new int[0];
-
         int n = nums.length;
-        int[] res = new int[n];
-        List<Integer> list = new ArrayList<>();
-
-        for (int num : nums) {
-            if (num % 2 == 0) list.add(0, num);
-            else list.add(num);
+        int i = 0, j = n - 1;
+        while (i < j) {
+            while (i < j && nums[i] % 2 != 1) i++;
+            while (i < j && nums[j] % 2 != 0) j--;
+            swap(nums, i++, j--);
         }
+        return nums;
+    }
 
-        for (int i = 0; i < n; i++) res[i] = list.get(i);
-        return res;
+    private void swap(int[] nums, int i, int j) {
+        int t = nums[i];
+        nums[i] = nums[j];
+        nums[j] = t;
     }
 }

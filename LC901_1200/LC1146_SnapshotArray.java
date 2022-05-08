@@ -25,7 +25,7 @@ public class LC1146_SnapshotArray {
      * 0 <= val <= 10^9
      * @param length
      */
-    TreeMap<Integer, Integer>[] snaps;
+    TreeMap<Integer, Integer>[] snaps; // snaps[index]
     int snapId = 0;
     public LC1146_SnapshotArray(int length) {
         snaps = new TreeMap[length];

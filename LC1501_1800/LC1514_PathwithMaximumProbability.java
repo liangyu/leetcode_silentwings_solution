@@ -69,30 +69,33 @@ public class LC1514_PathwithMaximumProbability {
     // S2: Dijkstra
     // time = O(ElogE) = O(mlogm), space = O(n)
     public double maxProbability2(int n, int[][] edges, double[] succProb, int start, int end) {
-        List<Pair>[] graph = new List[n];
+        List<Pair>[] graph = new List[n]; // {nextId, Prob}
         for (int i = 0; i < n; i++) graph[i] = new ArrayList<>();
-        for (int i = 0; i < edges.length; i++) { // O(m)
-            graph[edges[i][0]].add(new Pair(edges[i][1], -Math.log(succProb[i])));
-            graph[edges[i][1]].add(new Pair(edges[i][0], -Math.log(succProb[i])));
+
+        for (int i = 0; i < edges.length; i++) {
+            int a = edges[i][0], b = edges[i][1];
+            double p = succProb[i];
+            graph[a].add(new Pair(b, -Math.log(p)));
+            graph[b].add(new Pair(a, -Math.log(p)));
         }
+
         PriorityQueue<Pair> pq = new PriorityQueue<>((o1, o2) -> Double.compare(o1.val, o2.val));
         pq.offer(new Pair(start, 0));
-        double[] finalDist = new double[n];
-        Arrays.fill(finalDist, -1);
+        boolean[] visited = new boolean[n];
 
         while (!pq.isEmpty()) {
             Pair cur = pq.poll();
             int node = cur.node;
             double dist = cur.val;
-            if (finalDist[node] != -1) continue;
-            finalDist[node] = dist;
+            if (visited[node]) continue;
+            visited[node] = true;
             if (node == end) return Math.exp(-dist);
 
-            for (Pair next : graph[node]) {
-                int nextNode = next.node;
-                if (finalDist[nextNode] != -1) continue;
-                double edge = next.val;
-                pq.offer(new Pair(nextNode, finalDist[node] + edge));
+            for (Pair x : graph[node]) {
+                int next = x.node;
+                double weight = x.val;
+                if (visited[next]) continue;
+                pq.offer(new Pair(next, dist + weight));
             }
         }
         return 0;
@@ -118,4 +121,10 @@ public class LC1514_PathwithMaximumProbability {
  * maximize prob(E1) * prob(E2) * ... * prob(Ek)
  * minimize -log(prob(E1)) - log(prob(E2)) - ... - log(prob(Ek))
  * 取对数，取负号后，所有权重都变成正的了。
+ * maximize distance product
+ * Dijkstra: minimize distance sum => non-negative weight
+ * maximize p1*p2*p3*...
+ * minimize -log(p1*p2*p3*...) => -log(p1) + -log(p2) + -log(p3) + ...
+ * 找一个最小化的边和
+ * d => exp(-d)
  */

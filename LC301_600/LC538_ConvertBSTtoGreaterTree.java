@@ -37,9 +37,4 @@ public class LC538_ConvertBSTtoGreaterTree {
         convertBST(root.left);
         return root;
     }
-
-    private class TreeNode {
-        private int val;
-        private TreeNode left, right;
-    }
 }

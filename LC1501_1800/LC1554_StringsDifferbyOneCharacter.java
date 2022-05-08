@@ -33,8 +33,8 @@ public class LC1554_StringsDifferbyOneCharacter {
             long h = 0;
             for (char ch : dict[i].toCharArray()) {
                 h = h * base + ch - 'a';
-                hash[i] = h;
             }
+            hash[i] = h;
         }
 
         long power = 1;
@@ -42,7 +42,7 @@ public class LC1554_StringsDifferbyOneCharacter {
             HashSet<Long> set = new HashSet<>();
             for (int i = 0; i < n; i++) {
                 // hash[i]
-                long hash_new = hash[i] - dict[i].charAt(j) * power;
+                long hash_new = hash[i] - (dict[i].charAt(j) - 'a') * power;
                 if (set.contains(hash_new)) return true;
                 set.add(hash_new);
             }
@@ -66,5 +66,5 @@ public class LC1554_StringsDifferbyOneCharacter {
  * => O(n*m)
  * 0123 -> 0*26^3+1*26^2+2*26^1+3*26^0
  * (0123)26 - 3 * 26^0
- * (0123)26 - 3 * 26^1
+ * (0123)26 - 2 * 26^1
  */

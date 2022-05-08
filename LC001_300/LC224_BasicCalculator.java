@@ -87,10 +87,60 @@ public class LC224_BasicCalculator {
         }
         return res;
     }
+
+    // S3: stack
+    // time = O(n), space = O(n)
+    public int calculate3(String s) {
+        Stack<Integer> num = new Stack<>();
+        Stack<Character> op = new Stack<>();
+
+        int n = s.length();
+        for (int i = 0; i < n; i++) {
+            char c = s.charAt(i);
+            if (c == ' ') continue;
+            if (Character.isDigit(c)) {
+                int j = i;
+                while (j < n && Character.isDigit(s.charAt(j))) j++;
+                int val = Integer.parseInt(s.substring(i, j));
+                num.push(val);
+                i = j - 1;
+            } else if (c == '(') op.push(c);
+            else if (c == ')') {
+                while (!op.isEmpty() && op.peek() != '(') eval(num, op);
+                op.pop();
+            } else {
+                if (i == 0 || s.charAt(i - 1) == '(' || s.charAt(i - 1) == '+' || s.charAt(i - 1) == '-') num.push(0);
+                while (!op.isEmpty() && op.peek() != '(') eval(num, op);
+                op.push(c);
+            }
+        }
+        while (!op.isEmpty()) eval(num, op);
+        return num.peek();
+    }
+
+    private void eval(Stack<Integer> num, Stack<Character> op) {
+        int b = num.pop(), a = num.pop();
+        char c = op.pop();
+        int res = 0;
+        if (c == '+') res = a + b;
+        else res = a - b;
+        num.push(res);
+    }
 }
 /**
  * 压栈
  * -3 => +(-3)
  * 每个数都有正负号
  * 所有单项式都是做加法操作
+ *
+ * 通用模板：( ) + - * / ^
+ * 维护1个栈 stack:
+ * 只要"能算就算" a + b + c / a + b * c
+ * 运算符分2类：括号一类，后面运算符算一类
+ * 1. 如果遇到数字 -> 压入栈中
+ * 2. (  -> 压入栈中
+ * 3. ） -> 则( 之后的部分都算完
+ * 4. +-* / -> 自定义优先级
+ * 4.1: 当前优先级小于等于栈顶优先级，则计算栈顶，压入栈中
+ * 4.2：否则直接压入栈中
  */

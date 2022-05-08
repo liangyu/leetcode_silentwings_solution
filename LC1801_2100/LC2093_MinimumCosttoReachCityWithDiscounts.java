@@ -68,3 +68,6 @@ public class LC2093_MinimumCosttoReachCityWithDiscounts {
         return -1;
     }
 }
+/**
+ * 定义状态的时候，是一个二维的变量
+ */

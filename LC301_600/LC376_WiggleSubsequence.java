@@ -69,6 +69,29 @@ public class LC376_WiggleSubsequence {
         }
         return Math.max(p, q);
     }
+
+    // S3: dp + rolling matrix
+    public int wiggleMaxLength3(int[] nums) {
+        int n = nums.length;
+        int[][] dp = new int[2][2]; // 0: up; 1: down
+        int old = 0, now = 0;
+        // init
+        dp[old][0] = 1;
+        dp[now][1] = 1;
+
+        for (int i = 1; i < n; i++) {
+            old = now;
+            now = 1 - now;
+            if (nums[i] < nums[i - 1]) {
+                dp[now][0] = dp[old][1] + 1;
+            } else dp[now][0] = dp[old][0];
+
+            if (nums[i] > nums[i - 1]) {
+                dp[now][1] = dp[old][0] + 1;
+            } else dp[now][1] = dp[old][1];
+        }
+        return Math.max(dp[now][0], dp[now][1]);
+    }
 }
 
 /**

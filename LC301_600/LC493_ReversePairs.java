@@ -111,6 +111,55 @@ public class LC493_ReversePairs {
             nums[i + left] = temp[i];
         }
     }
+
+    // S3: BIT
+    // time = O(nlogn), space = O(n)
+    public int reversePairs3(int[] nums) {
+        TreeSet<Long> set = new TreeSet<>();
+        for (int x : nums) {
+            set.add((long) x);
+            set.add((long) x * 2);
+        }
+
+        HashMap<Long, Integer> map = new HashMap<>();
+        for (long x : set) map.put(x, map.size());
+
+        int res = 0, n = nums.length;
+        BIT bit = new BIT(map.size());
+        for (int i = 0; i < n; i++) {
+            int left = map.get((long) nums[i] * 2) + 1, right = map.size() - 1;
+            res += bit.sumRange(left + 1, right + 1);
+            bit.update(map.get((long) nums[i]) + 1, 1);
+        }
+        return res;
+    }
+
+    private class BIT {
+        int n;
+        int[] bitree;
+        public BIT(int n) {
+            this.n = n;
+            this.bitree = new int[n + 1];
+        }
+
+        private void update(int x, int delta) {
+            for (int i = x; i <= n; i += i & (-i)) {
+                bitree[i] += delta;
+            }
+        }
+
+        private int query(int x) {
+            int res = 0;
+            for (int i = x; i > 0; i -= i & (-i)) {
+                res += bitree[i];
+            }
+            return res;
+        }
+
+        private int sumRange(int i, int j) {
+            return query(j) - query(i - 1);
+        }
+    }
 }
 /**
  * A：[y y y y y z z z z]

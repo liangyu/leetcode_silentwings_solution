@@ -124,4 +124,7 @@ public class LC787_CheapestFlightsWithinKStops {
  * 对于非终点的任何路径而言，e[i][j]不一定意味着路径最短即是最优的，也有可能转机次数限制，也有可能在后续计算destination时也会有帮助
  * 尽管路径最短，但是可能转机次数更多
  * Floyd这道题是不能做的
+ * 结点是个2维量 (x,3) -> (y,4)
+ * DP:
+ * dp[i][b] = min{dp[i - 1][a] + price[a][b]}  where there is a flight a -> b
  */

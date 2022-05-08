@@ -77,4 +77,5 @@ public class LC1606_FindServersThatHandledMostNumberofRequests {
  *      free[0]
  * free.erase(id)
  * busy: {expected finish time, server id} ... => pq
+ * 维护2个序列，free一直保持有序 => TreeSet
  */

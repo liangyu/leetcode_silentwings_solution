@@ -34,8 +34,8 @@ public class LC1612_CheckIfTwoExpressionTreesareEquivalent {
     // time = O(n), space = O(n)
     public boolean checkEquivalence(Node root1, Node root2) {
         int[] count = new int[26];
-        dfs(root1, count, true);
-        dfs(root2, count, false);
+        dfs(root1, count, 1, 1);
+        dfs(root2, count, -1, 1);
 
         for (int x : count) {
             if (x != 0) return false;
@@ -43,29 +43,16 @@ public class LC1612_CheckIfTwoExpressionTreesareEquivalent {
         return true;
     }
 
-    private void dfs(Node node, int[] count, boolean flag) {
+    private void dfs(Node node, int[] count, int flag, int sign) {
         if (node == null) return;
 
         if (Character.isLowerCase(node.val)) {
-            if (flag) count[node.val - 'a']++;
-            else count[node.val - 'a']--;
+            count[node.val - 'a'] += flag * sign;
         }
 
-        dfs(node.left, count, flag);
-        dfs(node.right, count, flag);
-    }
-
-    // follow-up
-    private void dfs2(Node node, int[] count, boolean flag, int sign) {
-        if (node == null) return;
-
-        if (Character.isLowerCase(node.val)) {
-            if (flag) count[node.val - 'a'] += sign;
-            else count[node.val - 'a'] -= sign;
-        }
-
-        dfs2(node.left, count, flag, sign);
-        if (node.val == '-') dfs2(node.right, count, flag, -1 * sign);
+        dfs(node.left, count, flag, sign);
+        if (node.val == '-') sign *= -1;
+        dfs(node.right, count, flag, sign);
     }
 
     class Node {

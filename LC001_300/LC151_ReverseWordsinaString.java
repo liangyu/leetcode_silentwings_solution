@@ -37,4 +37,33 @@ public class LC151_ReverseWordsinaString {
         sb.setLength(sb.length() - 1);
         return sb.toString();
     }
+
+    // S2
+    // time = O(n), space = O(n)
+    public String reverseWords2(String s) {
+        s = s.trim();
+        char[] chars = s.toCharArray();
+        StringBuilder sb = new StringBuilder();
+        int n = s.length();
+        reverse(chars, 0, n - 1);
+
+        for (int i = 0; i < n; i++) {
+            int j = i;
+            while (j < n && chars[j] != ' ') j++;
+            reverse(chars, i, j - 1);
+            sb.append(new String(chars, i, j - i)).append(' ');
+            while (j < n && chars[j] == ' ') j++;
+            i = j - 1;
+        }
+        sb.setLength(sb.length() - 1);
+        return sb.toString();
+    }
+
+    private void reverse(char[] chars, int i, int j) {
+        while (i < j) {
+            char t = chars[i];
+            chars[i++] = chars[j];
+            chars[j--] = t;
+        }
+    }
 }

@@ -27,17 +27,18 @@ public class LC1676_LowestCommonAncestorofaBinaryTreeIV {
     TreeNode res = null;
     HashSet<TreeNode> set;
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode[] nodes) {
+        if (root == null) return null;
+
         set = new HashSet<>();
         for (TreeNode x : nodes) set.add(x);
-        dfs(root, nodes);
+        dfs(root);
         return res;
     }
 
-    private int dfs(TreeNode node, TreeNode[] nodes) {
+    private int dfs(TreeNode node) {
         if (node == null) return 0;
-        if (res != null) return 0; // not necessary
 
-        int count = dfs(node.left, nodes) + dfs(node.right, nodes) + (set.contains(node) ? 1 : 0);
+        int count = dfs(node.left) + dfs(node.right) + (set.contains(node) ? 1 : 0);
         if (count == set.size() && res == null) res = node;
         return count;
     }

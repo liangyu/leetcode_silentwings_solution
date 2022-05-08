@@ -33,7 +33,7 @@ public class LC295_FindMedianfromDataStream {
      * If 99% of all integer numbers from the stream are in the range [0, 100], how would you optimize your solution?
      */
     /** initialize your data structure here. */
-    // time = O(nlogn), space = O(n)
+    // time = O(logn), space = O(n)
     PriorityQueue<Integer> minHeap;
     PriorityQueue<Integer> maxHeap;
     /** initialize your data structure here. */
@@ -60,4 +60,10 @@ public class LC295_FindMedianfromDataStream {
 }
 /**
  * 只进不出
+ * 如果动态维护一个序列的话 => 用平衡树  set map
+ * 对顶堆，分别维护左半边和右半边
+ * 快速找到边界
+ * 大顶堆：左边 down
+ * 小顶堆：右边 up
+ * 左边 >= 右边 + 1
  */

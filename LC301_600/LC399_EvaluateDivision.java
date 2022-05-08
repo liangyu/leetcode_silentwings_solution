@@ -134,6 +134,50 @@ public class LC399_EvaluateDivision {
         parent.put(px, py);
         vals.put(px, v * vals.get(y) / vals.get(x));
     }
+
+    // S3: Floyd
+    // time = O(n^3), space = O(n)
+    public double[] calcEquation3(List<List<String>> equations, double[] values, List<List<String>> queries) {
+        HashSet<String> set = new HashSet<>();
+        HashMap<String, Double> map = new HashMap<>();
+        int n = equations.size();
+        for (int i = 0; i < n; i++) {
+            String a = equations.get(i).get(0);
+            String b = equations.get(i).get(1);
+            double c = values[i];
+
+            String key1 = a + "#" + b;
+            String key2 = b + "#" + a;
+            map.put(key1, c);
+            map.put(key2, 1 / c);
+            set.add(a);
+            set.add(b);
+        }
+
+        // Floyd
+        for (String k : set) {
+            for (String i : set) {
+                for (String j : set) {
+                    String key1 = i + "#" + k;
+                    String key2 = k + "#" + j;
+                    if (map.containsKey(key1) && map.containsKey(key2)) {
+                        map.put(i + "#" + j, map.get(key1) * map.get(key2));
+                    }
+                }
+            }
+        }
+
+        int m = queries.size();
+        double[] res = new double[m];
+        for (int i = 0; i < m; i++) {
+            String a = queries.get(i).get(0);
+            String b = queries.get(i).get(1);
+            String key = a + "#" + b;
+            if (map.containsKey(key)) res[i] = map.get(key);
+            else res[i] = -1;
+        }
+        return res;
+    }
 }
 /**
  * 任何两点之间的路径是唯一的 => dfs

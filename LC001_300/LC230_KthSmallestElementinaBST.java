@@ -20,6 +20,7 @@ public class LC230_KthSmallestElementinaBST {
      * @param k
      * @return
      */
+    // S1: dfs
     // time = O(n), space = O(n)
     private int count = 0;
     private int res = 0;
@@ -36,5 +37,25 @@ public class LC230_KthSmallestElementinaBST {
         count--;
         if (count == 0) res = root.val;
         helper(root.right);
+    }
+
+    // S2: bfs
+    // time = O(n), space = O(n)
+    public int kthSmallest2(TreeNode root, int k) {
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode cur = root;
+
+        while (cur != null || !stack.isEmpty()) {
+            if (cur != null) {
+                stack.push(cur);
+                cur = cur.left;
+            } else {
+                cur = stack.pop();
+                k--;
+                if (k == 0) return cur.val;
+                cur = cur.right;
+            }
+        }
+        return -1;
     }
 }

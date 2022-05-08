@@ -34,21 +34,20 @@ public class LC1231_DivideChocolate {
 
         int left = 1, right = sum; // right = Integer.MAX_VALUE
         while (left < right) {
-            int mid = left + (right - left) / 2;
-            if (count(sweetness, mid) > k) left = mid + 1;
-            else right = mid;
+            int mid = right - (right - left) / 2;
+            if (count(sweetness, mid) >= k + 1) left = mid;
+            else right = mid - 1;
         }
         return left;
     }
 
-    private int count(int[] nums, int target) {
+    private int count(int[] nums, int t) {
         int count = 0, sum = 0;
-        for (int i = 0; i < nums.length; i++) { // O(n)
-            if (sum + nums[i] <= target) {
-                sum += nums[i];
-            } else {
-                sum = 0;
+        for (int x : nums) {
+            sum += x;
+            if (sum >= t) { // 注意：这里是当切出来的sum >= t的时候，才能算作是有效的一块，否则低于t的都不能算，因为最小甜度得是t！！！
                 count++;
+                sum = 0;
             }
         }
         return count;

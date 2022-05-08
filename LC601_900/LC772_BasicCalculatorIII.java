@@ -24,6 +24,7 @@ public class LC772_BasicCalculatorIII {
      * @param s
      * @return
      */
+    // S1
     // time = O(n), space = O(n)
     public int calculate(String s) {
         // corner case
@@ -77,6 +78,59 @@ public class LC772_BasicCalculatorIII {
         int sum = 0;
         for (int x : nums) sum += x;
         return sum;
+    }
+
+    // S2: Stack (general template)
+    // time = O(n), space = O(n)
+    public int calculate2(String s) {
+        if (s == null || s.length() == 0) return 0;
+
+        HashMap<Character, Integer> map = new HashMap<>();
+        map.put('+', 1);
+        map.put('-', 1);
+        map.put('*', 2);
+        map.put('/', 2);
+
+        Stack<Integer> num = new Stack<>();
+        Stack<Character> op = new Stack<>();
+
+        int n = s.length();
+        for (int i = 0; i < n; i++) {
+            char c = s.charAt(i);
+            if (c == ' ') continue;
+            if (Character.isDigit(c)) {
+                int j = i;
+                while (j < n && Character.isDigit(s.charAt(j))) j++;
+                int val = Integer.parseInt(s.substring(i, j));
+                num.push(val);
+                i = j - 1;
+            } else if (c == '(') op.push(c);
+            else if (c == ')') {
+                while (!op.isEmpty() && op.peek() != '(') eval(num, op);
+                op.pop();
+            } else {
+                while (!op.isEmpty() && op.peek() != '(' && map.get(op.peek()) >= map.get(c)) {
+                    eval(num, op);
+                }
+                op.push(c);
+            }
+        }
+
+        while (!op.isEmpty()) eval(num, op);
+        return num.peek();
+    }
+
+    private void eval(Stack<Integer> num, Stack<Character> op) {
+        int b = num.pop();
+        int a = num.pop();
+        char c = op.pop();
+
+        int res = 0;
+        if (c == '+') res = a + b;
+        else if (c == '-') res = a - b;
+        else if (c == '*') res = a * b;
+        else res = a / b;
+        num.push(res);
     }
 }
 /**

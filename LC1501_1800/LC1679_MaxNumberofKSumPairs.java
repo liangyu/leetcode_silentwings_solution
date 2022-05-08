@@ -22,26 +22,35 @@ public class LC1679_MaxNumberofKSumPairs {
      * @param k
      * @return
      */
+    // S1
     // time = O(n), space = O(n)
     public int maxOperations(int[] nums, int k) {
-        // corner case
-        if (nums == null || nums.length == 0) return 0;
-
         HashMap<Integer, Integer> map = new HashMap<>();
-        int count = 0;
-
-        for (int n : nums) {
-            int diff = k - n;
-            if (map.containsKey(diff)) {
+        int n = nums.length, res = 0;
+        for (int i = 0; i < n; i++) {
+            int diff = k - nums[i];
+            if (map.containsKey(diff) && map.get(diff) > 0) {
+                res++;
                 map.put(diff, map.get(diff) - 1);
-                count++;
-                if (map.get(diff) == 0) { // delete depleted element to eliminate the key
-                    map.remove(diff);
-                }
-            } else { // if not able to remove, then add it to the hashmap
-                map.put(n, map.getOrDefault(n, 0) + 1);
-            }
+            } else map.put(nums[i], map.getOrDefault(nums[i], 0) + 1);
         }
-        return count;
+        return res;
+    }
+
+    // S2
+    // time = O(nlogn), space = O(1)
+    public int maxOperations2(int[] nums, int k) {
+        Arrays.sort(nums);
+        int n = nums.length, i = 0, j = n - 1, res = 0;
+
+        while (i < j) {
+            if (nums[i] + nums[j] == k) {
+                i++;
+                j--;
+                res++;
+            } else if (nums[i] + nums[j] < k) i++;
+            else j--;
+        }
+        return res;
     }
 }

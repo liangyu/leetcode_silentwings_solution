@@ -36,45 +36,60 @@ public class LC308_RangeSumQuery2DMutable {
      * @param matrix
      */
     // time = O(logm * logn), space = O(m * n)
-    private int m, n;
-    private int[][] bitree;
-    private int[][] nums;
+    BIT bit;
+    int[][] matrix;
+    int m, n;
     public LC308_RangeSumQuery2DMutable(int[][] matrix) {
-        m = matrix.length;
-        n = matrix[0].length;
-        bitree = new int[m + 1][n + 1];
-        nums = new int[m][n];
+        this.matrix = matrix;
+        this.m = matrix.length;
+        this.n = matrix[0].length;
+        bit = new BIT(m, n);
 
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                update(i, j, matrix[i][j]);
+                bit.update(i + 1, j + 1, matrix[i][j]);
             }
         }
     }
 
     public void update(int row, int col, int val) {
-        if (m == 0 || n == 0) return;
-        int diff = val - nums[row][col];
-        nums[row][col] = val;
-        for (int i = row + 1; i <= m; i += (i & -i)) {
-            for (int j = col + 1; j <= n; j += (j & -j)) {
-                bitree[i][j] += diff;
-            }
-        }
+        bit.update(row + 1, col + 1, val - matrix[row][col]);
+        matrix[row][col] = val;
     }
 
     public int sumRegion(int row1, int col1, int row2, int col2) {
-        if (m == 0 || n == 0) return 0;
-        return querySum(row2 + 1, col2 + 1) + querySum(row1, col1) - querySum(row1, col2 + 1) - querySum(row2 + 1, col1);
+        return bit.sumRange(row1 + 1, col1 + 1, row2 + 1, col2 + 1);
     }
 
-    private int querySum(int m, int n) {
-        int sum = 0;
-        for (int i = m; i > 0; i -= (i & -i)) {
-            for (int j = n; j > 0; j -= (j & -j)) {
-                sum += bitree[i][j];
+    private class BIT {
+        int m, n;
+        int[][] bitree;
+        public BIT(int m, int n) {
+            this.m = m;
+            this.n = n;
+            this.bitree = new int[m + 1][n + 1];
+        }
+
+        private void update(int x, int y, int val) {
+            for (int i = x; i <= m; i += i & (-i)) {
+                for (int j = y; j <= n; j += j & (-j)) {
+                    bitree[i][j] += val;
+                }
             }
         }
-        return sum;
+
+        private int query(int x, int y) {
+            int res = 0;
+            for (int i = x; i > 0; i -= i & (-i)) {
+                for (int j = y; j > 0; j -= j & (-j)) {
+                    res += bitree[i][j];
+                }
+            }
+            return res;
+        }
+
+        private int sumRange(int i, int j, int k, int l) {
+            return query(k, l) + query(i - 1, j - 1) - query(i - 1, l) - query(k, j - 1);
+        }
     }
 }

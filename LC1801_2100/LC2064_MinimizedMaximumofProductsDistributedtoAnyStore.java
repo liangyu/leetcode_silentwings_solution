@@ -28,7 +28,7 @@ public class LC2064_MinimizedMaximumofProductsDistributedtoAnyStore {
      */
     // time = O(nlogn), space = O(1)
     public int minimizedMaximum(int n, int[] quantities) {
-        int left = 1, right = 100000;
+        int left = 1, right = 100000; // 注意：这里left一定要从1开始，否则下面 / t的时候会出错，/0是不行的！！！
         while (left < right) {
             int mid = left + (right - left) / 2;
             if (helper(quantities, n, mid)) right = mid;

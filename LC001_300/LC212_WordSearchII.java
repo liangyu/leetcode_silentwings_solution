@@ -63,7 +63,7 @@ public class LC212_WordSearchII {
         if (node.next[board[i][j] - 'a'] == null) return;
         if (node.next[board[i][j] - 'a'].count == 0) return;
 
-        node = node.next[board[i][j] - 'a']; // 注意：node本质上只是一个类似i, j的指针，作为引用，不需要进行回溯！！！
+        node = node.next[board[i][j] - 'a']; // 注意：node本质上只是一个类似i, j的指针，不是引用，不需要进行回溯！！！
         path.append(board[i][j]);
 
         if (node.isEnd) {

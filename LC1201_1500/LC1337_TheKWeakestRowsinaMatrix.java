@@ -30,34 +30,22 @@ public class LC1337_TheKWeakestRowsinaMatrix {
      * @param k
      * @return
      */
-    // time = O(m * n + mlogm) = O(m * (n + logm), space = O(m + k) = O(m)
+    // time = O(m * n + m * logm), space = O(m)
     public int[] kWeakestRows(int[][] mat, int k) {
+        int m = mat.length, n = mat[0].length;
+        int[][] arr = new int[m][2];
+
+        for (int i = 0; i < m; i++) {
+            int j = 0;
+            while (j < n && mat[i][j] == 1) j++;
+            arr[i] = new int[]{j, i};
+        }
+
+        Arrays.sort(arr, (o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o1[1] - o2[1]);
         int[] res = new int[k];
-        // corner case
-        if (mat == null || mat.length == 0 || mat[0] == null || mat[0].length == 0 || k <= 0) return res;
-
-        int row = mat.length, col = mat[0].length;
-        List<Cell > list = new ArrayList<>();
-        for (int i = 0; i < row; i++) { // O(m)
-            int cnt = 0;
-            for (int j = 0; j < col; j++) {
-                if (mat[i][j] == 1) cnt++;
-                else break;
-            }
-            list.add(new Cell(cnt, i));
+        for (int i = 0; i < k; i++) {
+            res[i] = arr[i][1];
         }
-
-        Collections.sort(list, (o1, o2) -> o1.val != o2.val ? o1.val - o2.val : o1.idx - o2.idx);
-        for (int i = 0; i < k; i++) res[i] = list.get(i).idx;
         return res;
-    }
-
-    private class Cell {
-        private int val;
-        private int idx;
-        public Cell (int val, int idx) {
-            this.val = val;
-            this.idx = idx;
-        }
     }
 }

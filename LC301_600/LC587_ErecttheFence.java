@@ -21,8 +21,49 @@ public class LC587_ErecttheFence {
      * @param trees
      * @return
      */
+    // S1: 凸包 (Andrew)
     // time = O(nlogn), space = O(n)
     public int[][] outerTrees(int[][] trees) {
+        Arrays.sort(trees, (o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o1[1] - o2[1]);
+
+        int n = trees.length;
+        int[] hull = new int[n + 2];
+        boolean[] used = new boolean[n];
+        int top = 0;
+
+        for (int i = 0; i < n; i++) {
+            while (top >= 2 && area(trees[hull[top - 1]], trees[hull[top]], trees[i]) > 0) {
+                used[hull[top--]] = false;
+            }
+            hull[++top] = i;
+            used[i] = true;
+        }
+
+        used[0] = false;
+        for (int i = n - 1; i >= 0; i--) {
+            if (used[i]) continue; // don't forget to check used[i]!!!
+            while (top >= 2 && area(trees[hull[top - 1]], trees[hull[top]], trees[i]) > 0) {
+                top--;
+            }
+            hull[++top] = i;
+        }
+        top--; // 第一个点被用了2次
+        int[][] res = new int[top][2];
+        for (int i = 1; i <= top; i++) res[i - 1] = trees[hull[i]];
+        return res;
+    }
+
+    private int area(int[] a, int[] b, int[] c) {
+        return cross(b[0] - a[0], b[1] - a[1], c[0] - a[0], c[1] - a[1]);
+    }
+
+    private int cross(int x1, int y1, int x2, int y2) {
+        return x1 * y2 - x2 * y1;
+    }
+
+    // S2
+    // time = O(nlogn), space = O(n)
+    public int[][] outerTrees2(int[][] trees) {
         // corner case
         if (trees == null || trees.length == 0 || trees[0] == null || trees[0].length == 0) return new int[0][0];
 
@@ -74,4 +115,12 @@ public class LC587_ErecttheFence {
  * qr: (x3 - x2), (y3 - y2)
  * => cross product = (x2 - x1) * (y3 - y2) - (x3 - x2) * (y2 - y1) > 0 逆时针 来判断qr是在pr的左边还是右边
  *                                                                  < 0 顺时针
+ * 求凸包 -> 二维叉积
+ * a * b = |a| x |b| x sinø = 2 * S = x1y2 - x2y1
+ * 求凸包的2种算法，基本等价：
+ * Graham
+ * Andrew ->
+ * 1. 将所有点排序，先排x再排y
+ * 2. 两遍扫描，先扫凸包的上半边，再扫凸包下半边，要借助一个栈去维护当前的凸包
+ * 3. 倒着遍历一遍，把下半边扫出来
  */

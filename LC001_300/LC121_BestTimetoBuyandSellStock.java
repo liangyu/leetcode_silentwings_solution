@@ -21,14 +21,11 @@ public class LC121_BestTimetoBuyandSellStock {
      */
     // time = O(n), space = O(1)
     public int maxProfit(int[] prices) {
-        // corner case
-        if (prices == null || prices.length < 2) return 0;
-
-        int max = 0, minVal = prices[0];
-        for (int i = 1; i < prices.length; i++) {
-            max = Math.max(max, prices[i] - minVal);
-            minVal = Math.min(minVal, prices[i]);
+        int min = Integer.MAX_VALUE, res = 0;
+        for (int x : prices) {
+            res = Math.max(res, x - min);
+            min = Math.min(min, x);
         }
-        return max;
+        return res;
     }
 }

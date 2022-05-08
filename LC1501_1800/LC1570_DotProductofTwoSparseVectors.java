@@ -40,6 +40,7 @@ public class LC1570_DotProductofTwoSparseVectors {
 
     // Return the dotProduct of two sparse vectors
     public int dotProduct(SparseVector vec) {
+        if (vec.map.size() < this.map.size()) return vec.dotProduct(this);
         int res = 0;
         for (int key : this.map.keySet()) {
             if (vec.map.containsKey(key)) {

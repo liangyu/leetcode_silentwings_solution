@@ -27,6 +27,7 @@ public class LC1249_MinimumRemovetoMakeValidParentheses {
      * @param s
      * @return
      */
+    // S1: stack
     // time = O(n), space = O(n)
     public String minRemoveToMakeValid(String s) {
         int n = s.length();
@@ -44,6 +45,39 @@ public class LC1249_MinimumRemovetoMakeValidParentheses {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < n; i++) {
             if (chars[i] != ' ') sb.append(chars[i]);
+        }
+        return sb.toString();
+    }
+
+    // S2: StringBuilder only!
+    // time = O(n), space = O(n)
+    public String minRemoveToMakeValid2(String s) {
+        int n = s.length();
+        StringBuilder sb = new StringBuilder();
+        int delta = 0, open = 0;
+
+        for (char c : s.toCharArray()) {
+            if (c == '(') {
+                delta++;
+                open++;
+            } else if (c == ')') {
+                if (delta == 0) continue;
+                delta--;
+            }
+            sb.append(c);
+        }
+
+        if (delta == 0) return sb.toString();
+
+        int keep = open - delta;
+        for (int i = 0; i < sb.length(); i++) {
+            if (sb.charAt(i) == '(') {
+                keep--;
+                if (keep < 0) {
+                    sb.delete(i, i + 1);
+                    i--;
+                }
+            }
         }
         return sb.toString();
     }

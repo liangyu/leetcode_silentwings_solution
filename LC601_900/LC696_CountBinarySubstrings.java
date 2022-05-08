@@ -34,7 +34,7 @@ public class LC696_CountBinarySubstrings {
     }
 }
 /**
- * First, I count the number of 1 or 0 grouped consecutively.
+ * First, I countu the number of 1 or 0 grouped consectively.
  * For example "0110001111" will be [1, 2, 3, 4].
  *
  * Second, for any possible substrings with 1 and 0 grouped consecutively, the number of valid substring will be the

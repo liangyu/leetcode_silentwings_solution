@@ -46,7 +46,7 @@ public class LC588_DesignInMemoryFileSystem {
         List<String> res = new ArrayList<>();
         TrieNode node = root;
         String str = "";
-        for (int i = 1; i < path.length(); i++) {
+        for (int i = 1; i < path.length(); i++) { // 根目录下有个斜杠
             int j = i;
             while (j < path.length() && path.charAt(j) != '/') j++;
             str = path.substring(i, j);
@@ -101,6 +101,8 @@ public class LC588_DesignInMemoryFileSystem {
 }
 /**
  * 字典树结构
+ * 充分利用字典树的特点
+ * 额外标记是文件而不是文件夹
  * abc/xyz/w.cpp
  * abc/def
  * abc/def/ghi

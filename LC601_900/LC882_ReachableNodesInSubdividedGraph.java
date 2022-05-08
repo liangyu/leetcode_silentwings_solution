@@ -37,47 +37,49 @@ public class LC882_ReachableNodesInSubdividedGraph {
      */
     // time = O(mlogn), space = O(n)  m: the length of edges
     public int reachableNodes(int[][] edges, int maxMoves, int n) {
-        HashMap<Integer, List<int[]>> map = new HashMap<>(); // {nextNode, weight}
-        for (int[] edge : edges) { // O(m)
-            map.putIfAbsent(edge[0], new ArrayList<>());
-            map.putIfAbsent(edge[1], new ArrayList<>());
-            map.get(edge[0]).add(new int[]{edge[1], edge[2] + 1}); // 注意：这里的weight要+1，因为走到大点的话还要中间小点个数+1
-            map.get(edge[1]).add(new int[]{edge[0], edge[2] + 1});
+        List<int[]>[] graph = new List[n];
+        for (int i = 0; i < n; i++) graph[i] = new ArrayList<>();
+        for (int[] edge : edges) {
+            int a = edge[0], b = edge[1], c = edge[2] + 1; // 注意：这里的weight要+1，因为走到大点的话还要中间小点个数+1
+            graph[a].add(new int[]{b, c});
+            graph[b].add(new int[]{a, c});
         }
+
+        int[] dist = new int[n];
+        Arrays.fill(dist, -1);
 
         PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] - o2[0]); // {dist, nodeIdx}
         pq.offer(new int[]{0, 0});
-        int[] dist = new int[3000];
-        boolean[] resolved = new boolean[3000];
 
         while (!pq.isEmpty()) {
-            int[] top = pq.poll();
-            int d = top[0], cur = top[1];
+            int[] cur = pq.poll();
+            int d = cur[0], node = cur[1];
             // 可能有很多种不同的方案走到cur，对应的d是不同的，而且可能同时存在于队列中，所以要在这里check是否第一次弹出cur
             // 第一次弹出即为最短方案
-            if (resolved[cur]) continue;
-            resolved[cur] = true;
-            dist[cur] = d;
+            if (dist[node] != -1) continue;
+            dist[node] = d;
 
-            if (map.containsKey(cur)) {
-                for (int[] next : map.get(cur)) {
-                    if (resolved[next[0]]) continue;
-                    if (d + next[1] <= maxMoves) {
-                        pq.offer(new int[]{d + next[1], next[0]});
-                    }
+            for (int[] x : graph[node]) {
+                int next = x[0], weight = x[1];
+                if (dist[next] != -1) continue;
+                if (d + weight <= maxMoves) {
+                    pq.offer(new int[]{d + weight, next});
                 }
             }
         }
+
+        // check each edge
         int count = 0;
-        for (int[] edge : edges) {
-            int a = edge[0], b = edge[1], sum = 0; // 注意：sum要初始化在for loop里面！！！
-            if (resolved[a]) sum += maxMoves - dist[a]; // 在已经可以到达a的基础上，看还有多少余力可以reach到ab间的其他点！
-            if (resolved[b]) sum += maxMoves - dist[b];
-            count += Math.min(sum, edge[2]);
+        for (int[] edge : edges) {  // count all smaller nodes
+            int a = edge[0], b = edge[1], c = edge[2];
+            int sum = 0; // 注意：sum要初始化在for loop里面！！！
+            if (dist[a] != -1) sum += maxMoves - dist[a]; // 在已经可以到达a的基础上，看还有多少余力可以reach到ab间的其他点！
+            if (dist[b] != -1) sum += maxMoves - dist[b];
+            count += Math.min(sum, c);
         }
 
-        for (int i = 0; i < n; i++) {
-            if (resolved[i]) count++;
+        for (int i = 0; i < n; i++) {  // count all larger nodes
+            if (dist[i] != -1) count++;
         }
         return count;
     }

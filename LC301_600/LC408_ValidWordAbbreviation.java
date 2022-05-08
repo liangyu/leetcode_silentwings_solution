@@ -29,19 +29,21 @@ public class LC408_ValidWordAbbreviation {
      */
     // time = O(n), space = O(1)
     public boolean validWordAbbreviation(String word, String abbr) {
-        int i = 0, j = 0;
         int m = word.length(), n = abbr.length();
+        int i = 0, j = 0;
+
         while (i < m && j < n) {
             if (word.charAt(i) == abbr.charAt(j)) {
                 i++;
                 j++;
             } else {
-                if (Character.isLetter(abbr.charAt(j))) return false;
+                if (Character.isLowerCase(abbr.charAt(j))) return false;
                 if (abbr.charAt(j) == '0') return false;
-                int start = j;
-                while (j < n && Character.isDigit(abbr.charAt(j))) j++;
-                int num = Integer.parseInt(abbr.substring(start, j));
-                i += num;
+                int k = j;
+                while (k < n && Character.isDigit(abbr.charAt(k))) k++;
+                int len = Integer.parseInt(abbr.substring(j, k));
+                i += len;
+                j = k;
             }
         }
         return i == m && j == n;

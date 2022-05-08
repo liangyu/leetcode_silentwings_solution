@@ -20,6 +20,7 @@ public class LC1522_DiameterofNAryTree {
      * @param root
      * @return
      */
+    // S1
     // time = O(n), space = O(n)
     private int res = 0;
     public int diameter(Node root) {
@@ -48,6 +49,27 @@ public class LC1522_DiameterofNAryTree {
         return max1 + 1;
     }
 
+    // S2: dfs
+    int ans = 0;
+    public int diameter2(Node root) {
+        helper(root);
+        return ans - 1;
+    }
+
+    private int helper(Node node) {
+        if (node == null) return 0;
+
+        List<Integer> list = new ArrayList<>();
+        for (Node child : node.children) {
+            list.add(helper(child));
+        }
+        Collections.sort(list, (o1, o2) -> o2 - o1);
+        if (list.size() >= 2) ans = Math.max(ans, list.get(0) + list.get(1) + 1);
+        else if (list.size() == 1) ans = Math.max(ans, list.get(0) + 1);
+        else ans = Math.max(ans, 1);
+        return list.size() == 0 ? 1 : list.get(0) + 1;
+    }
+
     class Node {
         public int val;
         public List<Node> children;
@@ -70,4 +92,10 @@ public class LC1522_DiameterofNAryTree {
 }
 /**
  * => 求任意两棵子树的最大深度之和
+ * 定义了根
+ * 路径都有个拐点
+ * 按照拐点来数路径，可以不重不漏
+ * 所有孩子里面找2条最长单链即可。
+ * h(node) = max{h(node - child)} + 1
+ * 本质上求不带拐点的最长路径
  */

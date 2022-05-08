@@ -65,3 +65,10 @@ public class LC381_InsertDeleteGetRandomO1Duplicatesallowed {
         return list.get(idx);
     }
 }
+/**
+ * 1 1 2 2 2 3
+ * 随机选一个的话，选中的概率就是和它的频次成正比的 -> 废话！
+ * remove稍微麻烦点
+ * 如果移除1个1 -> 后面取随机数就会出问题，再次摇骰子？ -> swap
+ * use HashMap to get the pos
+ */

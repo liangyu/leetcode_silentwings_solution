@@ -23,14 +23,14 @@ public class LC122_BestTimetoBuyandSellStockII {
      */
     // time = O(n), space = O(1)
     public int maxProfit(int[] prices) {
-        // corner case
-        if (prices == null || prices.length == 0) return 0;
-
-        int res = 0;
-        for (int i = 0; i < prices.length - 1; i++) {
-            int diff = prices[i + 1] - prices[i];
-            if (diff > 0) res += diff;
+        int n = prices.length, res = 0;
+        for (int i = 0; i < n - 1; i++) {
+            res += Math.max(0, prices[i + 1] - prices[i]);
         }
         return res;
     }
 }
+/**
+ * 把每一个交易都可以拆成一天天的个别交易
+ * 只需要记录交易获益>0的那一天天交易即可！
+ */

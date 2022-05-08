@@ -1,5 +1,7 @@
 package LC601_900;
+import com.sun.source.tree.Tree;
 
+import java.util.*;
 public class LC715_RangeModule {
     /**
      * A Range Module is a module that tracks ranges of numbers. Design a data structure to track the ranges represented
@@ -29,6 +31,7 @@ public class LC715_RangeModule {
      * 1 <= left < right <= 10^9
      * At most 10^4 calls will be made to addRange, queryRange, and removeRange.
      */
+    // S1: Segment Tree
     // time = O(logn), space = O(n)
     private SegTreeNode root;
     public LC715_RangeModule() {
@@ -90,8 +93,56 @@ public class LC715_RangeModule {
         if (b >= mid + 1) R = getStatus(node.right, Math.max(mid + 1, a), b);
         return L && R;
     }
+
+    // S2: TreeMap
+    // time = O(logn), space = O(n)
+    class RangeModule {
+        TreeMap<Integer, Integer> map; // {left -> right}
+        public RangeModule() {
+            map = new TreeMap<>();
+        }
+
+        public void addRange(int left, int right) {
+            Integer start = map.floorKey(left); // 找比left还靠左露头的区间
+            if (start == null) start = map.ceilingKey(left); // 如果没有左边露头的区间，那么找>= left的第一个区间
+            // 寻找所有[left, right)里的原有区间,注意当有区间刚好是right作为start的时候，可以和[left, right)合并成大区间！！！
+            while (start != null && start <= right) {
+                int end = map.get(start);
+                if (end >= left) { // [start, end)与[left, right)有overlap或者可以合并
+                    map.remove(start); // delete [start, end) interval and merge with [left, start)
+                    if (start < left) left = start;
+                    if (end > right) right = end;
+                }
+                start = map.ceilingKey(end); // 因为end是个开区间端点，所以下一个interval可以从>= end的位置开始！
+            }
+            map.put(left, right); // 加入[left, right)
+        }
+
+        public boolean queryRange(int left, int right) {
+            Integer fk = map.floorKey(left);
+            return fk != null && map.get(fk) >= right;
+        }
+
+        public void removeRange(int left, int right) {
+            Integer start = map.floorKey(left);
+            if (start == null) start = map.ceilingKey(left);
+            while (start != null && start < right) {  // delete all intervals within
+                int end = map.get(start);
+                if (end >= left) {
+                    map.remove(start);
+                    if (start < left) map.put(start, left); // 分割出左半边
+                    if (end > right) map.put(right, end);
+                }
+                start = map.ceilingKey(end);
+            }
+        }
+    }
 }
 /**
  * 线段树最大的好处，
  * [3,5] -> 二分 => {3} {[4,5]}
+ * 线段树并不推荐，因为这道题的难点在于所有这些问题都是动态的，你事先并不知道总共会有多少个点，有多少个区间
+ * 一旦线段树开辟好了，每个结点上的值，性质做些改变，线段树大小本身有变化，需要一个高级的支持动态开点和删点的模板。
+ * map<int, int> -> TreeMap
+ *    head  tail
  */

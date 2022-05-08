@@ -38,6 +38,7 @@ public class LC636_ExclusiveTimeofFunctions {
      * @param logs
      * @return
      */
+    // S1
     // time = O(n), space = O(n)
     public int[] exclusiveTime(int n, List<String> logs) {
         Stack<int[]> stack = new Stack<>();
@@ -59,6 +60,30 @@ public class LC636_ExclusiveTimeofFunctions {
                     int prevId = stack.peek()[0];
                     res[prevId] -= duration; // 处理完一个就去掉，提前预扣
                 }
+            }
+        }
+        return res;
+    }
+
+    // S2:
+    // time = O(n), space = O(n)
+    public int[] exclusiveTime2(int n, List<String> logs) {
+        int[] res = new int[n];
+        Stack<Integer> stack = new Stack<>();
+        int last = 0;
+
+        for (String log : logs) {
+            String[] strs = log.split(":");
+            int id = Integer.parseInt(strs[0]);
+            int ts = Integer.parseInt(strs[2]);
+            String status = strs[1];
+            if (status.equals("start")) {
+                if (!stack.isEmpty()) res[stack.peek()] += ts - last;
+                stack.push(id);
+                last = ts;
+            } else {
+                res[stack.pop()] += ts - last + 1;
+                last = ts + 1;
             }
         }
         return res;

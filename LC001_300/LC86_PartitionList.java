@@ -19,6 +19,7 @@ public class LC86_PartitionList {
      * @param x
      * @return
      */
+    // S1
     // time = O(n), space = O(1)
     public ListNode partition(ListNode head, int x) {
         // corner case
@@ -43,5 +44,32 @@ public class LC86_PartitionList {
         small.next = bigHead.next;
         big.next = null;
         return smallHead.next;
+    }
+
+    // S2
+    // time = O(n), space = O(1)
+    public ListNode partition2(ListNode head, int x) {
+        // corner case
+        if (head == null || head.next == null) return head;
+
+        ListNode h1 = new ListNode(0);
+        ListNode h2 = new ListNode(0);
+        ListNode p = h1, q = h2;
+        ListNode cur = head;
+
+        while (cur != null) {
+            if (cur.val < x) {
+                p.next = cur;
+                p = p.next;
+            } else {
+                q.next = cur;
+                q = q.next;
+            }
+            cur = cur.next;
+        }
+
+        p.next = h2.next;
+        q.next = null;
+        return h1.next;
     }
 }

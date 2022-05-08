@@ -31,32 +31,25 @@ public class LC2156_FindSubstringWithGivenHashValue {
      * @param hashValue
      * @return
      */
-    // S1
     // time = O(n), space = O(1)
     public String subStrHash(String s, int power, int modulo, int k, int hashValue) {
-        long cur = 0, pk = 1;
-        int n = s.length(), res = 0;
-        for (int i = n - 1; i >= 0; i--) {
-            cur = (cur * power + s.charAt(i) - 'a' + 1) % modulo;
-            if (i + k >= n) pk = pk * power % modulo;
-            else cur = (cur - (s.charAt(i + k) - 'a' + 1) * pk % modulo + modulo) % modulo;
-            if (cur == hashValue) res = i;
+        int n = s.length();
+        long pk = 1, M = modulo, hash = 0;
+        for (int i = 0; i < k - 1; i++) {
+            pk = pk * power % M;
         }
-        return s.substring(res, res + k);
-    }
 
-    // S2
-    // time = O(n), space = O(1)
-    public String subStrHash2(String s, int power, int modulo, int k, int hashValue) {
-        long cur = 0, pk = 1;
-        int n = s.length(), res = 0;
+        int pos = -1;
         for (int i = n - 1; i >= 0; i--) {
-            cur = (cur * power + s.charAt(i) - 'a' + 1) % modulo;
-            if (i + k >= n) pk = pk * power % modulo;
-            else cur = (cur - (s.charAt(i + k) - 'a' + 1) * pk % modulo + modulo) % modulo;
-            if (cur == hashValue) res = i;
+            if (i + k < n) {
+                hash = hash - (s.charAt(i + k) - 'a' + 1) * pk % M;
+                hash = (hash + M) % M;
+            }
+            hash = hash * power % M;
+            hash = (hash + (s.charAt(i) - 'a' + 1)) % M;
+            if (i + k - 1 <= n - 1 && hash == hashValue) pos = i;
         }
-        return s.substring(res, res + k);
+        return s.substring(pos, pos + k);
     }
 }
 /**

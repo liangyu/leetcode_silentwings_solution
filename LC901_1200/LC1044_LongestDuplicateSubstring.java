@@ -19,38 +19,35 @@ public class LC1044_LongestDuplicateSubstring {
      * @return
      */
     // time = O(nlogn), space = O(n)
-    HashMap<Integer, Integer> map = new HashMap<>();
+    HashMap<Integer, Integer> map;
     public String longestDupSubstring(String s) {
-        // corner case
-        if (s == null || s.length() == 0) return "";
-
-        int left = 1, right = s.length() - 1;
+        map = new HashMap<>();
+        int n = s.length();
+        int left = 1, right = n - 1;
         while (left < right) {
-            int mid = left + (right - left) / 2 + 1; // test with left = 0, right = 1 to check if there is a cycle
-            if (isOK(s, mid)) left = mid;
-            else right = mid - 1; // 双闭区间
+            int mid = right - (right - left) / 2;
+            if (helper(s, mid)) left = mid;
+            else right = mid - 1;
         }
-        if (isOK(s, left)) return s.substring(map.get(left), map.get(left) + left);
-        return "";
+        return helper(s, left) ? s.substring(map.get(left), map.get(left) + left) : "";
     }
 
-    private boolean isOK(String s, int len) {
-        HashSet<Long> set = new HashSet<>();
-        long base = (long)(1e5 + 7), hash = 0;
-        long pow_base_len = 1;
-        for (int i = 0; i < len; i++) {
-            pow_base_len = pow_base_len * base;
-        }
+    private boolean helper(String s, int len) {
+        long hash = 0, base = 31;
+        long power = 1;
+        for (int i = 0; i < len; i++) power = power * base;
 
-        for (int i = 0; i < s.length(); i++) {
-            hash = hash * base + s.charAt(i) - 'a';
-            if (i >= len) hash = hash - pow_base_len * (s.charAt(i - len) - 'a');
-            if (i >= len - 1) {
-                if (set.contains(hash)) {
-                    map.put(len, i - len + 1);
-                    return true;
-                }
-                set.add(hash);
+        int n = s.length();
+        HashSet<Long> set = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            hash = hash * base + (s.charAt(i) - 'a');
+            if (i >= len) {
+                hash = hash - (s.charAt(i - len) - 'a') * power;
+            }
+
+            if (i >= len - 1 && !set.add(hash)) {
+                map.put(len, i - len + 1);
+                return true;
             }
         }
         return false;

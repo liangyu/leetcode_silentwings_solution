@@ -79,6 +79,48 @@ public class LC1289_MinimumFallingPathSumII {
         }
         return grid[n - 1][min1];
     }
+
+    // S3: dp
+    // time = O(n * k), space = O(n)
+    public int minFallingPathSum3(int[][] grid) {
+        int n = grid.length;
+
+        int[][] dp = new int[2][n];
+        int old = 0, now = 0;
+
+        for (int i = 0; i < n; i++) {
+            old = now;
+            now = 1 - now;
+            int min1 = Integer.MAX_VALUE, min2 = Integer.MAX_VALUE;
+            int idx1 = -1, idx2 = -1;
+
+            for (int j = 0; j < n; j++) {
+                if (dp[old][j] < min1) {
+                    min2 = min1;
+                    idx2 = idx1;
+                    min1 = dp[old][j];
+                    idx1 = j;
+                } else if (dp[old][j] < min2) {
+                    min2 = dp[old][j];
+                    idx2 = j;
+                }
+            }
+
+            for (int j = 0; j < n; j++) {
+                if (j == idx1) {
+                    dp[now][j] = (min2 == Integer.MAX_VALUE ? 0 : min2) + grid[i][j];
+                } else {
+                    dp[now][j] = min1 + grid[i][j];
+                }
+            }
+        }
+
+        int res = Integer.MAX_VALUE;
+        for (int j = 0; j < n; j++) {
+            res = Math.min(res, dp[now][j]);
+        }
+        return res;
+    }
 }
 /**
  * same as LC265

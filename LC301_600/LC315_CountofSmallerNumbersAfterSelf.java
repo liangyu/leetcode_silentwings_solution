@@ -188,6 +188,111 @@ public class LC315_CountofSmallerNumbersAfterSelf {
             this.selfCount = 1;
         }
     }
+
+    // S4: Segment Tree
+    // time = O(nlogn), space = O(n)
+    public List<Integer> countSmaller4(int[] nums) {
+        List<Integer> res = new LinkedList<>();
+        int n = nums.length;
+        SegTreeNode root = new SegTreeNode(-10000, 10000);
+        init(root, -10000, 10000);
+
+        for (int i = n - 1; i >= 0; i--) {
+            update(root, nums[i], 1);
+            res.add(0, query(root, -10000, nums[i] - 1));
+        }
+        return res;
+    }
+
+    private class SegTreeNode {
+        private int start, end;
+        private int count;
+        private SegTreeNode left, right;
+        public SegTreeNode(int start, int end) {
+            this.start = start;
+            this.end = end;
+        }
+    }
+
+    private void init(SegTreeNode node, int a, int b) {
+        if (a == b) return;
+
+        int mid = a + (b - a) / 2;
+        if (node.left == null) {
+            node.left = new SegTreeNode(a, mid);
+            node.right = new SegTreeNode(mid + 1, b);
+        }
+
+        init(node.left, a, mid);
+        init(node.right, mid + 1, b);
+
+        node.count = node.left.count + node.right.count;
+    }
+
+    private void update(SegTreeNode node, int index, int val) {
+        if (node.end < index || node.start > index) return;
+        if (node.start == node.end) {
+            node.count += val;
+            return;
+        }
+
+        update(node.left, index, val);
+        update(node.right, index, val);
+
+        node.count = node.left.count + node.right.count;
+    }
+
+    private int query(SegTreeNode node, int a, int b) {
+        if (node.end < a || node.start > b) return 0;
+        if (a <= node.start && node.end <= b) return node.count;
+
+        return query(node.left, a, b) + query(node.right, a, b);
+    }
+
+    // S5: BIT
+    // time = O(nlogn), space = O(n)
+    public List<Integer> countSmaller5(int[] nums) {
+        List<Integer> res = new LinkedList<>();
+
+        int min = nums[0], n = nums.length;
+        for (int x : nums) min = Math.min(min, x);
+        for (int i = 0; i < n; i++) nums[i] -= min;
+
+        BIT bit = new BIT(200001);
+
+        for (int i = n - 1; i >= 0; i--) {
+            res.add(0, bit.sumRange(1, nums[i]));
+            bit.update(nums[i] + 1, 1);
+        }
+        return res;
+    }
+
+    private class BIT {
+        private int n;
+        private int[] bitree;
+        public BIT(int n) {
+            this.n = n;
+            this.bitree = new int[n + 1];
+        }
+
+        private void update(int x, int delta) {
+            for (int i = x; i <= n; i += i & (-i)) {
+                bitree[i] += delta;
+            }
+        }
+
+        private int query(int x) {
+            int res = 0;
+            for (int i = x; i > 0; i -= i & (-i)) {
+                res += bitree[i];
+            }
+            return res;
+        }
+
+        private int sumRange(int i, int j) {
+            return query(j) - query(i - 1);
+        }
+    }
 }
 /**
  * ref: LC1649: 翻译过来就是count smaller number before self 与该题几乎一致

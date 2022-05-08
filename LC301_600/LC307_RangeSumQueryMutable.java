@@ -29,6 +29,7 @@ public class LC307_RangeSumQueryMutable {
      * At most 3 * 10^4 calls will be made to update and sumRange.
      * @param nums
      */
+    // S1: Segment Tree
     // time = O(logn), space = O(n)
     private SegTreeNode root;
     private int[] nums;
@@ -93,6 +94,57 @@ public class LC307_RangeSumQueryMutable {
         if (a <= node.start && node.end <= b) return node.info; // 结点本身是query的一个子集的话，直接返回info
         // recursion
         return queryRange(node.left, a, b) + queryRange(node.right, a, b);
+    }
+
+    // S2: BIT
+    // time = O(nlogn), space = O(n)
+    class NumArray {
+        BIT bit;
+        int[] nums;
+        public NumArray(int[] nums) {
+            this.nums = nums;
+            int n = nums.length;
+            bit = new BIT(n);
+
+            for (int i = 0; i < n; i++) bit.update(i + 1, nums[i]);
+        }
+
+        public void update(int index, int val) {
+            int delta = val - nums[index];
+            bit.update(index + 1, delta);
+            nums[index] = val;
+        }
+
+        public int sumRange(int left, int right) {
+            return bit.sumRange(left + 1, right + 1);
+        }
+
+        private class BIT {
+            int n;
+            int[] bitree;
+            public BIT(int n) {
+                this.n = n;
+                this.bitree = new int[n + 1];
+            }
+
+            private void update(int x, int delta) {
+                for (int i = x; i <= n; i += i & (-i)) {
+                    bitree[i] += delta;
+                }
+            }
+
+            private int query(int x) {
+                int res = 0;
+                for (int i = x; i > 0; i -= i & (-i)) {
+                    res += bitree[i];
+                }
+                return res;
+            }
+
+            private int sumRange(int i, int j) {
+                return query(j) - query(i - 1);
+            }
+        }
     }
 }
 /**

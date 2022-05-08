@@ -162,48 +162,47 @@ public class LC1649_CreateSortedArraythroughInstructions {
 
     // S2: BIT 树状数组
     // time = O(nlogm), space = O(m)  m: the maximum value in instructions
-    private int MAX = 100000;
-    long[] bitArray;
-    long[] nums;
+    BIT bit;
     public int createSortedArray2(int[] instructions) {
-        // corner case
-        if (instructions == null || instructions.length == 0) return 0;
-
-        bitArray = new long[MAX + 1];
-        nums = new long[MAX + 1];
+        int n = instructions.length;
+        bit = new BIT(100001);
 
         long res = 0;
-        for (int x : instructions) {
-            updateDelta(x, 1);
-            long a = sumRange(1, x - 1);
-            long b = sumRange(x + 1, MAX);
-            res += Math.min(a, b);
-            res %= M;
+        for (int i = 0; i < n; i++) {
+            long val = Math.min(bit.sumRange(2, instructions[i]), bit.sumRange(instructions[i] + 2, 100001));
+            res = (res + val) % M;
+            bit.update(instructions[i] + 1, 1);
         }
-        return (int)res;
+        return (int) res;
     }
 
-    private void updateDelta(int i, long delta) {
-        int idx = i;
-        while (idx <= MAX) {
-            bitArray[idx] += delta;
-            bitArray[idx] %= M;
-            idx += idx & (-idx);
+    private class BIT {
+        private int n;
+        private long[] bitree;
+        public BIT(int n) {
+            this.n = n;
+            this.bitree = new long[n + 1];
         }
-    }
 
-    private long queryPreSum(int idx) {
-        long res = 0;
-        while (idx != 0) {
-            res += bitArray[idx];
-            res %= M;
-            idx -= idx & (-idx);
+        private void update(int x, int delta) {
+            for (int i = x; i <= n; i += i & (-i)) {
+                bitree[i] += delta;
+                bitree[i] %= M;
+            }
         }
-        return res;
-    }
 
-    private long sumRange(int i, int j) {
-        return queryPreSum(j) - queryPreSum(i - 1);
+        private long query(int x) {
+            long res = 0;
+            for (int i = x; i > 0; i -= i & (-i)) {
+                res += bitree[i];
+                res %= M;
+            }
+            return res;
+        }
+
+        private long sumRange(int i, int j) {
+            return query(j) - query(i - 1);
+        }
     }
 
     // S3: Segment Tree

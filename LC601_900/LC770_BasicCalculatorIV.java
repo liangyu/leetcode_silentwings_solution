@@ -246,4 +246,164 @@ public class LC770_BasicCalculatorIV {
         }
         return result;
     }
+
+    // S2:
+    HashMap<String, Integer> map;
+    Stack<List<Item>> num;
+    Stack<Character> op;
+    public List<String> basicCalculatorIV2(String expression, String[] evalvars, int[] evalints) {
+        map = new HashMap<>();
+        num = new Stack<>();
+        op = new Stack<>();
+
+        int n = evalvars.length;
+        for (int i = 0; i < n; i++) map.put(evalvars[i], evalints[i]);
+        List<Item> t = calc(expression);
+        List<String> res = new ArrayList<>();
+        for (Item item : t) res.add(item.toString());
+        return res;
+    }
+
+    private List<Item> add(List<Item> a, List<Item> b, int sign) {
+        List<Item> res = new ArrayList<>();
+        int i = 0, j = 0;
+        while (i < a.size() && j < b.size()) { // 二路归并
+            if (a.get(i).equals(b.get(j))) {
+                Item t = new Item(a.get(i).c + b.get(j).c * sign, a.get(i).vars);
+                if (t.c != 0) res.add(t); // 常数项存在
+                i++;
+                j++;
+            } else if (a.get(i).compareTo(b.get(j)) < 0) res.add(a.get(i++));
+            else {
+                res.add(new Item(b.get(j).c * sign, b.get(j).vars));
+                j++;
+            }
+        }
+        while (i < a.size()) res.add(a.get(i++));
+        while (j < b.size()) {
+            res.add(new Item(b.get(j).c * sign, b.get(j).vars));
+            j++;
+        }
+        return res;
+    }
+
+    private List<Item> mul(List<Item> a, List<Item> b) {
+        List<Item> res = new ArrayList<>();
+        for (Item x : a) {
+            List<Item> items = new ArrayList<>();
+            for (Item y : b) {
+                Item t = new Item(x.c * y.c, new ArrayList<>());
+                t.vars.addAll(x.vars);
+                t.vars.addAll(y.vars);
+                Collections.sort(t.vars);
+                items.add(t);
+            }
+            res = add(res, items, 1);
+        }
+        return res;
+    }
+
+    private void eval() {
+        List<Item> b = num.pop(), a = num.pop();
+        char c = op.pop();
+        List<Item> x = new ArrayList<>();
+        if (c == '+') x = add(a, b, 1);
+        else if (c == '-') x = add(a, b, -1);
+        else x = mul(a, b);
+        num.push(x);
+    }
+
+    private List<Item> calc(String s) {
+        HashMap<Character, Integer> pr = new HashMap<>();
+        pr.put('+', 1);
+        pr.put('-', 1);
+        pr.put('*', 2);
+
+        int n = s.length();
+        for (int i = 0; i < n; i++) {
+            char c = s.charAt(i);
+            if (c == ' ') continue;
+            if (Character.isLowerCase(c) || Character.isDigit(c)) {
+                List<Item> items = new ArrayList<>();
+                if (Character.isLowerCase(c)) {
+                    StringBuilder sb = new StringBuilder();
+                    int j = i;
+                    while (j < n && Character.isLowerCase(s.charAt(j))) sb.append(s.charAt(j++));
+                    String var = sb.toString();
+                    i = j - 1;
+                    if (map.containsKey(var)) {
+                        if (map.get(var) != 0) items.add(new Item(map.get(var), new ArrayList<>()));
+                    }
+                    else items.add(new Item(1, Arrays.asList(var)));
+                } else { // digit
+                    int j = i;
+                    while (j < n && Character.isDigit(s.charAt(j))) j++;
+                    int x = Integer.parseInt(s.substring(i, j));
+                    i = j - 1;
+                    if (x != 0) items.add(new Item(x, new ArrayList<>()));
+                }
+                num.push(items);
+            } else if (c == '(') op.push(c);
+            else if (c == ')') {
+                while (!op.isEmpty() && op.peek() != '(') eval();
+                op.pop();
+            } else {
+                while (!op.isEmpty() && op.peek() != '(' && pr.get(op.peek()) >= pr.get(c)) eval();
+                op.push(c);
+            }
+        }
+        while (!op.isEmpty()) eval();
+        return num.peek();
+    }
+
+    private class Item {
+        int c;
+        List<String> vars;
+        public Item(int c, List<String> vars) {
+            this.c = c;
+            this.vars = vars;
+        }
+
+        @Override
+        public String toString() {
+            String res = String.valueOf(c);
+            for (String var : vars) res += "*" + var;
+            return res;
+        }
+
+        public boolean equals(Item that) {
+            if (this.vars.size() != that.vars.size()) return false;
+            for (int i = 0; i < this.vars.size(); i++) {
+                if (!this.vars.get(i).equals(that.vars.get(i))) return false;
+            }
+            return true;
+        }
+
+        public int compareTo(Item that) {
+            if (this.vars.size() > that.vars.size()) return -1;
+            if (this.vars.size() < that.vars.size()) return 1;
+            for (int i = 0; i < this.vars.size(); i++) {
+                int x = this.vars.get(i).compareTo(that.vars.get(i));
+                if (x != 0) return x;
+            }
+            return 0;
+        }
+    }
 }
+/**
+ * 把其中的每一项换成了一个多项式
+ * (2+2) * (3-1) =>
+ * (x + 2) * (y - 3)
+ * (f1+f2) * (f3+f4)
+ * f1 = x
+ * f2 = 2
+ * f3 = y
+ * f4 = -3
+ * +-* 去实现一个多项式的+-*即可
+ * f5 = f1 + f2
+ * f6 = f3 + f4
+ * f5 * f6 = f7
+ * 本质上还是个表达式求值的问题
+ * 写的时候把模板稍微扩展下
+ * 存多项式
+ */

@@ -41,6 +41,7 @@ public class LC1786_NumberofRestrictedPathsFromFirsttoLastNode {
     public int countRestrictedPaths(int n, int[][] edges) {
         List<int[]>[] graph = new List[n];
         int[] dist = new int[n];
+        Arrays.fill(dist, -1);
         for (int i = 0; i < n; i++) graph[i] = new ArrayList<>();
         for (int[] edge : edges) {
             int a = edge[0] - 1, b = edge[1] - 1;
@@ -49,18 +50,16 @@ public class LC1786_NumberofRestrictedPathsFromFirsttoLastNode {
         }
         PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] - o2[0]);
         pq.offer(new int[]{0, n - 1}); // dist: distance from node x to end, so we should start from end, then the dist = 0
-        boolean[] visited = new boolean[n];
 
         while (!pq.isEmpty()) {
             int[] cur = pq.poll();
             int d = cur[0], node = cur[1];
-            if (visited[node]) continue;
-            visited[node] = true;
+            if (dist[node] != -1) continue;
             dist[node] = d;
 
             for (int[] x : graph[node]) {
                 int next = x[0], weight = x[1];
-                if (visited[next]) continue;
+                if (dist[next] != -1) continue;
                 pq.offer(new int[]{weight + dist[node], next});
             }
         }

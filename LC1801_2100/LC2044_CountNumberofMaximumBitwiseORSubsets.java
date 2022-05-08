@@ -32,7 +32,7 @@ public class LC2044_CountNumberofMaximumBitwiseORSubsets {
 
         for (int x : nums) {
             int[] dp_old = dp.clone();
-//            Arrays.fill(dp, 0); // 不清零就直接继承
+//            Arrays.fill(dp, 0); // 不清零就直接继承 -> 根据无后效性，过去推将来，一定要每轮给当前的dp备份后清零！！！
             for (int val = 0; val < M; val++) {
 //                dp[val] += dp_old[val];
                 dp[val | x] += dp_old[val];
@@ -67,7 +67,7 @@ public class LC2044_CountNumberofMaximumBitwiseORSubsets {
         return count;
     }
 
-    // S2: DFS (better solution)
+    // S3: DFS (better solution)
     // time = O(2^n), space = O(n)
     private int res = 0;
     public int countMaxOrSubsets3(int[] nums) {

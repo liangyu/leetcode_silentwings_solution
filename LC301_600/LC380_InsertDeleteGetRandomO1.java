@@ -54,7 +54,7 @@ public class LC380_InsertDeleteGetRandomO1 {
         list.set(idx, lastVal);
         map.put(lastVal, idx);
         list.remove(list.size() - 1);
-        map.remove(val);
+        map.remove(val); // val的remove必须放到最后，因为有可能要remove的就是list的最后一个元素！！！
         return true;
     }
 
@@ -65,3 +65,14 @@ public class LC380_InsertDeleteGetRandomO1 {
         return list.get(idx);
     }
 }
+/**
+ * pool里每个元素都是unique的，distinct的
+ * O(1)时间getRandom()
+ * idx = rand()
+ * a b c d e f g
+ * 要用一个数组, O(1)时间访问任意index
+ * remove O(1)? => 保持数组，里面都是连续的
+ * use swap(j, x) => 与最后一个交换，这样删掉最后一个即可
+ * 必须知道要删除的元素宰哪 => use HashMap
+ * update HashMap
+ */

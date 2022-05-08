@@ -63,7 +63,7 @@ public class LC410_SplitArrayLargestSum {
 
         for (int i = 1; i <= n; i++) {
             for (int k = 2; k <= Math.min(i, m); k++) {
-                dp[i][k] = Math.max(dp[i - 1][k - 1], nums[i - 1]);
+                dp[i][k] = Math.max(dp[i - 1][k - 1], nums[i - 1]); // 自成一派
                 for (int j = 1; j < i; j++) {
                     if (j >= k - 1) {
                         int temp = Math.max(dp[j][k - 1], dp[i][1] - dp[j][1]);

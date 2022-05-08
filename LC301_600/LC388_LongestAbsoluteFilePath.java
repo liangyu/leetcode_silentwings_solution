@@ -64,8 +64,32 @@ public class LC388_LongestAbsoluteFilePath {
         }
         return res;
     }
+
+    // S2: stack
+    // time = O(n), space = O(n)
+    public int lengthLongestPath2(String input) {
+        Stack<Integer> stack = new Stack<>();
+        int n = input.length(), res = 0, sum = 0; // sum存的是当前路径上所有元素的长度，即栈里所有数的加和
+        for (int i = 0; i < n; i++) {
+            int k = 0; // k代表层数
+            while (i < n && input.charAt(i) == '\t') { // 看一下当前是在第几层，数一下开头有几个制表符
+                i++;
+                k++;
+            }
+            while (k < stack.size()) sum -= stack.pop(); // 如果k比较小，就一直退栈
+            int j = i; // 把当前的点找出来
+            while (j < n && input.charAt(j) != '\n') j++;
+            String s = input.substring(i, j);
+            stack.push(s.length());
+            sum += s.length();
+            if (s.contains(".")) res = Math.max(res, sum + stack.size() - 1); // 所有路径字符长度+各个层级字符串之间的'\'数目！
+            i = j; // i更新到j的位置，即当前在'\'上，所以下面i++可以走到下一个有效字符串路径的开头！
+        }
+        return res;
+    }
 }
 /**
+ * 特别注意：'\n'，'\t' 这种转义字符被认为是一个字符！
  * '\n' 换行
  * '\t' 缩进一个层级
  * 只要保留每个层级

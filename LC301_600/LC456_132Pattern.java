@@ -18,6 +18,7 @@ public class LC456_132Pattern {
      * @param nums
      * @return
      */
+    // S1
     // time = O(n), space = O(n)
     public boolean find132pattern(int[] nums) {
         // corner case
@@ -38,6 +39,22 @@ public class LC456_132Pattern {
         }
         return false;
     }
+
+    // S2: monotonic stack
+    // time = O(n), space = O(n)
+    public boolean find132pattern2(int[] nums) {
+        int n = nums.length, right = Integer.MIN_VALUE; // right: 最大的一个ak
+        Stack<Integer> stack = new Stack<>();
+
+        for (int i = n - 1; i >= 0; i--) {
+            if (nums[i] < right) return true; // if ak exists, then aj is already available to kick ak out
+            while (!stack.isEmpty() && nums[stack.peek()] < nums[i]) {
+                right = Math.max(right, nums[stack.pop()]); // update the ak to get the max of ak
+            }
+            stack.push(i); // this is aj that exists before ak
+        }
+        return false;
+    }
 }
 /**
  * 贪心想法
@@ -47,4 +64,11 @@ public class LC456_132Pattern {
  * 总结：盯着中间的那个元素看，次大元素 -> 单调栈
  * 找一个仅此于该元素的，就从后往前单调递减的栈
  * 如果碰到一个比栈顶元素大的，就退栈
+ * ai, aj, ak
+ * ak > ai, aj > ak
+ * 看下后面是否存在aj和ak
+ * 找到一个ak最大的组合(aj',ak') => ak' > ai
+ * 只需要看满足要求的最大的一个ak是否比ai大就可以了。
+ * 求ai后面最大的一个满足要求的ak是什么
+ * 如何去快速的求出来最大的满足要求的ak？
  */

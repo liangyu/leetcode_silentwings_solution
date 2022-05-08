@@ -38,7 +38,6 @@ public class LC31_NextPermutation {
         while (nums[j] <= nums[i] && j > i) j--;
         swap(nums, i, j);
         reverse(nums, i + 1);
-        return;
     }
 
     private void swap(int[] nums, int i, int j) {
@@ -59,4 +58,8 @@ public class LC31_NextPermutation {
  * 从最低位到最高位，找第一个能提升一点的位置，剩下的从小到大排
  * [197] 3  8 6 4 2
  * [197] 4  2 3 6 8  (8 6 3 2 -> 2 3 6 8 -> reverse)
+ * 找到第一个非降序的位置，后面变成升序
+ * 2 3 5 4 1
+ *   ^   ^
+ * 2 4 1 3 5
  */
