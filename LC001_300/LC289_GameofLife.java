@@ -58,6 +58,40 @@ public class LC289_GameofLife {
             }
         }
     }
+
+    // S2
+    // time = O(m * n), space = O(1)
+    private int[][] directions = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
+    public void gameOfLife2(int[][] board) {
+        int m = board.length, n = board[0].length;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int live = 0;
+                for (int[] dir : directions) {
+                    int x = i + dir[0];
+                    int y = j + dir[1];
+                    if (x < 0 || x >= m || y < 0 || y >= n) continue;
+                    if ((board[x][y] & 1) == 1) live++;
+                }
+
+                int next = 0;
+                if (board[i][j] == 0) {
+                    if (live == 3) next = 1;
+                    else next = 0;
+                } else {
+                    if (live < 2 || live > 3) next = 0;
+                    else next = 1;
+                }
+                board[i][j] |= next << 1;
+            }
+        }
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                board[i][j] >>= 1;
+            }
+        }
+    }
 }
 
 /**

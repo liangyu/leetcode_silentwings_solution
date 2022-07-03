@@ -19,6 +19,7 @@ public class LC329_LongestIncreasingPathinaMatrix {
      * @param matrix
      * @return
      */
+    // S1: dfs + memo
     // time = O(m * n), space = O(m * n)
     private int[][] directions = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
     int[][] memo;
@@ -55,4 +56,9 @@ public class LC329_LongestIncreasingPathinaMatrix {
  * dfs(A) = 1 + max(dfs(B1), dfs(B2))
  * 我们从任意点A开始递归寻找各条递增路径，最终返回的时候记录从A为起点时的最长路径长度。
  * 将此结果记忆化，这样当对其他点进行DFS的时候，如果递归调用到dfs(A)就直接返回结果。
+ * f(i,j): 以(i,j)为起点的上升路径的最大长度
+ * 这题不存在环
+ * 这里必须要严格上升，如果这个题说可以非严格上升，就不能用dp来做，可以用图论做法来做。
+ * 相当于求图论里的长度，枚举下起点，dijkstra或者spfa
+ * 需要保证按照拓扑序来写 -> dfs
  */

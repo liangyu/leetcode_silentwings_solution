@@ -42,6 +42,7 @@ public class LC1354_ConstructTargetArrayWithMultipleSums {
 
             if (others == 0 || a <= others) return false; // 注意： a <= others (==)也是可以的，那时b = 0，也是不行的，会进入死循环
             long b = a % others;
+            if (b == 0) b = others; // b 不能降为0，所以要补回others
 
             sum = others + b;
             maxHeap.offer((int)b);

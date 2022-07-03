@@ -20,28 +20,20 @@ public class LC1060_MissingElementinSortedArray {
      */
     // time = O(logn), space = O(1)
     public int missingElement(int[] nums, int k) {
-        // corner case
-        if (nums == null || nums.length == 0) return 0;
-
         int n = nums.length;
-        int left = nums[0], right = nums[n - 1] + k;
+        int left = 0, right = n - 1;
+        int missing = nums[right] - nums[left] + 1 - (right - left + 1);
+        if (missing  < k) return nums[right] + k - missing;
         while (left < right) {
             int mid = right - (right - left) / 2;
-            int M = mid - nums[0]; // nums[0] ~ mid之间的元素个数
-            int T = lowerBound(nums, mid) + 1; // idx + 1 => 个数，0-index
-            if (M - T < k) left = mid;
-            else right = mid - 1;
+            missing = nums[mid] - nums[left] - (mid - left); // 不包含mid本身，总共在[left, mid)区间上缺少的个数！
+            if (missing >= k) right = mid - 1; // 不包含mid自己，缺少的数字已经 >= k的话，那表示第k个缺少的数一定在mid左边！
+            else {  // 不包含mid本身，缺少的数字少于k个，那么有可能mid就是第k个缺少的数字(如果mid前面缺少k-1个数字的话),也有可能在mid之后！
+                left = mid;
+                k -= missing; // 减掉[left,mid)里缺少掉的数字个数，这样才能把[left,mid)放心砍掉，看 >= mid的区间里还缺少的k-missing个！
+            }
         }
-        return left;
-    }
-
-    private int lowerBound(int[] nums, int target) {
-        int left = 0, right = nums.length - 1;
-        while (left < right) {
-            int mid = right - (right - left) / 2;
-            if (nums[mid] < target) left = mid;
-            else right = mid - 1;
-        }
-        return nums[left] < target ? left : left - 1;
+        // 记得要加上剩余的k,因为最后left == right的时候，k还没减到0，缺少的数字在nums[left: left + 1]里，所以需要加上k!
+        return nums[left] + k;
     }
 }

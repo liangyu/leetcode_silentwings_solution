@@ -21,36 +21,26 @@ public class LC31_NextPermutation {
      */
     // time = O(n), space = O(1)
     public void nextPermutation(int[] nums) {
-        // corner case
-        if (nums == null || nums.length == 0) return;
-
-        int i = nums.length - 1;
-        while (i >= 1 && nums[i] <= nums[i - 1]) i--;
-        // case 1: reach the head -> i == 0  递增
+        int n = nums.length, i = n - 1;
+        while (i > 0 && nums[i] <= nums[i - 1]) i--; // pivot: i - 1
         if (i == 0) {
-            reverse(nums, 0);
+            reverse(nums, 0, n - 1);
             return;
         }
-
-        // case 2: nums[i] > nums[i - 1]
-        i--;
-        int j = nums.length - 1;
-        while (nums[j] <= nums[i] && j > i) j--;
-        swap(nums, i, j);
-        reverse(nums, i + 1);
+        int j = n - 1;
+        while (j >= i && nums[j] <= nums[i - 1]) j--;
+        swap(nums, j, i - 1);
+        reverse(nums, i, n - 1);
     }
 
     private void swap(int[] nums, int i, int j) {
-        int temp = nums[i];
+        int t = nums[i];
         nums[i] = nums[j];
-        nums[j] = temp;
+        nums[j] = t;
     }
 
-    private void reverse(int[] nums, int start) {
-        int i = start, j = nums.length - 1;
-        while (i < j) {
-            swap(nums, i++, j--);
-        }
+    private void reverse(int[] nums, int i, int j) {
+        while (i < j) swap(nums, i++, j--);
     }
 }
 /**

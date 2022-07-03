@@ -89,6 +89,35 @@ public class LC139_WordBreak {
             this.isEnd = false;
         }
     }
+
+    // S3: dp
+    // time = O(n^2), space = O(n)
+    public boolean wordBreak3(String s, List<String> wordDict) {
+        final int P = 131;
+        HashSet<Long> set = new HashSet<>();
+        for (String word : wordDict) {
+            long h = 0;
+            for (char c : word.toCharArray()) {
+                h = h * P + c;
+            }
+            set.add(h);
+        }
+
+        int n = s.length();
+        boolean[] f = new boolean[n + 1];
+        f[0] = true;
+
+        for (int i = 1; i <= n; i++) {
+            if (f[i - 1]) {
+                long h = 0;
+                for (int j = i; j <= n; j++) {
+                    h = h * P + s.charAt(j - 1);
+                    if (set.contains(h)) f[j] = true;
+                }
+            }
+        }
+        return f[n];
+    }
 }
 /**
  * 非常好的NP问题

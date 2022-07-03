@@ -21,7 +21,6 @@ public class LC268_MissingNumber {
      */
     // S1: XOR
     // time = O(n), space = O(1)
-    // time = O(n), space = O(1)
     public int missingNumber(int[] nums) {
         // corner case
         if (nums == null || nums.length == 0) return -1;
@@ -38,12 +37,10 @@ public class LC268_MissingNumber {
     // S2: Math
     // time = O(n), space = O(1)
     public int missingNumber2(int[] nums) {
-        int expectedSum = nums.length * (nums.length + 1) / 2;
-        int actualSum = 0;
-        for (int num : nums) {
-            actualSum += num;
-        }
-        return expectedSum - actualSum;
+        int n = nums.length;
+        int res = n * (n + 1) / 2;
+        for (int x : nums) res -= x;
+        return res;
     }
 
     // S3: indexing sort

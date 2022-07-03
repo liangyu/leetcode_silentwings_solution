@@ -31,7 +31,7 @@ public class LC32_LongestValidParentheses {
                 if (!stack.isEmpty() && s.charAt(stack.peek()) == '(') {
                     stack.pop();
                     res = Math.max(res, i - (stack.isEmpty() ? -1 : stack.peek())); // 注意这里stack可能为空，从头开始到i，取-1！！！
-                } else stack.push(i);
+                } else stack.push(i); // 栈顶没有左括号与之匹配，现在的右括号作为一堵墙放入栈中
             }
         }
         return res;

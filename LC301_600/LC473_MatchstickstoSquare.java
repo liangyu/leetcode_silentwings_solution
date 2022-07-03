@@ -26,12 +26,20 @@ public class LC473_MatchstickstoSquare {
         if (matchsticks == null || matchsticks.length == 0) return false;
 
         Arrays.sort(matchsticks); // 相同元素都变得邻接
+        int i = 0, j = matchsticks.length - 1;
+        while (i < j) swap(matchsticks, i++, j--); // 从大到小排序
 
         boolean[] visited = new boolean[matchsticks.length];
         int sum = 0;
         for (int n : matchsticks) sum += n;
         if (sum % 4 != 0) return  false;
         return dfs(matchsticks, 0, 0, 0, sum / 4, visited);
+    }
+
+    private void swap(int[] nums, int i, int j) {
+        int t = nums[i];
+        nums[i] = nums[j];
+        nums[j] = t;
     }
 
     private boolean dfs(int[] nums, int cur, int group, int sum, int side, boolean[] visited) {
@@ -48,6 +56,7 @@ public class LC473_MatchstickstoSquare {
             last = nums[i];
             if (dfs(nums,i + 1, group, sum + nums[i], side, visited)) return true;
             visited[i] = false;
+            if (sum == 0 || sum + nums[i] == side) return false;
         }
         return false;
     }
@@ -56,4 +65,10 @@ public class LC473_MatchstickstoSquare {
  * ref: LC698 一模一样
  * dfs暴力搜索：状态压缩(方便枚举,不太容易剪枝),深度搜索(容易剪枝)
  * Ref: LC1681 状态压缩
+ * 1. 从大到小枚举 -> 剩余分支更少，更容易剪枝
+ * 2. 每条边内部，要求火柴编号递增 -> 避免搜搜重复
+ * 3. 若当前放某根火柴失败，
+ * 3.1 跳过长度相同的火柴
+ * 3.2 是第一根火柴，则直接剪掉当前分支
+ * 3.3 是最后一根火柴，也剪掉当前分支
  */

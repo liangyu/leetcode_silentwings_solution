@@ -113,6 +113,26 @@ public class LC416_PartitionEqualSubsetSum {
         }
         return false;
     }
+
+    // S4: dp
+    // time = O(n * target), space = O(target)
+    public boolean canPartition5(int[] nums) {
+        int m = 0;
+        for (int x : nums) m += x;
+        if (m % 2 == 1) return false;
+        m /= 2;
+
+        boolean[] f = new boolean[m + 1];
+        f[0] = true;
+
+        int n = nums.length;
+        for (int i = 1; i <= n; i++) {
+            for (int j = m; j >= nums[i - 1]; j--) {
+                f[j] |= f[j - nums[i - 1]];
+            }
+        }
+        return f[m];
+    }
 }
 /**
  * 本身是个NP问题，本质上还是个搜索。

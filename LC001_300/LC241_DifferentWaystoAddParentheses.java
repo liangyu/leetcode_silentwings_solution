@@ -15,33 +15,26 @@ public class LC241_DifferentWaystoAddParentheses {
      * @param expression
      * @return
      */
-    // S1
+    // S1: dfs
     // time = O(2^n), space = O(2^n)
-    HashMap<String, List<Integer>> map = new HashMap<>();
     public List<Integer> diffWaysToCompute(String expression) {
-        if (map.containsKey(expression)) return map.get(expression);
         List<Integer> res = new ArrayList<>();
-        // corner case
-        if (expression == null || expression.length() == 0) return res;
-
-        for (int i = 0; i < expression.length(); i++) {
+        int n = expression.length();
+        for (int i = 0; i < n; i++) {
             char c = expression.charAt(i);
-            if (c == '-' || c == '+' || c == '*') {
-                String a = expression.substring(0, i);
-                String b = expression.substring(i + 1);
-                List<Integer> al = diffWaysToCompute(a);
-                List<Integer> bl = diffWaysToCompute(b);
-                for (int x : al) {
-                    for (int y : bl) {
-                        if (c == '-') res.add(x - y);
-                        else if (c == '+') res.add(x + y);
-                        else if (c == '*') res.add(x * y);
+            if (c == '+' || c == '-' || c == '*') {
+                List<Integer> left = diffWaysToCompute(expression.substring(0, i));
+                List<Integer> right = diffWaysToCompute(expression.substring(i + 1));
+                for (int x : left) {
+                    for (int y : right) {
+                        if (c == '+') res.add(x + y);
+                        else if (c == '-') res.add(x - y);
+                        else res.add(x * y);
                     }
                 }
             }
         }
         if (res.size() == 0) res.add(Integer.valueOf(expression));
-        map.put(expression, res);
         return res;
     }
 }

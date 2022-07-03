@@ -31,57 +31,51 @@ public class LC675_CutOffTreesforGolfEvent {
      * @param forest
      * @return
      */
-    private static final int[][] DIRECTIONS = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    // time = O(m^2 * n^2), space = O(m * n)
+    private int[][] directions = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
     public int cutOffTree(List<List<Integer>> forest) {
-        // corner case
-        if (forest == null || forest.size() == 0 || forest.get(0) == null || forest.get(0).size() == 0) return 0;
-
-        TreeMap<Integer, int[]> map = new TreeMap<>();
         int m = forest.size(), n = forest.get(0).size();
+        TreeMap<Integer, int[]> map = new TreeMap<>();
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                if (forest.get(i).get(j) > 1) map.put(forest.get(i).get(j), new int[]{i, j});
+                int h = forest.get(i).get(j);
+                if (h > 1) map.put(h, new int[]{i, j});
             }
         }
 
-        int x = 0, y = 0;
         int res = 0;
-        for (int key : map.keySet()) {
-            int xx = map.get(key)[0];
-            int yy = map.get(key)[1];
-            int step = go(x, y, xx, yy, forest);
-            if (step == -1) return -1;
-            else res += step;
-            x = xx;
-            y = yy;
+        int[] last = new int[]{0, 0};
+        for (int[] cur : map.values()) {
+            int t = bfs(forest, last, cur, m, n);
+            if (t == -1) return -1;
+            res += t;
+            last = cur;
         }
         return res;
     }
 
-    private int go(int x, int y, int xx, int yy, List<List<Integer>> forest) {
-        int m = forest.size(), n = forest.get(0).size();
-        if (x == xx && y == yy) return 0;
-        Queue<Integer> queue = new LinkedList<>();
-        queue.offer(x * n + y);
+    private int bfs(List<List<Integer>> forest, int[] start, int[] end, int m, int n) {
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(start);
         boolean[][] visited = new boolean[m][n];
-        visited[x][y] = true;
-        int step = 0;
+        visited[start[0]][start[1]] = true;
 
+        int step = 0;
         while (!queue.isEmpty()) {
             int size = queue.size();
             while (size-- > 0) {
-                int cur = queue.poll();
-                int i = cur / n, j = cur % n;
+                int[] cur = queue.poll();
+                int x = cur[0], y = cur[1];
+                if (x == end[0] && y == end[1]) return step;
 
-                for (int[] dir : DIRECTIONS) {
-                    int ii = i + dir[0];
-                    int jj = j + dir[1];
-                    if (ii == xx && jj == yy) return step + 1;
-                    if (ii < 0 || ii >= m || jj < 0 || jj >= n) continue;
-                    if (forest.get(ii).get(jj) == 0) continue;
-                    if (visited[ii][jj]) continue;
-                    queue.offer(ii * n + jj);
-                    visited[ii][jj] = true;
+                for (int[] dir : directions) {
+                    int i = x + dir[0];
+                    int j = y + dir[1];
+                    if (i < 0 || i >= m || j < 0 || j >= n) continue;
+                    if (visited[i][j]) continue;
+                    if (forest.get(i).get(j) == 0) continue;
+                    queue.offer(new int[]{i, j});
+                    visited[i][j] = true;
                 }
             }
             step++;

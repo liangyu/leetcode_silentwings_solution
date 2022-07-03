@@ -16,21 +16,38 @@ public class LC1047_RemoveAllAdjacentDuplicatesInString {
      *
      * 1 <= S.length <= 20000
      * S consists only of English lowercase letters.
-     * @param S
+     * @param s
      * @return
      */
+    // S1
     // time = O(n), space = O(n)
-    public String removeDuplicates(String S) {
-        // corner case
-        if (S == null || S.length() == 0) return "";
-
+    public String removeDuplicates(String s) {
         Stack<Character> stack = new Stack<>();
-        for (char c : S.toCharArray()) {
-            if (stack.isEmpty() || stack.peek() != c) stack.push(c);
-            else stack.pop();
+        for (char c : s.toCharArray()) {
+            if (!stack.isEmpty() && stack.peek() == c) {
+                while (!stack.isEmpty() && stack.peek() == c) stack.pop();
+            } else stack.push(c);
         }
+
         StringBuilder sb = new StringBuilder();
         while (!stack.isEmpty()) sb.append(stack.pop());
         return sb.reverse().toString();
     }
+
+    // S2:
+    // time = O(n), space = O(n)
+    public String removeDuplicates2(String s) {
+        StringBuilder sb = new StringBuilder();
+        for (char c : s.toCharArray()) {
+            if (sb.length() > 0 && sb.charAt(sb.length() - 1) == c) sb.setLength(sb.length() - 1);
+            else sb.append(c);
+        }
+        return sb.toString();
+    }
 }
+/**
+ * 数学归纳法
+ * n = 1 成立
+ * 设 k < n 均成立
+ * k = n 时也成立
+ */

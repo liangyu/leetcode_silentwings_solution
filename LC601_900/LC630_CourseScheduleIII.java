@@ -48,5 +48,9 @@ public class LC630_CourseScheduleIII {
  *  贪心策略
  *  1. 先处理deadline
  *  2. 精华：赶不上deadline,就优化days，把上的最长的课cancel掉，把短的提上来，优化了days，有更多充裕时间完成更多的课
+ *
+ * f(i):考虑了前i个任务的所有合法方案
+ * (1) 选的个数最多
+ * (2) 总用时最小(每种用时个数相同)
  */
 

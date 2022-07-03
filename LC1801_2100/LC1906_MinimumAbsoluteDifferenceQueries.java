@@ -78,7 +78,7 @@ public class LC1906_MinimumAbsoluteDifferenceQueries {
             for (int k = 1; k <= 100; k++) {
                 int count = presum[k][right] - (left == 0 ? 0 : presum[k][left - 1]);
                 if (count > 0) arr.add(k);
-                if (arr.size() > 2 && arr.get(arr.size() - 1) - arr.get(arr.size() - 2) == 1) break;
+                if (arr.size() >= 2 && arr.get(arr.size() - 1) - arr.get(arr.size() - 2) == 1) break;
             }
             if (arr.size() <= 1) res[j] = -1;
             else {

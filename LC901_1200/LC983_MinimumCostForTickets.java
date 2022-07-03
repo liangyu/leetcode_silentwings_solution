@@ -29,6 +29,7 @@ public class LC983_MinimumCostForTickets {
      * @param costs
      * @return
      */
+    // S1
     // time = O(n), space = O(n)
     public int mincostTickets(int[] days, int[] costs) {
         int[] dp = new int[366];
@@ -50,6 +51,21 @@ public class LC983_MinimumCostForTickets {
         }
         return  dp[days[n - 1]];
     }
+
+    // S2
+    // time = O(n), space = O(n)
+    public int mincostTickets2(int[] days, int[] costs) {
+        int n = days.length;
+        int[] f = new int[n + 1];
+        int a = 0, b = 0, c = 0;
+        for (int i = 1; i <= n; i++) {
+            while (days[i - 1] - days[a] >= 1) a++; // days[a - 1 + 1] = days[a] -> 1-index
+            while (days[i - 1] - days[b] >= 7) b++;
+            while (days[i - 1] - days[c] >= 30) c++;
+            f[i] = Math.min(f[a] + costs[0], Math.min(f[b] + costs[1], f[c] + costs[2]));
+        }
+        return f[n];
+    }
 }
 /**
  * dp[i]: the cost for the first i days you can travel
@@ -64,4 +80,6 @@ public class LC983_MinimumCostForTickets {
  * 对任何的 j < i, dp[j] <= dp[i] 恒成立
  * => 同样买周票，7天前买一定 <= 2天前买的花费，同理对应其他日票和月票，所以以上方案一定是最优解，其他情况不会比它更优！
  * dp无后效性，这里有点贪心的思想
+ *
+ * f(i): 玩完前i天，最后一张票以i结尾
  */

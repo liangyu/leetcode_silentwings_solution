@@ -60,6 +60,20 @@ public class LC926_FlipStringtoMonotoneIncreasing {
         }
         return f[n - 1];
     }
+
+    // S3: prefix sum
+    // time = O(n), space = O(n)
+    public int minFlipsMonoIncr3(String s) {
+        int n = s.length();
+        int[] presum = new int[n + 1];
+        for (int i = 1; i <= n; i++) presum[i] = presum[i - 1] + s.charAt(i - 1) - '0';
+
+        int res = n - presum[n];
+        for (int i = 1; i <= n; i++) {
+            res = Math.min(res, presum[i] + (n - i) - (presum[n] - presum[i]));
+        }
+        return res;
+    }
 }
 /**
  * dp[i]表示前i个字符所需最小翻转次数，则dp[i+1]有如下四种情况，取其最小值即可

@@ -20,6 +20,7 @@ public class LC44_WildcardMatching {
      * @param p
      * @return
      */
+    // S1: dp
     // time = O(m * n), space = O(m * n)
     public boolean isMatch(String s, String p) {
         int m = s.length(), n = p.length();
@@ -75,4 +76,33 @@ public class LC44_WildcardMatching {
         }
         return true;
     }
+
+    // S3: DP
+    // time = O(m * n), space = O(m * n)
+    public boolean isMatch3(String s, String p) {
+        int m = s.length(), n = p.length();
+        s = "#" + s;
+        p = "#" + p;
+        boolean[][] f = new boolean[m + 1][n + 1];
+        f[0][0] = true;
+
+        for (int i = 0; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (p.charAt(j) != '*') {
+                    f[i][j] = i > 0 && f[i - 1][j - 1] && (s.charAt(i) == p.charAt(j) || p.charAt(j) == '?');
+                } else {
+                    f[i][j] = f[i][j - 1] || i > 0 && f[i - 1][j];
+                }
+            }
+        }
+        return f[m][n];
+    }
 }
+/**
+ * f[i,j]: s[1:i] and p[1:j]是否匹配
+ * f[i,j]:
+ * 1. p[j] == '*'   f[i,j-1] || f[i-1,j-1] || f[i-2,j-1] || ... || f[0,j-1]
+ *                 f[i-1,j] = f[i-1,j-1] || f[i-2,j-1] || ... || f[0,j-1]
+ *              => f[i,j] = f[i,j-1] || f[i-1,j]
+ * 2. p[j] != '*'  s[i] == p[j] && f[i-1,j-1]
+ */

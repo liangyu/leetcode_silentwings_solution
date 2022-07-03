@@ -121,7 +121,7 @@ public class LC1943_DescribethePainting {
                 start = end;
             }
             sum += diff;
-            if (sum == 0) start = -1;
+            if (sum == 0) start = -1; // discard all 0 segments
         }
         return res;
     }

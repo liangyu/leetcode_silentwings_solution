@@ -19,34 +19,36 @@ public class LC698_PartitiontoKEqualSumSubsets {
      */
     // time = O(n * 2^n), space = O(n * 2^n)
     public boolean canPartitionKSubsets(int[] nums, int k) {
-        // corner case
-        if (nums == null || nums.length == 0 || k <= 0) return false;
-
-        Arrays.sort(nums);
-        int n = nums.length, total = 0;
-        for (int num : nums) total += num;
+        int total = 0;
+        for (int x : nums) total += x;
         if (total % k != 0) return false;
-
-        boolean[] visited = new boolean[n];
-        return dfs(nums, 0, 0, 0, total, k, visited);
+        boolean[] visited = new boolean[nums.length];
+        Arrays.sort(nums);
+        int i = 0, j = nums.length - 1;
+        while (i < j) swap(nums, i++, j--);
+        return dfs(nums, 0, 0, 0, total / k, k, visited);
     }
 
-    private boolean dfs(int[] nums, int cur, int group, int sum, int total, int k, boolean[] visited) {
-        // base case
+    private void swap(int[] nums, int i, int j) {
+        int t = nums[i];
+        nums[i] = nums[j];
+        nums[j] = t;
+    }
+
+    private boolean dfs(int[] nums, int cur, int sum, int group, int side, int k, boolean[] visited) {
         if (group == k) return true;
-        if (sum > total / k) return false;
-        if (sum == total / k) {
-            return dfs(nums, 0, group + 1, 0, total, k, visited);
-        }
+        if (sum > side) return false;
+        if (sum == side) return dfs(nums, 0, 0, group + 1, side, k, visited);
 
         int last = -1;
         for (int i = cur; i < nums.length; i++) {
             if (visited[i]) continue;
-            if (nums[i] == last) continue; // 剪枝
+            if (nums[i] == last) continue;
             visited[i] = true;
             last = nums[i];
-            if (dfs(nums, i + 1, group, sum + nums[i], total, k, visited)) return true;
+            if (dfs(nums, i + 1, sum + nums[i], group, side, k, visited)) return true;
             visited[i] = false;
+            if (sum == 0 || sum + nums[i] == side) return false;
         }
         return false;
     }
@@ -63,4 +65,8 @@ public class LC698_PartitiontoKEqualSumSubsets {
  * 排序 => 相同元素总是相邻的
  * 小优化：倒序 => 大元素在前，更容易 > total / k而尽早剪枝
  * [1, ]
+ * 1. 从大到小枚举：搜索分支数少，更快的搜的越深，剪枝越快
+ * 2. nums[i] == nums[i - 1] 并且失败，当前也一定失败
+ * 3.当前第一个数失败了，一定失败
+ * 4. 当前最后一个数失败了，一定失败
  */

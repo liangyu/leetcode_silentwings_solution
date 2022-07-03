@@ -14,6 +14,7 @@ public class LC515_FindLargestValueinEachTreeRow {
      * @param root
      * @return
      */
+    // S1: bfs
     // time = O(n), space = O(n)
     public List<Integer> largestValues(TreeNode root) {
         List<Integer> res = new ArrayList<>();
@@ -35,5 +36,30 @@ public class LC515_FindLargestValueinEachTreeRow {
             res.add(max);
         }
         return res;
+    }
+
+    // S2: dfs
+    // time = O(n), space = O(n)
+    HashMap<Integer, Integer> map;
+    public List<Integer> largestValues2(TreeNode root) {
+        map = new HashMap<>();
+
+        dfs(root, 1);
+
+        List<Integer> res = new ArrayList<>();
+        for (int i = 1; i <= map.size(); i++) {
+            res.add(map.get(i));
+        }
+        return res;
+    }
+
+    private void dfs(TreeNode node, int d) {
+        if (node == null) return;
+
+        if (!map.containsKey(d)) map.put(d, node.val);
+        else map.put(d, Math.max(map.get(d), node.val));
+
+        dfs(node.left, d + 1);
+        dfs(node.right, d + 1);
     }
 }

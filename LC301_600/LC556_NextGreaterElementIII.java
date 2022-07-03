@@ -24,16 +24,16 @@ public class LC556_NextGreaterElementIII {
      */
     // time = O(n), space = O(n)
     public int nextGreaterElement(int n) {
-        char[] chars = ("" + n).toCharArray();
-        int i = chars.length - 2;
-        while (i >= 0 && chars[i + 1] <= chars[i]) i--; // chars[i] = 2
-        if (i < 0) return -1;
-        int j = chars.length - 1;
-        while (j >= 0 && chars[j] <= chars[i]) j--; // chars[j] = 4
-        swap(chars, i, j);
-        reverse(chars, i + 1);
-        long val = Long.valueOf(new String(chars));
-        return val > Integer.MAX_VALUE ? -1 : (int)val;
+        char[] chars = (n + "").toCharArray();
+        int m = chars.length, i = m - 1;
+        while (i > 0 && chars[i] <= chars[i - 1]) i--; // pivot: i - 1
+        if (i == 0) return -1;
+        int j = m - 1;
+        while (j >= i && chars[j] <= chars[i - 1]) j--;
+        swap(chars, j, i - 1);
+        reverse(chars, i, m - 1);
+        long res = Long.valueOf(String.valueOf(chars));
+        return res > Integer.MAX_VALUE ? -1 : (int) res;
     }
 
     private void swap(char[] chars, int i, int j) {
@@ -42,12 +42,22 @@ public class LC556_NextGreaterElementIII {
         chars[j] = temp;
     }
 
-    private void reverse(char[] chars, int i) {
-        int start = i, end = chars.length - 1;
-        while (start < end) swap(chars, start++, end--);
+    private void reverse(char[] chars, int i, int j) {
+        while (i < j) swap(chars, i++, j--);
     }
 }
-
+/**
+ * next permutation
+ * 从后往前找
+ * 直到找到第一个出现降序为止
+ * 此时将后面这些调整变更大
+ * 调整第k-1位
+ * 比当前k-1位数大的最小的数
+ * 从后往前找比k大的最小的数
+ * 然后把两个数交换下
+ * 交换完之后，后面这个序列还是个单调递减的序列
+ * 后面要翻转一遍
+ */
 // 2 2 4 3 2 1
 //   i   j
 // step 1: 出现swap的条件 -> 从尾部开始，nums[i] < nums[i + 1]  2 < 4

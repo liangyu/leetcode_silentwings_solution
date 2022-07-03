@@ -18,26 +18,21 @@ public class LC318_MaximumProductofWordLengths {
      */
     // time = O(n^2), space = O(n)
     public int maxProduct(String[] words) {
-        // corner case
-        if (words == null || words.length == 0) return 0;
-
-        int n = words.length;
-        int[] codes = new int[n];
+        int n = words.length, res = 0;
+        int[] arr = new int[n];
         for (int i = 0; i < n; i++) {
-            String s = words[i];
-            int code = 0;
-            for (int j = 0; j < s.length(); j++) {
-                int x = s.charAt(j) - 'a';
-                code = (code | (1 << x));
+            int state = 0;
+            for (char c : words[i].toCharArray()) {
+                state |= 1 << (c - 'a');
             }
-            codes[i] = code;
+            arr[i] = state;
         }
 
-        int res = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                if ((codes[i] & codes[j]) != 0) continue;
-                res = Math.max(res, words[i].length() * words[j].length());
+            for (int j = i + 1; j < n; j++) {
+                if ((arr[i] & arr[j]) == 0) {
+                    res = Math.max(res, words[i].length() * words[j].length());
+                }
             }
         }
         return res;

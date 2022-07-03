@@ -36,6 +36,7 @@ public class LC2015_AverageHeightofBuildingsinEachSegment {
      * @param buildings
      * @return
      */
+    // S1: diff array
     // time = O(nlogn), space = O(n)
     public int[][] averageHeightOfBuildings(int[][] buildings) {
         List<int[]> diff = new ArrayList<>();
@@ -72,4 +73,44 @@ public class LC2015_AverageHeightofBuildingsinEachSegment {
         for (int i = 0; i < res.size(); i++) ans[i] = res.get(i);
         return ans;
     }
+
+    // S2: TreeMap
+    public int[][] averageHeightOfBuildings2(int[][] buildings) {
+        TreeMap<Integer, int[]> map = new TreeMap<>(); // pos -> {diffHeight, diffCount}
+        for (int[] build : buildings) {
+            int s = build[0], e = build[1], h = build[2];
+            map.putIfAbsent(s, new int[]{0, 0});
+            map.putIfAbsent(e, new int[]{0, 0});
+            map.get(s)[0] += h;
+            map.get(s)[1] += 1;
+            map.get(e)[0] -= h;
+            map.get(e)[1] -= 1;
+        }
+
+        int totalHeight = 0, totalCount = 0;
+        List<int[]> seg = new ArrayList<>();
+        for (int key : map.keySet()) {
+            int diffHeight = map.get(key)[0], diffCount = map.get(key)[1];
+            totalHeight += diffHeight;
+            totalCount += diffCount;
+            int avg = totalCount == 0 ? 0 : totalHeight / totalCount;
+            seg.add(new int[]{key, avg});
+        }
+
+        List<int[]> res = new ArrayList<>();
+        int m = seg.size();
+        for (int i = 0; i < m; i++) {
+            if (seg.get(i)[1] == 0) continue;
+            int j = i;
+            while (j < m && seg.get(j)[1] == seg.get(i)[1]) j++;
+            res.add(new int[]{seg.get(i)[0], seg.get(j)[0], seg.get(i)[1]});
+            i = j - 1;
+        }
+        return res.toArray(new int[res.size()][]);
+    }
 }
+/**
+ * 画格子题目
+ * 高度之和 / 矩阵个数之和
+ * 需要维护2个差分量，一个是个数，另一个是高度
+ */

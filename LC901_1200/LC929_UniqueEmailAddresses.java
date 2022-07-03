@@ -34,8 +34,27 @@ public class LC929_UniqueEmailAddresses {
      * @param emails
      * @return
      */
-    // time = O(n), space = O(n)
+    // S1
+    // time = O(n * k), space = O(n * k)
     public int numUniqueEmails(String[] emails) {
+        HashSet<String> set = new HashSet<>();
+
+        for (String s : emails) {
+            String[] strs = s.split("@");
+            StringBuilder sb = new StringBuilder();
+            for (char c : strs[0].toCharArray()) {
+                if (c == '+') break;
+                else if (c != '.') sb.append(c);
+            }
+            sb.append('@').append(strs[1]);
+            set.add(sb.toString());
+        }
+        return set.size();
+    }
+
+    // S2
+    // time = O(n), space = O(n)
+    public int numUniqueEmails2(String[] emails) {
         // corner case
         if (emails == null || emails.length == 0) return 0;
 

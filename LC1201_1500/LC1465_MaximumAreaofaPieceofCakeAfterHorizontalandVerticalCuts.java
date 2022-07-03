@@ -29,24 +29,20 @@ public class LC1465_MaximumAreaofaPieceofCakeAfterHorizontalandVerticalCuts {
      */
     // time = O(mlogm + nlogn), space = O(1)
     public int maxArea(int h, int w, int[] horizontalCuts, int[] verticalCuts) {
-        // corner case
-        if (horizontalCuts == null || verticalCuts == null) return 0;
+        long M = (long)(1e9 + 7);
+        return (int)(findMax(horizontalCuts, h) * findMax(verticalCuts, w) % M);
+    }
 
-        Arrays.sort(horizontalCuts);
-        Arrays.sort(verticalCuts);
-
-        int m = horizontalCuts.length, n = verticalCuts.length;
-        long mh = 0, mw = 0;
-        int M = (int)1e9+7;
-        for (int i = 0; i < m; i++) {
-            mh = Math.max(mh, horizontalCuts[i] - (i == 0 ? 0 : horizontalCuts[i - 1]));
+    private long findMax(int[] nums, int t) {
+        Arrays.sort(nums);
+        int s = 0, res = 0;
+        for (int x : nums) {
+            res = Math.max(res, x - s);
+            s = x;
         }
-        mh = Math.max(mh, h - horizontalCuts[m - 1]);
-
-        for (int j = 0; j < n; j++) {
-            mw = Math.max(mw, verticalCuts[j] - (j == 0 ? 0 : verticalCuts[j - 1]));
-        }
-        mw = Math.max(mw, w - verticalCuts[n - 1]);
-        return (int)(mh * mw % M);
+        return Math.max(res, t - s);
     }
 }
+/**
+ * 两个方向相互独立，各找一个最大值相乘即可。
+ */

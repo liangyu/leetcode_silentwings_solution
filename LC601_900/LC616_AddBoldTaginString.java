@@ -55,4 +55,23 @@ public class LC616_AddBoldTaginString {
         }
         return sb.toString();
     }
+
+    // S2
+    // time = O(m * n), space = O(n)
+    public String addBoldTag2(String s, String[] dict) {
+        int bold = -1, n = s.length();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            for (String word : dict) {
+                if (s.startsWith(word, i)) {
+                    if (bold < i) sb.append("<b>");
+                    bold = Math.max(bold, i + word.length());
+                }
+            }
+            if (i == bold) sb.append("</b>");
+            sb.append(s.charAt(i));
+        }
+        if (bold == n) sb.append("</b>");
+        return sb.toString();
+    }
 }

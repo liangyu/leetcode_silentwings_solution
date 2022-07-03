@@ -267,6 +267,38 @@ public class LC218_TheSkylineProblem {
         dfs(node.left);
         dfs(node.right);
     }
+
+    // S5: TreeMap + MultiSet
+    // time = O(nlogn), space = O(n)
+    public List<List<Integer>> getSkyline5(int[][] buildings) {
+        List<List<Integer>> res = new ArrayList<>();
+        TreeMap<Integer, List<Integer>> map = new TreeMap<>();
+
+        for (int[] x : buildings) {  // O(nlogn)
+            int a = x[0], b = x[1], c = x[2];
+            map.putIfAbsent(a, new ArrayList<>());
+            map.putIfAbsent(b, new ArrayList<>());
+            map.get(a).add(c);
+            map.get(b).add(-c);
+        }
+
+        TreeMap<Integer, Integer> hs = new TreeMap<>();
+        for (int x : map.keySet()) {
+            for (int h : map.get(x)) {
+                if (h > 0) hs.put(h, hs.getOrDefault(h, 0) + 1);
+                else {
+                    h = -h;
+                    hs.put(h, hs.get(h) - 1);
+                    if (hs.get(h) == 0) hs.remove(h);
+                }
+            }
+            int height = hs.size() == 0 ? 0 : hs.lastKey();
+            if (res.size() == 0 || res.get(res.size() - 1).get(1) != height) {
+                res.add(Arrays.asList(x, height));
+            }
+        }
+        return res;
+    }
 }
 /**
  * sweep line 扫描线算法
@@ -286,4 +318,10 @@ public class LC218_TheSkylineProblem {
  * 3: 6 => [3,4)
  * 4: 6 => [4,5)
  * 5: ? => [3,5)
+ *
+ * S2: diff array
+ * 维护一个最大值
+ * 用一个set，每次遇到边界点，就把高度加入set
+ * 上升沿加入
+ * 遇到下降沿再剔除掉
  */

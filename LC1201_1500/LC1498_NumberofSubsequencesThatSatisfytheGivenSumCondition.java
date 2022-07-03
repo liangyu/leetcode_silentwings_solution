@@ -19,7 +19,7 @@ public class LC1498_NumberofSubsequencesThatSatisfytheGivenSumCondition {
      * @param target
      * @return
      */
-    // time = O(n), space = O(n)
+    // time = O(nlogn), space = O(n)
     public int numSubseq(int[] nums, int target) {
         // corner case
         if (nums == null || nums.length == 0) return 0;

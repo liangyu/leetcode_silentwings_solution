@@ -46,6 +46,36 @@ public class LC1048_LongestStringChain {
         }
         return res;
     }
+
+    // S2: DP
+    // time = O(nlogn), space = O(n)
+    public int longestStrChain2(String[] words) {
+        Arrays.sort(words, (o1, o2) -> o1.length() - o2.length());
+        int n = words.length, res = 0;
+        int[] f = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            f[i] = 1;
+            for (int j = 0; j < i; j++) {
+                if (helper(words[j], words[i])) {
+                    f[i] = Math.max(f[i], f[j] + 1);
+                }
+            }
+            res = Math.max(res, f[i]);
+        }
+        return res;
+    }
+
+    private boolean helper(String s, String t) {
+        int m = s.length(), n = t.length();
+        if (m + 1 != n) return false;
+
+        int i = 0;
+        for (char c : t.toCharArray()) {
+            if (i < m && s.charAt(i) == c) i++;
+        }
+        return i == m;
+    }
 }
 /**
  * HashMap在这里是统计到当前这个key string为止，已经累计到的longest possible chain's length

@@ -63,3 +63,6 @@ public class LC609_FindDuplicateFileinSystem {
         return res;
     }
 }
+/**
+ * 文件内容 -> file1, file2, ...
+ */

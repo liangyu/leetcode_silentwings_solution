@@ -107,4 +107,11 @@ public class LC65_ValidNumber {
  * aeb -> [+a] e [-b]  大方向：找e，然后分而治之
  * [+c]
  * 中间不能有空格，否则就是false
+ * stof 函数： string to float
+ * 1. 去掉前后空格
+ * 2. e的前后如果是空的，则false
+ * 3. e的后面不能有.
+ * 4. +-不能连续出现多于1个
+ * 5. e和.最多1次
+ * 6. "+"， "e+"
  */

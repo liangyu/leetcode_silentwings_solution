@@ -26,34 +26,23 @@ public class LC463_IslandPerimeter {
      */
     // S1: traverse
     // time = O(m * n), space = O(1)
-    private static final int[][] DIRECTIONS = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    private int[][] directions = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
     public int islandPerimeter(int[][] grid) {
-        // corner case
-        if (grid == null || grid.length == 0 || grid[0] == null || grid[0].length == 0) return 0;
-
-        int m = grid.length, n = grid[0].length, res = 0;
+        int res = 0;
+        int m = grid.length, n = grid[0].length;
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 if (grid[i][j] == 1) {
-                    res += helper(grid, i, j);
+                    for (int[] dir : directions) {
+                        int x = i + dir[0];
+                        int y = j + dir[1];
+                        if (x < 0 || x >= m || y < 0 || y >= n) res++;
+                        else if (grid[x][y] == 0) res++;
+                    }
                 }
             }
         }
         return res;
-    }
-
-    private int helper(int[][] grid, int i, int j) {
-        int m = grid.length, n = grid[0].length;
-
-        int count = 0;
-        for (int[] dir : DIRECTIONS) {
-            int ii = i + dir[0];
-            int jj = j + dir[1];
-            if (ii >= 0 && ii < m && jj >= 0 && jj < n) {
-                if (grid[ii][jj] == 0) count++;
-            } else count++;
-        }
-        return count;
     }
 
     // S2: count (最优解!!!)

@@ -31,6 +31,7 @@ public class LC122_BestTimetoBuyandSellStockII {
     }
 }
 /**
+ * 买入之前必须先要把手头上的股票都卖出
  * 把每一个交易都可以拆成一天天的个别交易
  * 只需要记录交易获益>0的那一天天交易即可！
  */

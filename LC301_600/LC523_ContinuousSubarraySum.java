@@ -18,8 +18,24 @@ public class LC523_ContinuousSubarraySum {
      * @param k
      * @return
      */
+    // S1
     // time = O(n), space = O(n)
     public boolean checkSubarraySum(int[] nums, int k) {
+        int n = nums.length;
+        int[] presum = new int[n + 1];
+        for (int i = 1; i <= n; i++) presum[i] = presum[i - 1] + nums[i - 1];
+
+        HashSet<Integer> set = new HashSet<>();
+        for (int i = 2; i <= n; i++) {
+            set.add(presum[i - 2] % k);
+            if (set.contains(presum[i] % k)) return true;
+        }
+        return false;
+    }
+
+    // S2
+    // time = O(n), space = O(n)
+    public boolean checkSubarraySum2(int[] nums, int k) {
         // corner case
         if (nums == null || nums.length <= 1) return false;
         if (k == 0) {

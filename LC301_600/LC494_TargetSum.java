@@ -59,4 +59,12 @@ public class LC494_TargetSum {
  *            N, -N = 2N
  * dp[i][5] : dp[i][s+nums[i]]
  *            dp[i][s'+nums[i']]
+ *
+ * dp状态表示：
+ * 集合：前i个数总和为j的所有方案的集合
+ * 属性：数量
+ * 状态计算：
+ * ai取正：f(i-1,j-ai)
+ * ai取负：f(i-1,j+ai)
+ * f(0,0) = 1
  */

@@ -35,4 +35,29 @@ public class LC665_NondecreasingArray {
         }
         return true;
     }
+
+    // S2:
+    // time = O(n), space = O(1)  最多只会遍历2次数组 => O(2 * n)
+    public boolean checkPossibility2(int[] nums) {
+        int n = nums.length;
+        for (int i = 1; i < n; i++) {
+            if (nums[i] < nums[i - 1]) {
+                int a = nums[i - 1], b = nums[i];
+                nums[i - 1] = nums[i] = a;
+                if (check(nums)) return true;
+                nums[i - 1] = nums[i] = b;
+                if (check(nums)) return true;
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean check(int[] nums) {
+        int n = nums.length;
+        for (int i = 1; i < n; i++) {
+            if (nums[i] < nums[i - 1]) return false;
+        }
+        return true;
+    }
 }

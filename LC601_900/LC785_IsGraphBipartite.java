@@ -88,6 +88,7 @@ public class LC785_IsGraphBipartite {
     }
 
     // S2: Union Find
+    // time = O(nlogn), space = O(n)
     private int[] parent;
     public boolean isBipartite3(int[][] graph) {
         int n = graph.length;

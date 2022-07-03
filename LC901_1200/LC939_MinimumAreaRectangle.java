@@ -51,6 +51,29 @@ public class LC939_MinimumAreaRectangle {
         }
         return res == Integer.MAX_VALUE ? 0 : res;
     }
+
+    // S2
+    // time = O(n^2), space = O(n)
+    public int minAreaRect2(int[][] points) {
+        HashSet<Integer> set = new HashSet<>();
+        for (int[] p : points) set.add(helper(p));
+
+        int n = points.length, res = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int[] p = points[i], q = points[j];
+                if (p[0] != q[0] && p[1] != q[1] && set.contains(helper(new int[]{p[0], q[1]})) && set.contains(helper(new int[]{q[0], p[1]}))) {
+                    int area = Math.abs(p[0] - q[0]) * Math.abs(p[1] - q[1]);
+                    res = Math.min(res, area);
+                }
+            }
+        }
+        return res == Integer.MAX_VALUE ? 0 : res;
+    }
+
+    private int helper(int[] x) {
+        return x[0] * 50000 + x[1];
+    }
 }
 /**
  * 矩形都是"横平竖直"

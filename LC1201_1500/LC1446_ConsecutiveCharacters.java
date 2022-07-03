@@ -18,14 +18,12 @@ public class LC1446_ConsecutiveCharacters {
      */
     // time = O(n), space = O(1)
     public int maxPower(String s) {
-        int n = s.length(), res = 1;
-        for (int i = 0; i < n - 1; i++) {
-            if (s.charAt(i) == s.charAt(i + 1)) {
-                int j = i + 1;
-                while (j < n && s.charAt(j - 1) == s.charAt(j)) j++;
-                res = Math.max(res, j - i);
-                i = j - 1;
-            }
+        int res = 1, n = s.length(), sum = 1;
+        for (int i = 0; i < n; i++) {
+            if (i > 0 && s.charAt(i) == s.charAt(i - 1)) {
+                sum++;
+                res = Math.max(res, sum);
+            } else sum = 1;
         }
         return res;
     }

@@ -52,3 +52,11 @@ public class LC2158_AmountofNewAreaPaintedEachDay {
         return res;
     }
 }
+/**
+ * 类似LC218
+ * 有序集合
+ * 维护的是一个有序的集合
+ * 碰到开始就加元素，碰到结束就减去元素
+ * index小的就先涂
+ * 同一点多个信息 => TreeMap
+ */

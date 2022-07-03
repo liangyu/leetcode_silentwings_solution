@@ -121,6 +121,46 @@ public class LC51_NQueens {
         }
         res.add(list);
     }
+
+    // S3: dfs
+    // time = O(n!), space = O(n)
+    int n;
+    boolean[] col, dg, udg;
+    char[][] grid;
+    List<List<String>> res;
+    public List<List<String>> solveNQueens3(int n) {
+        this.n = n;
+        col = new boolean[n];
+        dg = new boolean[2 * n];
+        udg = new boolean[2 * n];
+        grid = new char[n][n];
+        res = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) Arrays.fill(grid[i], '.');
+
+        dfs(0);
+        return res;
+    }
+
+    private void dfs(int u) {
+        if (u == n) {
+            List<String> temp = new ArrayList<>();
+            for (int i = 0; i < n; i++) temp.add(String.valueOf(grid[i]));
+            res.add(temp);
+            return;
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (!col[i] && !dg[i - u + n] && !udg[i + u]) {
+                col[i] = dg[i - u + n] = udg[u + i] = true;
+                grid[u][i] = 'Q';
+                dfs(u + 1);
+                grid[u][i] = '.';
+                col[i] = dg[i - u + n] = udg[u + i] = false;
+            }
+        }
+    }
+
 }
 /**
  * N个皇后，每行只能选一个
@@ -130,4 +170,14 @@ public class LC51_NQueens {
  * 典型的深度优先搜索
  * 理论上时间复杂度是O(n^n)
  * 可以剪枝的可能性非常大，效率还是很高的
+ *
+ * 1. 每行放一个
+ * 对角线如何映射？
+ * 对角线数量 = 2 * n - 1
+ * 怎么判断每个点当前在哪个对角线上？
+ * 给对角线做一个编号 => 映射
+ * y = x + k
+ * y = -x + k
+ * 用截距k表示它们的下标 => k = y - x; k = y + x
+ * 截距可能是负的，数组下标不能是负的 => +偏移量 n => k = y - x + n
  */

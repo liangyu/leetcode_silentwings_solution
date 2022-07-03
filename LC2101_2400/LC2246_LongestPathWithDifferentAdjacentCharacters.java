@@ -53,4 +53,62 @@ public class LC2246_LongestPathWithDifferentAdjacentCharacters {
        }
        return max;
     }
+
+    // S2: dfs
+    // time = O(n), space = O(n)
+    class Solution {
+        List<Integer>[] children;
+        int[] len;
+        int res = 1; // at least 1
+        String s;
+        public int longestPath(int[] parent, String s) {
+            this.s = s;
+            int n = parent.length;
+            children = new List[n];
+            len = new int[n];
+            for (int i = 0; i < n; i++) children[i] = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                if (parent[i] != -1) children[parent[i]].add(i);
+            }
+
+            dfs(0);
+            return res;
+        }
+
+        private void dfs(int node) {
+            if (children[node].size() == 0) {
+                len[node] = 1;
+                return;
+            }
+
+            List<Integer> pool = new ArrayList<>();
+            len[node] = 1;
+            for (int child : children[node]) {
+                dfs(child); // len[child] 一定就有了！！！
+                if (s.charAt(child) != s.charAt(node)) {
+                    pool.add(len[child]);
+                    len[node] = Math.max(len[node], len[child] + 1);
+                }
+            }
+            Collections.sort(pool, (o1, o2) -> o2 - o1);
+            if (pool.size() >= 2) {
+                res = Math.max(res, pool.get(0) + pool.get(1) + 1);
+            } else if (pool.size() == 1) {
+                res = Math.max(res, pool.get(0) + 1);
+            } else res = Math.max(res, 1);
+        }
+    }
 }
+/**
+ * 有根树
+ * 任何路径都必然有一个拐点，我们遍历所有的节点，考虑对每个节点作为拐点时的最优路径，这样我们就可以做到不遗漏地求出全局的最优路径。
+ * 以Node为拐点的最长路径，必然由两条以它孩子节点为起点的最长单链路径（即一直向下没有拐弯）拼接组成。
+ * 本题的核心就转化为，求对于每个节点，从它往下走能够找到的最长单链路径h
+ * 遍历所有的拐点，找到每个拐点的最优路径。在全局中找最优解。
+ * len(node): the longest path starting from node toward leaves
+ * len 有递归性质
+ * len(node) = max{len(node -> child) + 1}  if (node is different from child)
+ *           = 1 otherwise
+ * for node:
+ * global = max(global, len(node->child)_max1 + len(node->child)_max2 + 1)
+ */

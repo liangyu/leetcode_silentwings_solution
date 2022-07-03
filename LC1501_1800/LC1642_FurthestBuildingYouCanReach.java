@@ -51,7 +51,7 @@ public class LC1642_FurthestBuildingYouCanReach {
 
         for (int i = 1; i < n; i++) {
             int diff = heights[i] - heights[i - 1];
-            if (diff < 0) continue;
+            if (diff <= 0) continue;
             map.put(diff, map.getOrDefault(diff, 0) + 1);
             if (count < ladders) count++;
             else {

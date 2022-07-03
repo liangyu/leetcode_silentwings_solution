@@ -121,6 +121,32 @@ public class LC699_FallingSquares {
         node.info = Math.max(queryRange(node.left, a, b) , queryRange(node.right, a, b));
         return node.info;
     }
+
+    // S2:
+    // time = O(n^2), space = O(n)
+    public List<Integer> fallingSquares2(int[][] pos) {
+        List<Integer> res = new ArrayList<>();
+        int n = pos.length;
+        int[] h = new int[n];
+        for (int i = 0; i < n; i++) {
+            int a = pos[i][0], b = pos[i][1];
+            h[i] += b;
+            for (int j = i + 1; j < n; j++) {
+                int c = pos[j][0], d = pos[j][1];
+                if (isIntersect(a, a + b, c, c + d)) h[j] = Math.max(h[j], h[i]);
+            }
+        }
+        int cur = 0;
+        for (int x : h) {
+            cur = Math.max(cur, x);
+            res.add(cur);
+        }
+        return res;
+    }
+
+    private boolean isIntersect(int l1, int r1, int l2, int r2) {
+        return r2 > l1 && l2 < r1;
+    }
 }
 /**
  * 共同点，叶子结点一开始都是知道的，整体什么样是可以提前建立起来的，而LC715形状一直在变，容易TLE，效率不高，需要动态开辟空间。
@@ -131,4 +157,11 @@ public class LC699_FallingSquares {
  * 不管是update还是query,一旦你要越过这个node到达下面去的时候，特别要小心
  * node本身可能截留住一些信息，如果是被lazyTag过，它下面的left, right信息都是不准确的
  * 所以在访问前要把lazyTag清理掉，同时把一些信息提前下放下去
+ *
+ * 本质上2个操作：
+ * 1. 求区间最大值
+ * 2. 将[l,r]变为c
+ * => 经典线段树的问题
+ * 区间查询，区间修改 => 懒标记
+ * 10^8 => 需要离散化，三个点 => 左右端点+中点
  */

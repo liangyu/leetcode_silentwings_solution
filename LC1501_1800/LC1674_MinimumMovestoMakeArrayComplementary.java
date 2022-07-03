@@ -29,29 +29,30 @@ public class LC1674_MinimumMovestoMakeArrayComplementary {
         // corner case
         if (nums == null || nums.length == 0) return 0;
 
+        int[] diff = new int[2 * limit + 2];
+
         int n = nums.length;
-        int[] diff = new int[2 * 100000 + 2];
         for (int i = 0; i < n / 2; i++) {
             int a = Math.min(nums[i], nums[n - 1 - i]);
             int b = Math.max(nums[i], nums[n - 1 - i]);
 
             diff[2] += 2;
-            diff[a + 1] -= 1;
-            diff[a + b] -= 1;
-            diff[a + b + 1] += 1;
-            diff[limit + b + 1] += 1;
+            diff[a + 1]--;
+            diff[a + b]--;
+            diff[a + b + 1]++;
+            diff[b + 1 + limit]++;
         }
 
         int y = 0, res = Integer.MAX_VALUE;
         for (int x = 2; x <= limit * 2; x++) {
             y += diff[x];
-            res = Math.min(y, res);
+            res = Math.min(res, y);
         }
         return res;
     }
 
     // S2: TreeMap
-    // time = O(nlogn), space = O(n)   当limit比较大的时候，就只能用这种做法
+    // time = O(nlogn), space = O(n)   当limit比较大的时候，就只能用这种做法!!!
     public int minMoves2(int[] nums, int limit) {
         // corner case
         if (nums == null || nums.length == 0) return 0;

@@ -87,4 +87,25 @@ public class LC498_DiagonalTraverse {
         }
         return res;
     }
+
+    // S3:
+    // time = O(n), space = O(1)
+    public int[] findDiagonalOrder3(int[][] mat) {
+        int m = mat.length, n = mat[0].length;
+        int[] res = new int[m * n];
+        int idx = 0;
+        for (int i = 0; i < n + m - 1; i++) { // 对角线总数 = m + n - 1
+            if (i % 2 == 0) {
+                // 看最后一条对角线，列数一定是n - 1, 那么根据性质row + col = i => row = i - (n - 1) = 1 - n + i
+                for (int j = Math.min(i, m - 1); j >= Math.max(0, 1 - n + i); j--) {
+                    res[idx++] = mat[j][i - j]; // row = j, col = i - row = i - j
+                }
+            } else {
+                for (int j = Math.max(0, 1 - n + i); j <= Math.min(i, m - 1); j++) {
+                    res[idx++] = mat[j][i - j];
+                }
+            }
+        }
+        return res;
+    }
 }

@@ -46,67 +46,87 @@ public class LC820_ShortEncodingofWords {
 
     // S2: Trie
     // time = O(n * k), space = O(n * k) k: average length of string
+    TrieNode root;
     public int minimumLengthEncoding2(String[] words) {
-        // corner case
-        if (words == null || words.length == 0) return 0;
+        root = new TrieNode();
 
-        Trie trie = new Trie();
-        int count = 0;
-
-        for (String word : words) { // O(n)
-            trie.insert(word); // O(k)
-        }
+        for (String word : words) insert(word);
 
         int res = 0;
         HashSet<String> set = new HashSet<>();
-        for (String word : words) { // O(n)
-            if (trie.search(word) && set.add(word)) res += word.length() + 1; // O(k)
+        for (String word : words) {
+            if (search(word) && set.add(word)) res += word.length() + 1;
         }
         return res;
     }
 
-    class Trie {
-        TrieNode root;
-        public Trie() {
-            root = new TrieNode('\0');
-        }
-
-        public void insert(String word) {
-            TrieNode cur = root;
-            for (int i = word.length() - 1; i >= 0; i--) {
-                char c = word.charAt(i);
-                if (cur.nexts[c - 'a'] == null) {
-                    cur.nexts[c - 'a'] = new TrieNode(c);
-                }
-                cur = cur.nexts[c - 'a'];
+    private void insert(String s) {
+        TrieNode node = root;
+        int n = s.length();
+        for (int i = n - 1; i >= 0; i--) {
+            char c = s.charAt(i);
+            if (node.next[c - 'a'] == null) {
+                node.next[c - 'a'] = new TrieNode();
             }
+            node = node.next[c - 'a'];
         }
+        node.isEnd = true;
+    }
 
-        public boolean search(String word) {
-            TrieNode cur = root;
-            for (int i = word.length() - 1; i >= 0; i--) {
-                char c = word.charAt(i);
-                if (cur.nexts[c - 'a'] == null) throw new RuntimeException();
-                cur = cur.nexts[c - 'a'];
-            }
-            if (checkNull(cur.nexts)) return true;
-            return false;
+    private boolean search(String s) {
+        TrieNode node = root;
+        int n = s.length();
+        for (int i = n - 1; i >= 0; i--) {
+            char c = s.charAt(i);
+            if (node.next[c - 'a'] == null) return false;
+            node = node.next[c - 'a'];
         }
+        return checkNull(node.next);
+    }
 
-        private boolean checkNull(TrieNode[] nexts) {
-            for (TrieNode next : nexts) {
-                if (next != null) return false;
-            }
-            return true;
+    private boolean checkNull(TrieNode[] next) {
+        for (TrieNode x : next) {
+            if (x != null) return false;
+        }
+        return true;
+    }
+
+    private class TrieNode {
+        private TrieNode[] next;
+        private boolean isEnd;
+        public TrieNode() {
+            this.next = new TrieNode[26];
+            this.isEnd = false;
         }
     }
 
-    class TrieNode {
-        char ch;
-        TrieNode[] nexts;
-        public TrieNode(char ch) {
-            this.ch = ch;
-            this.nexts = new TrieNode[26];
+    // S3: Trie
+    // time = O(n * k), space = O(n * k) k: average length of string
+    final int N = 2000 * 7 + 10;
+    int[][] son;
+    int[] cnt, len;
+    int idx;
+    public int minimumLengthEncoding3(String[] words) {
+        son = new int[N][26];
+        cnt = new int[N];
+        len = new int[N];
+        idx = 0;
+
+        for (String s : words) {
+            int p = 0, n = s.length();
+            for (int i = n - 1; i >= 0; i--) {
+                int u = s.charAt(i) - 'a';
+                if (son[p][u] == 0) son[p][u] = ++idx;
+                cnt[p]++; // 在p结点下有多少个子节点！！！ cnt[p] == 0 代表叶子结点！
+                p = son[p][u];
+            }
+            len[p] = n;
         }
+
+        int res = 0;
+        for (int i = 1; i <= idx; i++) {
+            if (cnt[i] == 0) res += len[i] + 1;
+        }
+        return res;
     }
 }

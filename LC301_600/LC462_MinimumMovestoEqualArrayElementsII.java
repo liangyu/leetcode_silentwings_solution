@@ -17,12 +17,19 @@ public class LC462_MinimumMovestoEqualArrayElementsII {
      * @param nums
      * @return
      */
-    // S1: without finding median
+    // S1: find median
     // time = O(nlogn), space = O(1)
     public int minMoves2(int[] nums) {
-        // corner case
-        if (nums == null || nums.length == 0) return 0;
+        Arrays.sort(nums);
+        int n = nums.length, res = 0;
+        int median = nums[(n - 1)/ 2];
+        for (int x : nums) res += Math.abs(x -  median);
+        return res;
+    }
 
+    // S2: without finding median
+    // time = O(nlogn), space = O(1)
+    public int minMoves2_2(int[] nums) {
         Arrays.sort(nums);
 
         int left = 0, right = nums.length - 1;
@@ -33,45 +40,31 @@ public class LC462_MinimumMovestoEqualArrayElementsII {
         return res;
     }
 
-    // S2: quick sort
+    // S3: quick sort (最优解!)
     // time = O(nlogn), space = O(1)
-    public int minMoves22(int[] nums) {
-        // corner case
-        if (nums == null || nums.length == 0) return 0;
-
-        int res = 0;
-        int median = findKthLargest(nums, 0, nums.length - 1, nums.length / 2);
-        for (int num : nums) {
-            res += Math.abs(num - median);
-        }
+    public int minMoves2_3(int[] nums) {
+        int n = nums.length, res = 0;
+        int median = quick_select(nums, 0, n - 1, (n - 1) / 2 + 1);
+        for (int x : nums) res += Math.abs(x - median);
         return res;
     }
 
-    private int findKthLargest(int[] nums, int left, int right, int k) {
-        if (left == right) return nums[left];
+    private int quick_select(int[] q, int l, int r, int k) {
+        if (l == r) return q[l];
 
-        int pos = partition(nums, left, right);
-        if (pos == k) return nums[pos];
-        if (pos < k) return findKthLargest(nums, pos + 1, right, k);
-        else return findKthLargest(nums, left, pos - 1, k);
-    }
-
-    private int partition(int[] nums, int left, int right) {
-        int pivot = nums[right];
-        int l = left, r = right - 1;
-        while (l <= r) {
-            if (nums[l] > pivot && nums[r] < pivot) swap(nums, l++, r--);
-            if (nums[l] <= pivot) l++;
-            if (nums[r] >= pivot) r--;
+        int x = q[l + (r - l) / 2], i = l - 1, j = r + 1;
+        while (i < j) {
+            while (q[++i] < x);
+            while (q[--j] > x);
+            if (i < j) {
+                int t = q[i];
+                q[i] = q[j];
+                q[j] = t;
+            }
         }
-        swap(nums, l, right);
-        return l;
-    }
-
-    private void swap(int[] nums, int i, int j) {
-        int temp = nums[i];
-        nums[i] = nums[j];
-        nums[j] = temp;
+        int sl = j - l + 1;
+        if (k <= sl) return quick_select(q, l, j, k);
+        return quick_select(q, j + 1, r, k - sl);
     }
 }
 /**

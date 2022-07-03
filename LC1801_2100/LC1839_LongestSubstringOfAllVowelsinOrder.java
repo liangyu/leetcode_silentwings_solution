@@ -81,8 +81,8 @@ public class LC1839_LongestSubstringOfAllVowelsinOrder {
     }
 }
 /**
- * dp[i][u] = max(dp[i - 1][u], dp[i - 1][o] + 1
- * dp[i][e] = max(dp[i - 1][a], dp[i - 1][e] + 1
+ * x x [x x x x x o/u u]
+ * dp[i][u] = max(dp[i - 1][u], dp[i - 1][o]) + 1
+ * dp[i][e] = max(dp[i - 1][a], dp[i - 1][e]) + 1
  * dp[i][a] = max(dp[i - 1][_], dp[i - 1][a]) + 1
- *
  */

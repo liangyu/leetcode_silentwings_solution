@@ -113,11 +113,11 @@ public class LC1878_GetBiggestThreeRhombusSumsinaGrid {
 
                     x1 = i - r; y1 = j;
                     x2 = i; y2 = j + r;
-                    sum+= presum1[x2][y2] - ((x1 - 1 >= 0 && y1 - 1 >= 0) ? presum1[x1 - 1][y1 - 1] : 0);
+                    sum += presum1[x2][y2] - ((x1 - 1 >= 0 && y1 - 1 >= 0) ? presum1[x1 - 1][y1 - 1] : 0);
 
                     x1 = i; y1 = j - r;
                     x2 = i + r; y2 = j;
-                    sum+= presum1[x2][y2] - ((x1 - 1 >= 0 && y1 - 1 >= 0) ? presum1[x1 - 1][y1 - 1] : 0);
+                    sum += presum1[x2][y2] - ((x1 - 1 >= 0 && y1 - 1 >= 0) ? presum1[x1 - 1][y1 - 1] : 0);
 
                     x1 = i - r; y1 = j;
                     x2 = i; y2 = j - r;
@@ -143,4 +143,5 @@ public class LC1878_GetBiggestThreeRhombusSumsinaGrid {
 /**
  * 以中心点来枚举所有可能的菱形 => O(m * n * m * n) 暴力解
  * 优化：区间和 -> 用前缀和数组
+ * 如何高效的遍历菱形 => 遍历中心，然后确定4个顶点来走
  */

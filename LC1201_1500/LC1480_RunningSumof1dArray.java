@@ -18,14 +18,8 @@ public class LC1480_RunningSumof1dArray {
      */
     // time = O(n), space = O(1)
     public int[] runningSum(int[] nums) {
-        // corner case
-        if (nums == null || nums.length == 0) return new int[0];
-
-        int[] res = new int[nums.length];
-        res[0] = nums[0];
-        for (int i = 1; i < nums.length; i++) {
-            res[i] = res[i - 1] + nums[i];
-        }
-        return res;
+        int n = nums.length;
+        for (int i = 0; i < n; i++) nums[i] += i == 0 ? 0 : nums[i - 1];
+        return nums;
     }
 }

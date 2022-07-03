@@ -25,24 +25,12 @@ public class LC532_KdiffPairsinanArray {
     // S1: Two Pointers
     // time = O(nlogn), space = O(n) -> from sort
     public int findPairs(int[] nums, int k) {
-        // corner case
-        if (nums == null || nums.length == 0) return 0;
-
         Arrays.sort(nums);
-
-        int n = nums.length, count = 0;
-        int i = 0, j = 1;
-
-        while (j < n) {
-            if (nums[i] + k == nums[j]) {
-                count++;
-                while (i < n - 1 && nums[i] == nums[i + 1]) i++;
-                i++;
-                j = i + 1;
-            } else if (nums[i] + k < nums[j]) {
-                i++;
-                j = i + 1;
-            } else j++;
+        int n = nums.length, j = 0, count = 0;
+        for (int i = 0; i < n; i++) {
+            while (i + 1 < n && nums[i] == nums[i + 1]) i++;
+            while (j < i && nums[i] - nums[j] > k) j++;
+            if (j < i && nums[i] - nums[j] == k) count++;
         }
         return count;
     }

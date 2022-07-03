@@ -37,38 +37,35 @@ public class LC572_SubtreeofAnotherTree {
     }
 
     // S2: KMP
+    // time = O(n), space = O(n)
     public boolean isSubtree2(TreeNode root, TreeNode subRoot) {
         List<Integer> s = new ArrayList<>();
         List<Integer> t = new ArrayList<>();
         convert(root, s);
         convert(subRoot, t);
-        // s: target, t: pattern
-        int[] suf = preprocess(t);
-
-        int n = s.size();
-        int[] dp = new int[n];
-        dp[0] = t.get(0).equals(s.get(0)) ? 1 : 0;
-        // dp[i]: the max length k s.t. t[0:k-1] = s[i-k+1:i]
-        for (int i = 1; i < n; i++) {
-            int j = dp[i - 1];
-
-            while (j > 0 && !t.get(j).equals(s.get(i))) j = suf[j - 1];
-            dp[i] = j + (t.get(j).equals(s.get(i)) ? 1 : 0);
-            if (dp[i] == t.size()) return true;
-        }
-        return false;
+        return kmp(s, t);
     }
 
-    private int[] preprocess(List<Integer> t) {
-        int n = t.size();
-        int[] dp = new int[n];
-        dp[0] = 0;
-        for (int i = 1; i < n; i++) {
-            int j = dp[i - 1];
-            while (j > 0 && !t.get(j).equals(t.get(i))) j = dp[j - 1];
-            dp[i] = j + (t.get(j).equals(t.get(i)) ? 1 : 0);
+    private boolean kmp(List<Integer> s, List<Integer> p) {
+        int m = s.size(), n = p.size();
+        s.add(0, -1);
+        p.add(0, -1);
+
+        int[] ne = new int[n + 1];
+        int j = 0;
+        for (int i = 2; i <= n; i++) {
+            while (j > 0 && !p.get(i).equals(p.get(j + 1))) j = ne[j];
+            if (p.get(i).equals(p.get(j + 1))) j++;
+            ne[i] = j;
         }
-        return dp;
+
+        j = 0;
+        for (int i = 1; i <= m; i++) {
+            while (j > 0 && !s.get(i).equals(p.get(j + 1))) j = ne[j];
+            if (s.get(i).equals(p.get(j + 1))) j++;
+            if (j == n) return true;
+        }
+        return false;
     }
 
     private void convert(TreeNode node, List<Integer> arr) {

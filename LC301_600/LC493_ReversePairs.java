@@ -167,5 +167,9 @@ public class LC493_ReversePairs {
  * 分治法和归并排序在一起用 => 返回的时候排个序
  * 变有序有什么帮助：用二分法(logn)找出逆序对，方便我们在做additional work时就变得非常高效
  * 拆分最多是logn层
+ *
+ * i,j都在左边 -> 递归
+ * i,j都在右边 -> 递归
+ * i在左，j在右
  */
 

@@ -16,6 +16,7 @@ public class LC52_NQueensII {
      * @param n
      * @return
      */
+    // S1
     // time = O(n!), space = O(n)
     private int res = 0;
     public int totalNQueens(int n) {
@@ -42,5 +43,32 @@ public class LC52_NQueensII {
             if (Math.abs(queens[pos] - queens[i]) == Math.abs(pos - i)) return false;
         }
         return true;
+    }
+
+    // S2:
+    // time = O(n!), space = O(n)
+    int n;
+    boolean[] col, dg, udg;
+    public int totalNQueens2(int n) {
+        this.n = n;
+        col = new boolean[n];
+        dg = new boolean[2 * n];
+        udg = new boolean[2 * n];
+
+        return dfs(0);
+    }
+
+    private int dfs(int u) {
+        if (u == n) return 1;
+
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (!col[i] && !dg[u - i + n] && !udg[u + i]) {
+                col[i] = dg[u - i + n] = udg[u + i] = true;
+                res += dfs(u + 1);
+                col[i] = dg[u - i + n] = udg[u + i] = false;
+            }
+        }
+        return res;
     }
 }

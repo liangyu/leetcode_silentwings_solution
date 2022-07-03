@@ -32,4 +32,23 @@ public class LC1461_CheckIfaStringContainsAllBinaryCodesofSizeK {
         }
         return set.size() == Math.pow(2, k);
     }
+
+    // S2: rolling hash
+    // time = O(n), space = O(2^k)
+    public boolean hasAllCodes2(String s, int k) {
+        int m = 1 << k;
+        boolean[] st = new boolean[m];
+        int hash = 0, n = s.length();
+        int allOne = m - 1;
+
+        for (int i = 0; i < n; i++) {
+            hash = ((hash << 1) & allOne) | (s.charAt(i) - '0');
+            if (i >= k - 1 && !st[hash]) {
+                st[hash] = true;
+                m--;
+                if (m == 0) return true;
+            }
+        }
+        return false;
+    }
 }

@@ -79,6 +79,34 @@ public class LC798_SmallestRotationwithHighestScore {
         }
         return res;
     }
+
+    // S3:
+    // time = O(n), space = O(n)
+    public int bestRotation3(int[] nums) {
+        int n = nums.length;
+        int[] b = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            int l = i - nums[i] + 1, r = i;
+            if (l >= 0) {
+                b[l]++;
+                b[r + 1]--;
+            } else {
+                b[0]++;
+                b[r + 1]--;
+                b[l + n]++;
+                b[n]--;
+            }
+        }
+        int res = Integer.MAX_VALUE, k = 0, sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += b[i];
+            if (res > sum) {
+                res = sum;
+            }
+                k = i;
+        }
+        return k;
+    }
 }
 /**
  *    A[i]

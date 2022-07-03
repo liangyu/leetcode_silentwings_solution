@@ -24,27 +24,22 @@ public class LC1423_MaximumPointsYouCanObtainfromCards {
      * @param k
      * @return
      */
+    // time = O(n), space = O(n)
     public int maxScore(int[] cardPoints, int k) {
-        // corner case
-        if (cardPoints == null || cardPoints.length == 0 || k <= 0) return 0;
-
         int n = cardPoints.length;
-        int sum = 0;
-        for (int c : cardPoints) sum += c;
+        int[] presum = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            presum[i] = presum[i - 1] + cardPoints[i - 1];
+        }
+        int[] sufsum = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            sufsum[i] = sufsum[i - 1] + cardPoints[n - i];
+        }
 
         int res = 0;
         for (int i = 0; i <= k; i++) {
-            int window = calSum(cardPoints, i, i + n - k - 1);
-            res = Math.max(res, sum - window);
+            res = Math.max(res, presum[i] + sufsum[k - i]);
         }
         return res;
-    }
-
-    private int calSum(int[] nums, int start, int end) {
-        int sum = 0;
-        for (int i = start; i <= end; i++) {
-            sum += nums[i];
-        }
-        return sum;
     }
 }

@@ -38,6 +38,36 @@ public class LC341_FlattenNestedListIterator {
         return !stack.isEmpty();
     }
 
+    // S2: dfs
+    // time = O(n), space = O(n)
+    public class NestedIterator implements Iterator<Integer> {
+        List<Integer> nums;
+        int k;
+        public NestedIterator(List<NestedInteger> nestedList) {
+            nums = new ArrayList<>();
+            k = 0;
+
+            for (NestedInteger x : nestedList) dfs(x);
+        }
+
+        @Override
+        public Integer next() {
+            return nums.get(k++);
+        }
+
+        @Override
+        public boolean hasNext() {
+            return k < nums.size();
+        }
+
+        private void dfs(NestedInteger x) {
+            if (x.isInteger()) nums.add(x.getInteger());
+            else {
+                for (NestedInteger next : x.getList()) dfs(next);
+            }
+        }
+    }
+
     /**
      * // This is the interface that allows for creating nested lists.
      * // You should not implement it, or speculate about its implementation

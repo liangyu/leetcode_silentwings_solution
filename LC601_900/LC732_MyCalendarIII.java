@@ -25,7 +25,8 @@ public class LC732_MyCalendarIII {
      * 0 <= start < end <= 10^9
      * At most 400 calls will be made to book.
      */
-    // time = O(nlogn), space = O(n)
+    // S1: TreeSet
+    // time = O(n^2), space = O(n)
     private TreeSet<int[]> diff; // 自动排序，但是会自动去重，所以加上一个idx累加来区分两个值相同的端点加入到set里
     private int idx = 0;
     public LC732_MyCalendarIII() {
@@ -33,9 +34,8 @@ public class LC732_MyCalendarIII {
     }
 
     public int book(int start, int end) {
-        diff.add(new int[]{start, 1, idx++});
+        diff.add(new int[]{start, 1, idx++}); // 注意：这里加1个idx来区分多个相同的start，比如例子中有2个10和2个5都是作为start!!!
         diff.add(new int[]{end, -1, idx++});
-        // System.out.println(diff.size() + " " + idx);
 
         int count = 0, res = 0;
         for (int[] x : diff) {
@@ -43,6 +43,27 @@ public class LC732_MyCalendarIII {
             res = Math.max(res, count);
         }
         return res;
+    }
+
+    // S2: TreeMap
+    class MyCalendarThree {
+        // time = O(n^2), space = O(n)
+        TreeMap<Integer, Integer> map;
+        public MyCalendarThree() {
+            map = new TreeMap<>();
+        }
+
+        public int book(int start, int end) {
+            map.put(start, map.getOrDefault(start, 0) + 1);
+            map.put(end, map.getOrDefault(end, 0) - 1);
+
+            int sum = 0, res = 0;
+            for (int v : map.values()) {
+                sum += v;
+                res = Math.max(sum, res);
+            }
+            return res;
+        }
     }
 }
 /**

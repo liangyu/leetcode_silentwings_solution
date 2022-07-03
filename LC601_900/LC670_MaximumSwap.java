@@ -36,6 +36,30 @@ public class LC670_MaximumSwap {
         }
         return num;
     }
+
+    // S2
+    // time = O(n), space = O(n)
+    public int maximumSwap2(int num) {
+        char[] chars = String.valueOf(num).toCharArray();
+        int n = chars.length;
+        for (int i = 0; i < n - 1; i++) {
+            if (chars[i] < chars[i + 1]) {
+                int k = i + 1;
+                for (int j = k; j < n; j++) {
+                    if (chars[j] >= chars[k]) k = j;
+                }
+                for (int j = 0; j < n; j++) {
+                    if (chars[j] < chars[k]) {
+                        char t = chars[j];
+                        chars[j] = chars[k];
+                        chars[k] = t;
+                        return Integer.parseInt(String.valueOf(chars));
+                    }
+                }
+            }
+        }
+        return num;
+    }
 }
 /**
  * 最高位与最大值交换

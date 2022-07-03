@@ -41,4 +41,41 @@ public class LC43_MultiplyStrings {
         }
         return sb.length() == 0 ? "0" : sb.toString();
     }
+
+    // S2:
+    // time = O(m * n), space = O(m + n)
+    public String multiply2(String num1, String num2) {
+        int m = num1.length(), n = num2.length();
+        int[] nums1 = new int[m];
+        int[] nums2 = new int[n];
+        int[] res = new int[m + n];
+
+        for (int i = m - 1; i >= 0; i--) {
+            nums1[m - 1 - i] = num1.charAt(i) - '0';
+        }
+
+        for (int j = n - 1; j >= 0; j--) {
+            nums2[n - 1 - j] = num2.charAt(j) - '0';
+        }
+
+        for (int i = m - 1; i >= 0; i--) {
+            for (int j = n - 1; j >= 0; j--) {
+                res[i + j] += nums1[i] * nums2[j];
+            }
+        }
+
+        int t = 0;
+        for (int i = 0; i < res.length; i++) {
+            t += res[i];
+            res[i] = t % 10;
+            t /= 10;
+        }
+
+        int k = res.length - 1;
+        while (k > 0 && res[k] == 0) k--; // 注意：这里是 k > 0，只能删除前导0， 最后一个0不能删，因为可能结果就是0！
+
+        StringBuilder sb = new StringBuilder();
+        while (k >= 0) sb.append(res[k--]);
+        return sb.toString();
+    }
 }

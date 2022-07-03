@@ -93,46 +93,48 @@ public class LC399_EvaluateDivision {
     // S2: Union Find
     // time = O(m + n) * logn, space = O(n)
     HashMap<String, String> parent;
-    HashMap<String, Double> vals;
+    HashMap<String, Double> dist;
     public double[] calcEquation2(List<List<String>> equations, double[] values, List<List<String>> queries) {
         parent = new HashMap<>();
-        vals = new HashMap<>();
-        double[] res = new double[queries.size()];
+        dist = new HashMap<>();
 
-        for (int i = 0; i < values.length; i++) {
-            union(equations.get(i).get(0), equations.get(i).get(1), values[i]);
+        int n = equations.size();
+        for (int i = 0; i < n; i++) {
+            String a = equations.get(i).get(0);
+            String b = equations.get(i).get(1);
+            double c = values[i];
+
+            parent.putIfAbsent(a, a);
+            parent.putIfAbsent(b, b);
+
+            if (!findParent(a).equals(findParent(b))) union(a, b, c);
         }
-        for (int i = 0; i < queries.size(); i++){
-            String x = queries.get(i).get(0), y = queries.get(i).get(1);
-            if (parent.containsKey(x) && parent.containsKey(y) && findParent(x) == findParent(y)) {
-                res[i] = vals.get(x) / vals.get(y);
-            } else res[i] = -1.0;
+
+        int m = queries.size();
+        double[] res = new double[m];
+        for (int i = 0; i < m; i++) {
+            String a = queries.get(i).get(0);
+            String b = queries.get(i).get(1);
+            if (!parent.containsKey(a) || !parent.containsKey(b) || !findParent(a).equals(findParent(b))) res[i] = -1.0;
+            else res[i] = dist.getOrDefault(a, 1.0) / dist.getOrDefault(b, 1.0);
         }
         return res;
     }
 
-    private void add(String x) {
-        if (parent.containsKey(x)) return;
-        parent.put(x, x);
-        vals.put(x, 1.0);
-    }
-
     private String findParent(String x) {
-        String p = parent.getOrDefault(x, x);
-        if (x != p) {
-            String pp = findParent(p);
-            vals.put(x, vals.get(x) * vals.get(p));
-            parent.put(x, pp);
+        if (!x.equals(parent.getOrDefault(x, x))) {
+            String p = parent.getOrDefault(x, x);
+            parent.put(x, findParent(p));
+            dist.put(x, dist.getOrDefault(x, 1.0) * dist.getOrDefault(p, 1.0));
         }
         return parent.getOrDefault(x, x);
     }
 
     private void union(String x, String y, double v) {
-        add(x);
-        add(y);
-        String px = findParent(x), py = findParent(y);
+        String px = parent.getOrDefault(x, x);
+        String py = parent.getOrDefault(y, y);
         parent.put(px, py);
-        vals.put(px, v * vals.get(y) / vals.get(x));
+        dist.put(px, v / dist.getOrDefault(x, 1.0) * dist.getOrDefault(y, 1.0));
     }
 
     // S3: Floyd

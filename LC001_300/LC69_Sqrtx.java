@@ -18,16 +18,12 @@ public class LC69_Sqrtx {
      */
     // time = O(logn), space = O(1)
     public int mySqrt(int x) {
-        // corner case
-        if (x <= 1) return x;
-
-        int start = 1, end = x / 2;
-        while (start <= end) {
-            int mid = start + (end - start) / 2;
-            if (mid <= x / mid && mid + 1 > x / (mid + 1)) return mid;
-            else if (mid > x / mid) end = mid - 1;
-            else start = mid + 1;
+        int l = 0, r = x;
+        while (l < r) {
+            int mid = r - (r - l) / 2;
+            if (mid <= x / mid) l = mid;
+            else r = mid - 1;
         }
-        return -1;
+        return l;
     }
 }

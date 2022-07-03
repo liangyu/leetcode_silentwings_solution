@@ -47,6 +47,7 @@ public class LC642_DesignSearchAutocompleteSystem {
      * @param sentences
      * @param times
      */
+    // S1: PriorityQueue
     // time = O(nlogn), space = O(n)
     HashMap<String, Integer> map;
     StringBuilder sb;
@@ -92,6 +93,75 @@ public class LC642_DesignSearchAutocompleteSystem {
         public Pair(String name, int freq) {
             this.word = name;
             this.freq =freq;
+        }
+    }
+
+    // S2: Trie
+    class AutocompleteSystem {
+        TrieNode root, cur;
+        StringBuilder sb;
+        boolean flag;
+        // time = O(n^2 * k), space = O(n * k)
+        public AutocompleteSystem(String[] sentences, int[] times) {
+            root = new TrieNode();
+            cur = root;
+            sb = new StringBuilder();
+            flag = true;
+
+            int n = times.length;
+            for (int i = 0; i < n; i++) add(root, sentences[i], 0, times[i]); // O(n)
+        }
+        // time = O(n * k), space = O(n * k)
+        public List<String> input(char c) {
+            List<String> res = new ArrayList<>();
+            sb.append(c);
+            if (c == '#') {
+                sb.setLength(sb.length() - 1);
+                add(root, sb.toString(), 0, 1); // O(n * k)
+                sb = new StringBuilder();
+                cur = root;
+                flag = true;
+                return res;
+            } else if (!flag) return res;
+            else if (cur.next[c] == null) {
+                flag = false;
+                return res;
+            } else {
+                cur = cur.next[c];
+                for (Pair x : cur.set) { // O(3)
+                    res.add(x.word);
+                    if (res.size() == 3) break;
+                }
+                return res;
+            }
+        }
+
+        private void add(TrieNode node, String sentence, int i, int freq) { // O(n * k)
+            if (i == sentence.length()) return;
+
+            char c = sentence.charAt(i);
+            if (node.next[c] == null) node.next[c] = new TrieNode();
+            node = node.next[c];
+            // check if the node.set already has the same pair element
+            int f = 0;
+            for (Pair x : node.set) {  // O(n)
+                if (x.word.equals(sentence)) {
+                    f = x.freq;
+                    break;
+                }
+            }
+            if (f != 0) node.set.remove(new Pair(sentence, f)); // O(logn)
+            node.set.add(new Pair(sentence, f + freq)); // O(logn)
+            add(node, sentence, i + 1, freq);
+        }
+
+        private class TrieNode {
+            private TrieNode[] next;
+            private TreeSet<Pair> set;
+            public TrieNode() {
+                this.next = new TrieNode[128];
+                this.set = new TreeSet<>((o1, o2) -> o1.freq != o2.freq ? o2.freq - o1.freq : o1.word.compareTo(o2.word));
+            }
         }
     }
 }

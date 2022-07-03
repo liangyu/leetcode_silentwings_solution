@@ -77,4 +77,47 @@ public class LC468_ValidateIPAddress {
         }
         return true;
     }
+
+    // S2
+    // time = O(1), space = O(1)
+    public String validIPAddress2(String ip) {
+        if (ip.contains(".") && ip.contains(":")) return "Neither";
+        if (ip.contains(".")) return check_ipv4(ip);
+        if (ip.contains(":")) return check_ipv6(ip);
+        return "Neither";
+    }
+
+    private String check_ipv4(String ip) {
+        String[] items = ip.split("\\.");
+        if (items.length != 4 || ip.charAt(ip.length() - 1) == '.') return "Neither";
+        for (String item : items) {
+            if (item.length() == 0 || item.length() > 3) return "Neither";
+            if (item.length() > 1 && item.charAt(0) == '0') return "Neither";
+            for (char c : item.toCharArray()) {
+                if (!Character.isDigit(c)) return "Neither";
+            }
+            int t = Integer.parseInt(item);
+            if (t > 255) return "Neither";
+        }
+        return "IPv4";
+    }
+
+    private String check_ipv6(String ip) {
+        String[] items = ip.split(":");
+        if (items.length != 8 || ip.charAt(ip.length() - 1) == ':') return "Neither";
+        for (String item : items) {
+            if (item.length() == 0 || item.length() > 4) return "Neither";
+            for (char c : item.toCharArray()) {
+                if (!check(c)) return "Neither";
+            }
+        }
+        return "IPv6";
+    }
+
+    private boolean check(char c) {
+        if (Character.isDigit(c)) return true;
+        if (c >= 'a' && c <= 'f') return true;
+        if (c >= 'A' && c <= 'F') return true;
+        return false;
+    }
 }

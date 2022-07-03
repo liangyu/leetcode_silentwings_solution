@@ -34,6 +34,7 @@ public class LC1825_FindingMKAverage {
      * @param m
      * @param k
      */
+    // S1
     // time = O(nlogn), space = O(n)
     int m, k;
     TreeMap<Integer, Integer> left, mid, right;
@@ -150,6 +151,95 @@ public class LC1825_FindingMKAverage {
         a.put(x, a.get(x) - 1);
         if (a.get(x) == 0) a.remove(x);
     }
+
+    // S2: 平衡树
+    // time = O(nlogn), space = O(n)
+    class MKAverage {
+        Range L, M, R;
+        int m, k;
+        List<Integer> q;
+        public MKAverage(int m, int k) {
+            L = new Range();
+            M = new Range();
+            R = new Range();
+            this.m = m;
+            this.k = k;
+            q = new ArrayList<>();
+        }
+
+        public void addElement(int num) {
+            q.add(num);
+            if (q.size() < m) return;
+            if (q.size() == m) {
+                List<Integer> w = new ArrayList<>(q);
+                Collections.sort(w);
+                for (int i = 0; i < k; i++) L.insert(w.get(i));
+                for (int i = k; i < m - k; i++) M.insert(w.get(i));
+                for (int i = m - k; i < m; i++) R.insert(w.get(i));
+            } else {
+                M.insert(num);
+                if (L.map.lastKey() > M.map.firstKey()) {
+                    int x = M.map.firstKey();
+                    int y = L.map.lastKey();
+                    M.remove(x);
+                    L.insert(x);
+                    L.remove(y);
+                    M.insert(y);
+                }
+                if (M.map.lastKey() > R.map.firstKey()) {
+                    int x = M.map.lastKey();
+                    int y = R.map.firstKey();
+                    M.remove(x);
+                    R.insert(x);
+                    R.remove(y);
+                    M.insert(y);
+                }
+
+                num = q.get(q.size() - 1 - m);
+                if (M.map.containsKey(num)) M.remove(num);
+                else if (L.map.containsKey(num)) {
+                    L.remove(num);
+                    int x = M.map.firstKey();
+                    M.remove(x);
+                    L.insert(x);
+                } else {
+                    R.remove(num);
+                    int x = M.map.lastKey();
+                    M.remove(x);
+                    R.insert(x);
+                }
+            }
+        }
+
+        public int calculateMKAverage() {
+            if (q.size() < m) return -1;
+            int size = 0;
+            for (int val : M.map.values()) size += val;
+            return (int)(M.sum / size);
+        }
+
+        private class Range {
+            private TreeMap<Integer, Integer> map;
+            private long sum;
+            public Range() {
+                map = new TreeMap<>();
+                sum = 0;
+            }
+
+            private void insert(int x) {
+                map.put(x, map.getOrDefault(x, 0) + 1);
+                sum += x;
+            }
+
+            private void remove(int x) {
+                if (!map.containsKey(x)) return;
+                map.put(x, map.get(x) - 1);
+                if (map.get(x) == 0) map.remove(x);
+                sum -= x;
+            }
+        }
+    }
+
 }
 /**
  * ref: LC295

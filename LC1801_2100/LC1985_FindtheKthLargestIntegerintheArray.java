@@ -38,7 +38,7 @@ public class LC1985_FindtheKthLargestIntegerintheArray {
         return pq.poll();
     }
 
-    // S2: sort (最优解！）
+    // S2: sort
     // time = O(nlogn), space = O(n)
     public String kthLargestNumber2(String[] nums, int k) {
         // corner case
@@ -46,5 +46,37 @@ public class LC1985_FindtheKthLargestIntegerintheArray {
 
         Arrays.sort(nums, (o1, o2) -> o1.length() == o2.length() ? o1.compareTo(o2) : o1.length() - o2.length());
         return nums[nums.length - k];
+    }
+
+    // S3: quick select (最优解！）
+    // time = O(n * k), space = O(n)
+    public String kthLargestNumber3(String[] nums, int k) {
+        return quickselect(nums, 0, nums.length - 1, k);
+    }
+
+    private String quickselect(String[] nums, int a, int b, int k) {
+        String pivot = nums[a + (b - a) / 2];
+        int i = a, j = b, t = a;
+        while (t <= j) {
+            if (helper(nums[t], pivot) < 0) swap(nums, t++, i++);
+            else if (helper(nums[t], pivot) > 0) swap(nums, t, j--);
+            else t++;
+        }
+
+        if (b - j >= k) return quickselect(nums, j + 1, b, k);
+        if (b - i + 1 >= k) return pivot;
+        return quickselect(nums, a, i - 1, k - (b - i + 1));
+    }
+
+    private void swap(String[] nums, int i, int j) {
+        String t = nums[i];
+        nums[i] = nums[j];
+        nums[j] = t;
+    }
+
+    private int helper(String s, String t) {
+        int m = s.length(), n = t.length();
+        if (m != n) return m > n ? 1 : -1;
+        return s.compareTo(t);
     }
 }

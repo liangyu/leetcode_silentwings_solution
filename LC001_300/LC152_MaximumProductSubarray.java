@@ -25,16 +25,18 @@ public class LC152_MaximumProductSubarray {
         // corner case
         if (nums == null || nums.length == 0) return 0;
 
-        int res = nums[0];
-        int max = nums[0];
-        int min = nums[0];
-
-        for (int i = 1; i < nums.length; i++) {
-            int temp = max;
-            max = Math.max(Math.max(max * nums[i], min * nums[i]), nums[i]);
-            min = Math.min(Math.min(temp * nums[i], min * nums[i]), nums[i]);
-            res = Math.max(res, max);
+        int res = nums[0], f = nums[0], g = nums[0];
+        int n = nums.length;
+        for (int i = 1; i < n; i++) {
+            int a = nums[i], fa = f * a, ga = g * a;
+            f = Math.max(a, Math.max(fa, ga));
+            g = Math.min(a, Math.min(fa, ga));
+            res = Math.max(res, f);
         }
         return res;
     }
 }
+/**
+ * f(i-1):最大  -> f(i)  ai > 0 => ai * f(i-1); ai < 0 => ai * g(i-1); ai == 0 => 0
+ * g(i-1):最小 -> g(i)  ai > 0 => ai * g(i-1); ai < 0 => ai * f(i-1)
+ */

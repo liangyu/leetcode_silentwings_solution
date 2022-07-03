@@ -1,5 +1,5 @@
 package LC301_600;
-import java.util.Random;
+import java.util.*;
 public class LC398_RandomPickIndex {
     /**
      * Given an integer array nums with possible duplicates, randomly output the index of a given target number. You
@@ -25,6 +25,7 @@ public class LC398_RandomPickIndex {
      * At most 10^4 calls will be made to pick.
      * @param nums
      */
+    // S1: Reservoir Sampling (TLE!)
     int[] nums;
     Random random;
     public LC398_RandomPickIndex(int[] nums) {
@@ -41,6 +42,27 @@ public class LC398_RandomPickIndex {
             if (random.nextInt(k) == 0) x = i;
         }
         return x;
+    }
+
+    // S2: HashMap
+    class Solution {
+        HashMap<Integer, List<Integer>> map;
+        Random random = new Random();
+        public Solution(int[] nums) {
+            map = new HashMap<>();
+            int n = nums.length;
+            for (int i = 0; i < n; i++) {
+                map.putIfAbsent(nums[i], new ArrayList<>());
+                map.get(nums[i]).add(i);
+            }
+        }
+
+        // time = O(n), space = O(1)
+        public int pick(int target) {
+            if (!map.containsKey(target)) return -1;
+            int r = random.nextInt(map.get(target).size());
+            return map.get(target).get(r);
+        }
     }
 }
 /**

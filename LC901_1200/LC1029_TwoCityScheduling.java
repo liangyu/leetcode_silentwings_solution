@@ -38,47 +38,14 @@ public class LC1029_TwoCityScheduling {
         return dp[n / 2][n / 2];
     }
 
-    // S2: Greedy
+    // S2: Greedy (最优解!)
     // time = O(nlogn), space = O(1)
     public int twoCitySchedCost2(int[][] costs) {
-        Arrays.sort(costs, (o1, o2) -> Math.abs(o1[0] - o1[1]) - Math.abs(o2[0] - o2[1]));
+        Arrays.sort(costs, (o1, o2) -> (o1[0] - o1[1]) - (o2[0] - o2[1]));
 
-        int n = costs.length, res = 0, countA = 0, countB = 0;
-        for (int i = n - 1; i >= 0; i--) {
-            int a = costs[i][0], b = costs[i][1];
-            if (a < b) {
-                if (countA < n / 2) {
-                    res += a;
-                    countA++;
-                } else {
-                    res += b;
-                    countB++;
-                }
-            } else {
-                if (countB < n / 2) {
-                    res += b;
-                    countB++;
-                } else {
-                    res += a;
-                    countA++;
-                }
-            }
-        }
-        return res;
-    }
-
-    // S3: Greedy (最优解!)
-    // time = O(nlogn), space = O(1)
-    public int twoCitySchedCost3(int[][] costs) {
-        int n = costs.length, res = 0;
-        int[] diff = new int[n];
-        for (int i = 0; i < n; i++) {
-            res += costs[i][0];
-            diff[i] = costs[i][1] - costs[i][0];
-        }
-
-        Arrays.sort(diff);
-        for (int i = 0; i < n / 2; i++) res += diff[i]; // 补最小的n/2差价，选择b！
+        int n = costs.length / 2, res = 0;
+        for (int i = 0; i < n; i++) res += costs[i][0];
+        for (int i = n; i < 2 * n; i++) res += costs[i][1];
         return res;
     }
 }

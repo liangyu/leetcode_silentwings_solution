@@ -54,6 +54,28 @@ public class LC10_RegularExpressionMatching {
         }
         return dp[m][n];
     }
+
+    // S2: DP
+    // time = O(m * n), space = O(m * n)
+    public boolean isMatch2(String s, String p) {
+        int m = s.length(), n = p.length();
+        s = "#" + s;
+        p = "#" + p;
+        boolean[][] f = new boolean[m + 1][n + 1];
+        f[0][0] = true;
+
+        for (int i = 0; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (j + 1 <= n && p.charAt(j + 1) == '*') continue;
+                if (p.charAt(j) != '*') {
+                    f[i][j] = i > 0 && f[i - 1][j - 1] && (s.charAt(i) == p.charAt(j) || p.charAt(j) == '.');
+                } else {
+                    f[i][j] = f[i][j - 2] || i > 0 && f[i - 1][j] && (s.charAt(i) == p.charAt(j - 1) || p.charAt(j - 1) == '.');
+                }
+            }
+        }
+        return f[m][n];
+    }
 }
 /**
  * dp[i][j]: whether s[0: i] and p[0:j] are matched
@@ -80,4 +102,15 @@ public class LC10_RegularExpressionMatching {
  *     dp[i][j] = (s[i] == p[j - 1] || p[j - 1] == '.') && dp[i - 1][j] || dp[i][j - 2];
  * }
  *
+ * 动态规划：
+ * 状态表示 f[i,j]:
+ * 1. 集合：所有s[1:i]和p[1:j]的匹配方案
+ * 2. 属性：boolean 是否存在一个合法方案
+ * 状态计算：
+ * p[j] != '*'   (s[i] == p[j] || p[j] == '.') && f[i-1, j-1]
+ * p[j] == '*'  j 表示多少个字符?
+ * 0个字符： f[i,j-2]
+ * 1个字符: f[i-1,j-2] && s[i] == p[j]
+ * 2个字符：f[i-2,j-2] && s[i] == p[j] && s[i-1] == p[j-1]
+ * => f[i,j] = f[i,j-2] || f[i-1,j] && (s[i] == p[j])
  */

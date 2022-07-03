@@ -18,6 +18,7 @@ public class LC968_BinaryTreeCameras {
      * @param root
      * @return
      */
+    // S1
     // time = O(n), space = O(n)
     int res = 0;
     public int minCameraCover(TreeNode root) {
@@ -39,8 +40,36 @@ public class LC968_BinaryTreeCameras {
         if (left == 2 && right == 2) return 0;
         return 2; // case: (1, 2) or (1, 1) -> 2
     }
+
+    // S2: 树形dp
+    // time = O(n), space = O(n)
+    public int minCameraCover2(TreeNode root) {
+        int[] res = helper(root);
+        return Math.min(res[1], res[2]);
+    }
+
+    private int[] helper(TreeNode node) {
+        if (node == null) return new int[]{0, 0, Integer.MAX_VALUE / 2};
+
+        int[] l = helper(node.left);
+        int[] r = helper(node.right);
+
+        // case 1: node 被父节点看 -> 子节点a,b只能被子节点和自己看
+        int v1 = Math.min(l[1], l[2]) + Math.min(r[1], r[2]);
+        // case 2: node 被子节点看 -> 子节点a自己看自己，b被自己或子节点看；b自己看自己，a被自己或者子节点看
+        int v2 = Math.min(l[2] + Math.min(r[1], r[2]), r[2] + Math.min(l[1], l[2]));
+        // case 3: node 被自己看 -> 子节点被父节点，子节点或者自己看都可以
+        int v3 = Math.min(l[0], Math.min(l[1], l[2])) + Math.min(r[0], Math.min(r[1], r[2])) + 1;
+        return new int[]{v1, v2, v3};
+    }
 }
 /**
+ * f(u, 0): u 被父节点看
+ * f(u, 1): u 被子节点看
+ * f(u, 2): u 被自己看
+ * f(u,0) = min{f(a,1), f(a,2)} + min{f(b,1), f(b,2)}
+ * f(u,1) = min{f(a,2) + min{f(b, 1~2)}， f(b,2) + min{f(a, 1~2)}}
+ * f(u,2) = min{f(a, 0~2) + min{f(b, 0~2)}}
  * 0: uncovered
  * 1: covered with camera
  * 2: covered without camera

@@ -17,6 +17,7 @@ public class LC46_Permutations {
      * @param nums
      * @return
      */
+    // S1: swap
     // time = O(n * n!), space = O(n)
     public List<List<Integer>> permute(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
@@ -47,6 +48,40 @@ public class LC46_Permutations {
         int temp = nums[i];
         nums[i] = nums[j];
         nums[j] = temp;
+    }
+
+    // S2: dfs
+    // time = O(n * n!), space = O(n)
+    class Solution {
+        List<List<Integer>> res;
+        List<Integer> path;
+        boolean[] visited;
+        int n;
+        public List<List<Integer>> permute(int[] nums) {
+            n = nums.length;
+            res = new ArrayList<>();
+            path = new ArrayList<>();
+            visited = new boolean[n];
+
+            dfs(nums, 0);
+            return res;
+        }
+
+        private void dfs(int[] nums, int idx) {
+            if (idx == n) {
+                res.add(new ArrayList<>(path));
+                return;
+            }
+
+            for (int i = 0; i < n; i++) {
+                if (visited[i]) continue;
+                visited[i] = true;
+                path.add(nums[i]);
+                dfs(nums, idx + 1);
+                path.remove(path.size() - 1);
+                visited[i] = false;
+            }
+        }
     }
 }
 

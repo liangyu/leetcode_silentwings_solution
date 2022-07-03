@@ -92,6 +92,26 @@ public class LC376_WiggleSubsequence {
         }
         return Math.max(dp[now][0], dp[now][1]);
     }
+
+    // S4: Greedy
+    // time = O(n), space = O(n)
+    public int wiggleMaxLength4(int[] nums) {
+        List<Integer> q = new ArrayList<>();
+        q.add(nums[0]);
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] == nums[i - 1]) continue;
+            q.add(nums[i]);
+        }
+        int m = q.size();
+        if (m <= 2) return m;
+
+        int res = 2;
+        for (int i = 1; i + 1 < m; i++) {
+            int a = q.get(i - 1), b = q.get(i), c = q.get(i + 1);
+            if (a < b && b > c || a > b && b < c) res++;
+        }
+        return res;
+    }
 }
 
 /**
@@ -104,4 +124,7 @@ public class LC376_WiggleSubsequence {
  * S2: DP
  * 如果之前是向上 => 后面向下才有帮助，如果依然向上则没有帮助，长度 q = p + 1
  * 同样，如果之前是向下 => 新增向上，就得到一个更长的wiggle sequence，p = q + 1
+ *
+ * 1. 取出连续相同的数
+ * 2.
  */

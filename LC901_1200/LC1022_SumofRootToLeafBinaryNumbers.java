@@ -39,18 +39,19 @@ public class LC1022_SumofRootToLeafBinaryNumbers {
 
     // S2: dfs
     // time = O(n), space = O(n)
-    int res = 0;
     public int sumRootToLeaf2(TreeNode root) {
-        preorder(root, 0);
-        return res;
+        if (root == null) return 0;
+
+        return helper(root, 0);
     }
 
-    private void preorder(TreeNode node, int cur) {
-        if (node == null) return;
+    private int helper(TreeNode node, int val) {
+        val = val * 2 + node.val;
+        if (node.left == null && node.right == null) return val;
 
-        cur = (cur << 1) | node.val;
-        if (node.left == null && node.right == null) res += cur;
-        preorder(node.left, cur);
-        preorder(node.right, cur);
+        int res = 0;
+        if (node.left != null) res += helper(node.left, val);
+        if (node.right != null) res += helper(node.right, val);
+        return res;
     }
 }

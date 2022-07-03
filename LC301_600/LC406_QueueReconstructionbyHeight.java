@@ -22,6 +22,7 @@ public class LC406_QueueReconstructionbyHeight {
      * @param people
      * @return
      */
+    // S1
     // time = O(nlogn), space = O(n)
     public int[][] reconstructQueue(int[][] people) {
         Arrays.sort(people, (o1, o2) -> o1[0] != o2[0] ? o2[0] - o1[0] : o1[1] - o2[1]);
@@ -35,9 +36,42 @@ public class LC406_QueueReconstructionbyHeight {
                 res.add(pos, people[i]);
             }
         }
-        int[][] ans = new int[n][2];
-        for (int i = 0; i < n; i++) ans[i] = res.get(i);
-        return ans;
+        return res.toArray(new int[res.size()][]);
+    }
+
+    // S2: BIT
+    // time = O(nlogn), space = O(n)
+    int n;
+    int[] tr;
+    public int[][] reconstructQueue2(int[][] people) {
+        n = people.length;
+        tr = new int[n + 1];
+
+        Arrays.sort(people, (o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o2[1] - o1[1]);
+
+        int[][] res = new int[n][2];
+        for (int[] p : people) {
+            int h = p[0], k = p[1];
+            int l = 1, r = n;
+            while (l < r) {
+                int mid = l + (r - l) / 2;
+                if (mid - query(mid) >= k + 1) r = mid;
+                else l = mid + 1;
+            }
+            res[l - 1] = p;
+            add(l, 1);
+        }
+        return res;
+    }
+
+    private void add(int x, int v) {
+        for (int i = x; i <= n; i += i & -i) tr[i] += v;
+    }
+
+    private int query(int x) {
+        int res = 0;
+        for (int i = x; i > 0; i -= i & -i) res += tr[i];
+        return res;
     }
 }
 /**
@@ -48,4 +82,9 @@ public class LC406_QueueReconstructionbyHeight {
  * 当处理某人时，所有比他高的都已经处理完了，然后将该人放在第k+1个位置即可。
  * 他的插入不会对之前那些“高人”的排名产生任何的影响。依次类推处理完所有的人。
  * 这里，当有两个人的身高相同怎么办呢？先处理k小的，他优先插入，优先得到更靠前的位置。
+ *
+ * 1. 排序： 身高 h inc  k dec
+ * 2. 对(h,k) 从前往后找到第1个空位，使得当前空位前面有k个空位
+ * 二分 mid
+ * 树状数组 O(logn)^2
  */

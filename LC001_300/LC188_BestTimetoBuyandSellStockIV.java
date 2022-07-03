@@ -23,41 +23,43 @@ public class LC188_BestTimetoBuyandSellStockIV {
      * @return
      */
     // S1: dp
-    // time = O(n * k), space = (n * k)
+    // time = O(n * k), space = O(k)
     public int maxProfit(int k, int[] prices) {
-        // corner case
-        if (prices == null || prices.length == 0 || k <= 0) return 0;
-
         int n = prices.length;
-        if (k >= n / 2) return helper(prices);
+        if (k >= n / 2) {
+            int res = 0;
+            for (int i = 0; i < n - 1; i++) {
+                res += Math.max(0, prices[i + 1] - prices[i]);
+            }
+            return res;
+        }
 
-        int[][] dp = new int[k + 1][n];
-        for (int i = 1; i <= k; i++) {
-            int max = -prices[0];
-            for (int j = 1; j < n; j++) {
-                dp[i][j] = Math.max(dp[i][j - 1], prices[j] + max);
-                max = Math.max(max, dp[i - 1][j - 1] - prices[j]);
+        int[] hold = new int[k + 1];
+        int[] sold = new int[k + 1];
+        Arrays.fill(hold, Integer.MIN_VALUE / 2);
+        Arrays.fill(sold, Integer.MIN_VALUE / 2);
+        hold[0] = 0;
+        sold[0] = 0;
+
+        for (int i = 0; i < n; i++) {
+            int[] hold_tmp = hold.clone();
+            int[] sold_tmp = sold.clone();
+            for (int j = 1; j <= k; j++) {
+                hold[j] = Math.max(hold_tmp[j], sold_tmp[j - 1] - prices[i]);
+                sold[j] = Math.max(sold_tmp[j], hold_tmp[j] + prices[i]);
             }
         }
-        return dp[k][n - 1];
-    }
 
-    private int helper(int[] prices) {
-        int n = prices.length, res = 0;
-        for (int i = 1; i < n; i++) {
-            if (prices[i] > prices[i - 1]) {
-                res += prices[i] - prices[i - 1];
-            }
-        }
+        int res = Integer.MIN_VALUE;
+        for (int j = 0; j <= k; j++) res = Math.max(res, sold[j]);
         return res;
     }
 
     // S2: 状态机dp
     // time = O(n * k), space = O(k)
     public int maxProfit2(int k, int[] prices) {
-        int n = prices.length;
+        int n = prices.length, res = 0;
         if (k >= n / 2) { // 等价于可以交易无限次
-            int res = 0;
             for (int i = 0; i < n - 1; i++) {
                 if (prices[i + 1] > prices[i]) {
                     res += prices[i + 1] - prices[i];
@@ -70,14 +72,12 @@ public class LC188_BestTimetoBuyandSellStockIV {
         int[] g = new int[k + 1]; // hold
         Arrays.fill(f, Integer.MIN_VALUE / 2);
         Arrays.fill(g, Integer.MIN_VALUE / 2);
-
         f[0] = 0;
 
-        int res = 0;
         for (int i = 1; i <= n; i++) {
-            for (int j = k; j >= 0; j--) {
+            for (int j = k; j > 0; j--) {
                 f[j] = Math.max(f[j], g[j] + prices[i - 1]);
-                if (j > 0) g[j] = Math.max(g[j], f[j - 1] - prices[i - 1]);
+                g[j] = Math.max(g[j], f[j - 1] - prices[i - 1]);
                 res = Math.max(res, f[j]);
             }
         }
@@ -129,8 +129,8 @@ public class LC188_BestTimetoBuyandSellStockIV {
  * time = O(nk)
  * for (int i = 0; i < n; i++)
  *      for (int k = 0; k <= K; k++)
- *          sold[i][k] = max{sold[i-1][k], hold[i-1][k-1]+prices[i]}
- *          hold[i][k] = max{hold[i-1][k], sold[i-1][k]-prices[i]}   注意当前交易尚未闭环(买了还没卖),所以i-1的卖还是k次操作！！！
+ *          sold[i][k] = max{sold[i-1][k], hold[i-1][k]+prices[i]}
+ *          hold[i][k] = max{hold[i-1][k], sold[i-1][k-1]-prices[i]}   注意当前交易尚未闭环(买了还没卖),所以i-1的卖还是k次操作！！！
  * max{sold[n-1][k]} for k = 0, 1, 2, ...k
  * 最后一天不可能是hold,否则肯定是亏的，还不如不买呢！所以最后一天只要看sold即可，但不一定是交易k次利润最大！
  *

@@ -47,4 +47,32 @@ public class LC76_MinimumWindowSubstring {
         }
         return min == Integer.MAX_VALUE ? "" : s.substring(start, start + min);
     }
+
+    // S2: HashMap + two pointers
+    // time = O(n), space = O(1)
+    public String minWindow2(String s, String t) {
+        HashMap<Character, Integer> hs = new HashMap<>();
+        HashMap<Character, Integer> ht = new HashMap<>();
+
+        for (char c : t.toCharArray()) ht.put(c, ht.getOrDefault(c, 0) + 1);
+
+        String res = "";
+        int m = s.length(), n = t.length();
+        int cnt = 0, j = 0;
+        for (int i = 0; i < m; i++) { // i: right pointer
+            char c = s.charAt(i);
+            hs.put(c, hs.getOrDefault(c, 0) + 1);
+            if (hs.get(c) <= ht.getOrDefault(c, 0)) cnt++;
+
+            while (j < m && hs.getOrDefault(s.charAt(j), 0) > ht.getOrDefault(s.charAt(j), 0)) {
+                c = s.charAt(j);
+                hs.put(c, hs.get(c) - 1);
+                j++;
+            }
+            if (cnt == n) {
+                if (res.length() == 0 || i - j + 1 < res.length()) res = s.substring(j, i + 1);
+            }
+        }
+        return res;
+    }
 }

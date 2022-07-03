@@ -23,24 +23,15 @@ public class LC1991_FindtheMiddleIndexinArray {
      * @param nums
      * @return
      */
+    // time = O(n), space = O(1)
     public int findMiddleIndex(int[] nums) {
-        // corner case
-        if (nums == null || nums.length == 0) return 0;
+        int sum = 0;
+        for (int x : nums) sum += x;
 
-        int n = nums.length, sum = 0;
-        HashMap<Integer, Integer> map = new HashMap<>();
-        map.put(-1, 0);
-        map.put(n, 0);
-
+        int n = nums.length, cur = 0;
         for (int i = 0; i < n; i++) {
-            sum += nums[i];
-            map.put(i, sum);
-        }
-
-        for (int i = 0; i < n; i++) {
-            int left = map.get(i) - nums[i];
-            int right = map.get(n - 1) - map.get(i);
-            if (left == right) return i;
+            if (cur == sum - cur - nums[i]) return i;
+            cur += nums[i];
         }
         return -1;
     }
