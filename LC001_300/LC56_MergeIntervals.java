@@ -78,6 +78,24 @@ public class LC56_MergeIntervals {
         }
         return ans;
     }
+
+    // S3
+    // time = O(nlogn), space = O(n)
+    final int INF = Integer.MIN_VALUE;
+    public int[][] merge3(int[][] intervals) {
+        Arrays.sort(intervals, (o1, o2) -> o1[0] - o2[0]);
+        List<int[]> res = new ArrayList<>();
+        int st = INF, ed = INF;
+        for (int[] x : intervals) {
+            if (ed < x[0]) {
+                if (st != INF) res.add(new int[]{st, ed});
+                st = x[0];
+                ed = x[1];
+            } else ed = Math.max(ed, x[1]);
+        }
+        if (st != INF) res.add(new int[]{st, ed});
+        return res.toArray(new int[res.size()][]);
+    }
 }
 /**
  * 扫描线的解法

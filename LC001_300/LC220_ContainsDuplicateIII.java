@@ -98,4 +98,8 @@ public class LC220_ContainsDuplicateIII {
  * 如果这个窗口是有序的话，用二分法可以做
  * [j-k+1,j-1] 找到一个i，如果这些元素能自动排序就最好了 -> PriorityQueue / TreeSet  PQ只能保证出口的位置，剩下位置不是顺序的
  * => TreeSet
+ *
+ * 寻找与x最接近的数
+ * >= x  lowerbound
+ * <= x
  */

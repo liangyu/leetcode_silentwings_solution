@@ -24,6 +24,7 @@ public class LC134_GasStation {
      * @param cost
      * @return
      */
+    // S1
     // time = O(n), space = O(1)
     public int canCompleteCircuit(int[] gas, int[] cost) {
         int n = gas.length, sum = 0, total = 0, res = 0;
@@ -37,6 +38,23 @@ public class LC134_GasStation {
         }
         return total < 0 ? -1 : res;
     }
+
+    // S2:
+    // time = O(n), space = O(1)
+    public int canCompleteCircuit2(int[] gas, int[] cost) {
+        int n = gas.length;
+        for (int i = 0; i < n; i++) {
+            int left = 0, j = 0;
+            for (j = 0; j < n; j++) {
+                int k = (i + j) % n;
+                left += gas[k] - cost[k];
+                if (left < 0) break;
+            }
+            if (j == n) return i;
+            i += j;
+        }
+        return -1;
+    }
 }
 /**
  *  非常经典的一道题。可以转换成求最大连续和做，但是有更简单的方法。基于一个数学定理：
@@ -48,4 +66,8 @@ public class LC134_GasStation {
  *  2. 现在突然发现开往位置j时油箱空了。这说明什么？说明从位置i开始没法走完全程(废话)。那么，我们要从位置i+1开始重新尝试吗？不需要！为什么？
  *  因为前面已经知道，位置i肯定是正积累，那么，如果从位置i+1开始走更加没法走完全程了，因为没有位置i的正积累了。
  *  同理，也不用从i+2，i+3，...开始尝试。所以我们可以放心地从位置j+1开始尝试。
+ *
+ *  AC1088 单调队列的通用解法
+ *  枚举+优化
+ *  枚举每个起点，然后去循环判断一遍
  */

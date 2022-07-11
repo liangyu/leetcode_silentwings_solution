@@ -22,24 +22,27 @@ public class LC230_KthSmallestElementinaBST {
      */
     // S1: dfs
     // time = O(n), space = O(n)
-    private int count = 0;
-    private int res = 0;
+    int k, res;
     public int kthSmallest(TreeNode root, int k) {
-        count = k;
-        helper(root);
+        this.k = k;
+        res = 0;
+        dfs(root);
         return res;
     }
 
-    private void helper(TreeNode root) {
-        if (root == null) return;
+    private boolean dfs(TreeNode node) {
+        if (node == null) return false;
 
-        helper(root.left);
-        count--;
-        if (count == 0) res = root.val;
-        helper(root.right);
+        if (dfs(node.left)) return true;
+        k--;
+        if (k == 0) {
+            res = node.val;
+            return true;
+        }
+        return dfs(node.right);
     }
 
-    // S2: bfs
+    // S2: stack
     // time = O(n), space = O(n)
     public int kthSmallest2(TreeNode root, int k) {
         Stack<TreeNode> stack = new Stack<>();
@@ -59,3 +62,11 @@ public class LC230_KthSmallestElementinaBST {
         return -1;
     }
 }
+/**
+ * 需要额外记录一个值，维护下以这个结点为根的子树里一共有多少个结点
+ * 可以在插入删除过程中维护的，就可以用logn的复杂度来做
+ * lc < k -> dfs 左子树
+ * lc == k + 1 -> root
+ * lc > k -> dfs 右子树
+ * 必须手写平衡树
+ */

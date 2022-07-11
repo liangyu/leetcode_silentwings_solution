@@ -29,6 +29,8 @@ public class LC676_ImplementMagicDictionary {
      * buildDict will be called only once before search.
      * At most 100 calls will be made to search.
      */
+    // S1
+    // time = O(nl + ql), space = O(nl)  n: dict长度, l: 字符串长度，q: search调用次数，
     TrieNode root;
     public LC676_ImplementMagicDictionary() {
         root = new TrieNode();
@@ -77,6 +79,52 @@ public class LC676_ImplementMagicDictionary {
         public TrieNode() {
             this.next = new TrieNode[26];
             this.isEnd = false;
+        }
+    }
+
+    // S2: Trie
+    // time = O(nl + ql), space = O(nl)  n: dict长度, l: 字符串长度，q: search调用次数，
+    class MagicDictionary {
+        final int N = 10010;
+        int[][] son;
+        boolean[] is_end;
+        int idx;
+
+        public MagicDictionary() {
+            son = new int[N][26];
+            is_end = new boolean[N];
+            idx = 0;
+        }
+
+        public void buildDict(String[] dictionary) {
+            for (String s : dictionary) insert(s);
+        }
+
+        public boolean search(String searchWord) {
+            return dfs(searchWord, 0, 0, 0);
+        }
+
+        private boolean dfs(String s, int p, int u, int c) {
+            if (is_end[p] && u == s.length() && c == 1) return true;
+            if (c > 1 || u == s.length()) return false;
+
+            for (int i = 0; i < 26; i++) {
+                if (son[p][i] == 0) continue;
+                if (dfs(s, son[p][i], u + 1, c + (s.charAt(u) - 'a' != i ? 1 : 0))) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void insert(String s) {
+            int p = 0;
+            for (char c : s.toCharArray()) {
+                int u = c - 'a';
+                if (son[p][u] == 0) son[p][u] = ++idx;
+                p = son[p][u];
+            }
+            is_end[p] = true;
         }
     }
 }

@@ -238,6 +238,56 @@ public class LC1473_PaintHouseIII {
         }
         return res == Integer.MAX_VALUE / 2 ? -1 : res;
     }
+
+    // S4: DP
+    // time = O(m * n^2 * t), space = O(m * n * t)
+    public int minCost4(int[] houses, int[][] cost, int m, int n, int target) {
+        int[][][] f = new int[m][target + 1][n + 1];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j <= target;j++) {
+                Arrays.fill(f[i][j], Integer.MAX_VALUE / 2);
+            }
+        }
+
+        if (houses[0] != 0) {
+            f[0][1][houses[0]] = 0;
+        } else {
+            for (int i = 1; i <= n; i++) {
+                f[0][1][i] = cost[0][i - 1];
+            }
+        }
+
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j <= target; j++) {
+                if (houses[i] != 0) {
+                    int k = houses[i];
+                    for (int u = 1; u <= n; u++) {
+                        if (u == k) {
+                            f[i][j][k] = Math.min(f[i][j][k], f[i - 1][j][u]);
+                        } else {
+                            f[i][j][k] = Math.min(f[i][j][k], f[i - 1][j - 1][u]);
+                        }
+                    }
+                } else {
+                    for (int k = 1; k <= n; k++) {
+                        for (int u = 1; u <= n; u++) {
+                            if (u == k) {
+                                f[i][j][k] = Math.min(f[i][j][k], f[i - 1][j][u] + cost[i][k - 1]);
+                            } else {
+                                f[i][j][k] = Math.min(f[i][j][k], f[i - 1][j - 1][u] + cost[i][k - 1]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        int res = Integer.MAX_VALUE / 2;
+        for (int i = 1; i <= n; i++) {
+            res = Math.min(res, f[m - 1][target][i]);
+        }
+        return res == Integer.MAX_VALUE / 2 ? -1 : res;
+    }
 }
 /**
  * dp[i][j][k]: the min cost when we paint the first i houses to form j neighborhoods and tthe i-th house is pained with color k
@@ -250,4 +300,16 @@ public class LC1473_PaintHouseIII {
  *          for prevState = ...
  *              dp[i][j][k] = max(dp[prevState])
  * 所有的关注点都在前一个，无后效性 -> dp
+ *
+ * S4:
+ * dp:
+ * 状态表示f(i,j,k)
+ * 1. 集合：将1~i染完色构成了j段且第i个房子的颜色为k的所有方案的集合
+ * 2. 属性：最小花费
+ * f(m-1,target,i)  i: 1~n -> min
+ * 状态计算：f(i,j,k)
+ * 枚举倒数第二个房子的颜色，分成n类
+ * 取min
+ * u = k  => f(i-1, j, u) + cost(i,k)
+ * u != k => f(i-1,j-1,u) + cost(i,k)
  */

@@ -34,6 +34,7 @@ public class LC460_LFUCache {
      * At most 2 * 10^5 calls will be made to get and put.
      * @param capacity
      */
+    // S1: LinkedHashSet
     // time = O(1), space = O(n)  n: capacity
     HashMap<Integer, Integer> map;
     HashMap<Integer, Integer> count;
@@ -64,7 +65,7 @@ public class LC460_LFUCache {
 
     public void put(int key, int value) {
         // corner case
-        if (capacity <= 0) return; // be careful about thsi corner case! capacity might be 0!!!
+        if (capacity <= 0) return; // be careful about this corner case! capacity might be 0!!!
 
         if (map.containsKey(key)) {
             map.put(key, value);
@@ -83,5 +84,107 @@ public class LC460_LFUCache {
         minCount = 1;
         lists.putIfAbsent(1, new LinkedHashSet<>());
         lists.get(1).add(key);
+    }
+
+    // S2: Double LinkedList
+    // time = O(1), space = O(n)  n: capacity
+    class LFUCache {
+        Block head, tail;
+        int n;
+        HashMap<Integer, Block> hash_block;
+        HashMap<Integer, Node> hash_node;
+        public LFUCache(int capacity) {
+            n = capacity;
+            hash_block = new HashMap<>();
+            hash_node = new HashMap<>();
+            head = new Block(0);
+            tail = new Block(Integer.MAX_VALUE);
+            head.right = tail;
+            tail.left = head;
+        }
+
+        public int get(int key) {
+            if (!hash_block.containsKey(key)) return -1;
+            Block block = hash_block.get(key);
+            Node node = hash_node.get(key);
+            block.remove(node);
+            if (block.right.cnt != block.cnt + 1) insert(block);
+            block.right.insert(node);
+            hash_block.put(key, block.right);
+            if (block.empty()) remove(block);
+            return node.val;
+        }
+
+        public void put(int key, int value) {
+            if (n == 0) return;
+            if (hash_block.containsKey(key)) {
+                hash_node.get(key).val = value;
+                get(key);
+            } else {
+                if (hash_block.size() == n) {
+                    Node p = head.right.tail.left;
+                    head.right.remove(p);
+                    if (head.right.empty()) remove(head.right);
+                    hash_block.remove(p.key);
+                    hash_node.remove(p.key);
+                }
+                Node p = new Node(key, value);
+                if (head.right.cnt > 1) insert(head);
+                head.right.insert(p);
+                hash_block.put(key, head.right);
+                hash_node.put(key, p);
+            }
+        }
+
+        private void insert(Block p) {  // 在p的右侧插入新块，cnt是p.cnt + 1
+            Block cur = new Block(p.cnt + 1);
+            cur.right = p.right;
+            p.right.left = cur;
+            p.right = cur;
+            cur.left = p;
+        }
+
+        private void remove(Block p) {
+            p.left.right = p.right;
+            p.right.left = p.left;
+        }
+
+        private class Node {
+            private int key, val;
+            private Node left, right;
+            public Node(int key, int val) {
+                this.key = key;
+                this.val = val;
+            }
+        }
+
+        private class Block {
+            private Block left, right;
+            private Node head, tail;
+            private int cnt;
+            public Block(int cnt) {
+                this.cnt = cnt;
+                head = new Node(-1, -1);
+                tail = new Node(-1, -1);
+                head.right = tail;
+                tail.left = head;
+            }
+
+            private void insert(Node p) {
+                p.right = head.right;
+                head.right.left = p;
+                p.left = head;
+                head.right = p;
+            }
+
+            private void remove(Node p) {
+                p.left.right = p.right;
+                p.right.left = p.left;
+            }
+
+            private boolean empty() {
+                return head.right == tail;
+            }
+        }
     }
 }

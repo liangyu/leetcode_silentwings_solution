@@ -28,59 +28,54 @@ public class LC146_LRUCache {
      * @param capacity
      */
     // time = O(1), space = O(k)   k: capacity
-    HashMap<Integer, Node> map;
     Node head, tail;
-    int size, capacity;
+    HashMap<Integer, Node> map;
+    int n;
     public LC146_LRUCache(int capacity) {
         map = new HashMap<>();
-        head = new Node(0, 0);
-        tail = new Node(0, 0);
+        n = capacity;
+        head = new Node(-1, -1);
+        tail = new Node(-1, -1);
         head.next = tail;
         tail.prev = head;
-        this.size = 0;
-        this.capacity = capacity;
     }
 
     public int get(int key) {
         if (!map.containsKey(key)) return -1;
-
-        Node node = map.get(key);
-        moveToHead(node);
-        return node.val;
+        Node p = map.get(key);
+        remove(p);
+        insert(p);
+        return p.val;
     }
 
     public void put(int key, int value) {
-        if (!map.containsKey(key)) {
-            Node node = new Node(key, value);
-            if (size < capacity) size++;
-            else {
-                Node lastNode = tail.prev;
-                lastNode.prev.next = tail;
-                tail.prev = lastNode.prev;
-                map.remove(lastNode.key);
-            }
-            map.put(key, node);
-            moveToHead(node);
+        if (map.containsKey(key)) {
+            Node p = map.get(key);
+            p.val = value;
+            remove(p);
+            insert(p);
         } else {
-            Node node = map.get(key);
-            node.val = value;
-            map.put(key, node);
-            moveToHead(node);
+            if (map.size() == n) {
+                Node p = tail.prev;
+                map.remove(p.key);
+                remove(p);
+            }
+            Node p = new Node(key, value);
+            insert(p);
+            map.put(key, p);
         }
     }
 
-    private void moveToHead(Node node) {
-        // remove the node
-        Node prev = node.prev;
-        Node next = node.next;
-        if (prev != null) prev.next = next;
-        if (next != null) next.prev = prev;
+    private void remove(Node p) {
+        p.prev.next = p.next;
+        p.next.prev = p.prev;
+    }
 
-        // move to head
-        node.next = head.next;
-        node.prev = head;
-        head.next.prev = node;
-        head.next = node;
+    private void insert(Node p) {
+        p.next = head.next;
+        p.prev = head;
+        head.next.prev = p;
+        head.next = p;
     }
 
     private class Node {

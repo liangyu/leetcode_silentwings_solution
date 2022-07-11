@@ -80,4 +80,6 @@ public class LC114_FlattenBinaryTreetoLinkedList {
 /**
  * flattern就是拉直的过程，这个命令是可以重复利用的。
  * 注意边界条件，如果左边为空的话，要单独考虑！
+ * 1. 存在左子树，将左子树的右链插入当前结点右边
+ * 2. 否则遍历到右儿子
  */

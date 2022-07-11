@@ -29,26 +29,16 @@ public class LC376_WiggleSubsequence {
     // S1: Greedy
     // time = O(n), space = O(1)
     public int wiggleMaxLength(int[] nums) {
-        // corner case
-        if (nums == null || nums.length == 0) return 0;
-
-        int ret = 1, dir = -2; // dir 预设为一个特殊值，不干扰之后判断是否为拐点
-
-        for (int i = 1; i < nums.length; i++) {
+        // res初始值为1，因为后面出现一段斜率变化之后，res = 2 => 初始值为1
+        int n = nums.length, res = 1, dir = -2;
+        for (int i = 1; i < n; i++) {
             int dir_prev = dir;
-
-            if (nums[i] > nums[i - 1]) {
-                dir = 1;
-            } else if (nums[i] < nums[i - 1]) {
-                dir = -1;
-            } else { // dir = 0
-                dir = dir_prev;
-            }
-            if (dir != dir_prev) { // nums[i] 是拐点
-                ret += 1;
-            }
+            if (nums[i] > nums[i - 1]) dir = 1;
+            else if (nums[i] < nums[i - 1]) dir = -1;
+            else dir = dir_prev; // 遇到平的，就追随之前的斜率。
+            if (dir != dir_prev) res++; // 出现正负交替的时候，才能算一个拐点
         }
-        return ret;
+        return res;
     }
 
     // S2: DP
@@ -115,7 +105,7 @@ public class LC376_WiggleSubsequence {
 }
 
 /**
- * 找出原数组所有的拐点
+ * 贪心：找出原数组所有的拐点
  * 拐点定义 + -> -, - -> +
  * 如果是0的话，就继承上一个斜率的正负，不会出现0
  * 只有出现正负交替的时候，才算拐点
@@ -124,7 +114,4 @@ public class LC376_WiggleSubsequence {
  * S2: DP
  * 如果之前是向上 => 后面向下才有帮助，如果依然向上则没有帮助，长度 q = p + 1
  * 同样，如果之前是向下 => 新增向上，就得到一个更长的wiggle sequence，p = q + 1
- *
- * 1. 取出连续相同的数
- * 2.
  */

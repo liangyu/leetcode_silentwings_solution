@@ -24,6 +24,7 @@ public class LC1696_JumpGameVI {
      * @param k
      * @return
      */
+    // S1
     // time = O(n), space = O(n)
     public int maxResult(int[] nums, int k) {
         // corner case
@@ -40,6 +41,24 @@ public class LC1696_JumpGameVI {
             deque.offerLast(new int[]{curSteps, i});
         }
         return deque.peekLast()[0];
+    }
+
+    // S1.2
+    // time = O(n), space = O(n)
+    public int maxResult2(int[] nums, int k) {
+        int n = nums.length;
+        Deque<Integer> dq = new LinkedList<>();
+        int[] f = new int[n];
+        f[0] = nums[0];
+        dq.offerLast(0);
+
+        for (int i = 1; i < n; i++) {
+            if (dq.peekFirst() < i - k) dq.pollFirst();
+            f[i] = f[dq.peekFirst()] + nums[i];
+            while (!dq.isEmpty() && f[dq.peekLast()] <= f[i]) dq.pollLast();
+            dq.offerLast(i);
+        }
+        return f[n - 1];
     }
 }
 /**

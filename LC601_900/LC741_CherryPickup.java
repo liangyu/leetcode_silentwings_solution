@@ -29,6 +29,7 @@ public class LC741_CherryPickup {
      * @param grid
      * @return
      */
+    // S1
     // time = O(n^3), space = O(n^3)
     public int cherryPickup(int[][] grid) {
         // corner case
@@ -71,6 +72,38 @@ public class LC741_CherryPickup {
         }
         return Math.max(0, dp[n][n][n]); // if Integer.MIN_VALUE -> unreachable!
     }
+
+    // S2
+    // time = O(n^3), space = O(n^3)
+    public int cherryPickup2(int[][] grid) {
+        int n = grid.length;
+        int[][][] f = new int[n + 1][n + 1][2 * n + 1];
+
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= n; j++) {
+                Arrays.fill(f[i][j], Integer.MIN_VALUE);
+            }
+        }
+
+        if (grid[0][0] != -1) f[1][1][2] = grid[0][0];
+
+        for (int k = 3; k <= 2 * n; k++) {
+            for (int i = Math.max(1, k - n); i <= Math.min(k - 1, n); i++) {
+                for (int j = Math.max(1, k - n); j <= Math.min(k - 1, n); j++) {
+                    if (grid[i - 1][k - i - 1] == -1 || grid[j - 1][k - j - 1] == -1) continue;
+                    int t = grid[i - 1][k - i - 1];
+                    if (i != j) t += grid[j - 1][k - j - 1];
+
+                    for (int a = i - 1; a <= i; a++) {
+                        for (int b = j - 1; b <= j; b++) {
+                            f[i][j][k] = Math.max(f[i][j][k], f[a][b][k - 1] + t);
+                        }
+                    }
+                }
+            }
+        }
+        return Math.max(0, f[n][n][2 * n]);
+    }
 }
 /**
  * for (int i = 0; i < n; i++) {
@@ -85,6 +118,13 @@ public class LC741_CherryPickup {
  * 在走了 t 步之后，我们可能处于的位置 (x, y) 满足 x + y = t。因此如果我们在位置 (x1, x1) 和 (x2, x2) 有两个人，
  * 那么 x2 = x1 + y1 - y2。这意味着 x1，y1，y2 唯一地决定了两个走了 t 步数的人。
  * as i + j = x + y  => y = i + j - x;
+ * i + j == x + y  走过的步数必定相等！！！
  *
  * 每条路径上的一对cell做一个状态
+ *
+ * 相当于走2次
+ * 如果某个格子被2次走到的话，只能取1次樱桃
+ * 按照步数来dp
+ * 枚举的是斜线
+ * f(i,j,k)
  */

@@ -19,32 +19,49 @@ public class LC777_SwapAdjacentinLRString {
      * @param end
      * @return
      */
-    // time = O(n), space = O(1)
+    // S1
+    // time = O(n), space = O(n)
     public boolean canTransform(String start, String end) {
-        String a = "", b = "";
+        StringBuilder sb1 = new StringBuilder(), sb2 = new StringBuilder();
         for (char c : start.toCharArray()) {
-            if (c != 'X') a += c;
+            if (c != 'X') sb1.append(c);
         }
-
         for (char c : end.toCharArray()) {
-            if (c != 'X') b += c;
+            if (c != 'X') sb2.append(c);
         }
+        if (!sb1.toString().equals(sb2.toString())) return false;
 
-        if (!a.equals(b)) return false;
-
-        int m = start.length(), n = end.length();
-
-        for (int i = 0, j = 0; i < m; i++, j++) {
-            while (i < m && start.charAt(i) != 'L') i++;
+        int n = start.length();
+        for (int i = 0, j = 0; i < n; i++, j++) {
+            while (i < n && start.charAt(i) != 'L') i++;
             while (j < n && end.charAt(j) != 'L') j++;
             if (i < j) return false;
         }
 
-
-        for (int i = 0, j = 0; i < m; i++, j++) {
-            while (i < m && start.charAt(i) != 'R') i++;
+        for (int i = 0, j = 0; i < n; i++, j++) {
+            while (i < n && start.charAt(i) != 'R') i++;
             while (j < n && end.charAt(j) != 'R') j++;
             if (i > j) return false;
+        }
+        return true;
+    }
+
+    // S2
+    // time = O(n), space = O(1)
+    public boolean canTransform2(String start, String end) {
+        int n = start.length(), j = 0;
+        for (int i = 0; i < n; i++) {
+            if (start.charAt(i) == 'X') continue;
+            while (j < n && end.charAt(j) == 'X') j++;
+            if (j == n) return false;
+            if (start.charAt(i) != end.charAt(j)) return false;
+            if (start.charAt(i) == 'L' && i < j) return false;
+            if (start.charAt(i) == 'R' && i > j) return false;
+            j++;
+        }
+
+        for (int i = j; i < n; i++) {
+            if (end.charAt(i) != 'X') return false;
         }
         return true;
     }
@@ -55,5 +72,7 @@ public class LC777_SwapAdjacentinLRString {
  * 必要条件：
  * 1. 删掉X后一定相等
  * 2. 从相对顺序上来看，L只能向左，R只能向右
- * 充分条件？
+ * 是否充分条件？是
+ * 只要满足这2个条件，一定能构造出来
+ * 给出一种构造方式
  */

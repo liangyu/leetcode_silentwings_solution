@@ -4,12 +4,14 @@ public class LC128_LongestConsecutiveSequence {
     /**
      * Given an unsorted array of integers nums, return the length of the longest consecutive elements sequence.
      *
+     * You must write an algorithm that runs in O(n) time.
+     *
      * Input: nums = [100,4,200,1,3,2]
      * Output: 4
      *
      * Constraints:
      *
-     * 0 <= nums.length <= 10^4
+     * 0 <= nums.length <= 10^5
      * -10^9 <= nums[i] <= 10^9
      * @param nums
      * @return
@@ -83,4 +85,10 @@ public class LC128_LongestConsecutiveSequence {
  * 挨个扫一遍，看我们的新元素是不是跟之前的数字会不会连着
  * 看这个数-1或者+1在不在里面
  * 找group最大的一个
+ *
+ * 并查集：
+ * 1.路径压缩
+ * 2.按秩合并
+ * 两个优化都加上，每一步才是O(1)的
+ * 否则并查集的时间复杂度是O(logn)
  */

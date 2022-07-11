@@ -55,4 +55,17 @@ public class LC3_LongestSubstringWithoutRepeatingCharacters {
         }
         return max;
     }
+
+    // S3
+    // time = O(n), space = O(1)
+    public int lengthOfLongestSubstring3(String s) {
+        int[] count = new int[128];
+        int n = s.length(), res = 0;
+        for (int i = 0, j = 0; i < n; i++) {
+            count[s.charAt(i)]++;
+            while (count[s.charAt(i)] > 1) count[s.charAt(j++)]--;
+            res = Math.max(res, i - j + 1);
+        }
+        return res;
+    }
 }

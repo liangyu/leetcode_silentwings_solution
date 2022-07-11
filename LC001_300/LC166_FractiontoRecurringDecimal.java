@@ -23,36 +23,26 @@ public class LC166_FractiontoRecurringDecimal {
      */
     // time = O(n), space = O(n)
     public String fractionToDecimal(int numerator, int denominator) {
-        long a = numerator, b = denominator;
-        if (a == 0) return "0";
-        int sign = 1;
-        if (a < 0) {
-            sign *= -1;
-            a = Math.abs(a);
-        }
-        if (b < 0) {
-            sign *= -1;
-            b = Math.abs(b);
-        }
+        long x = numerator, y = denominator;
+        if (x % y == 0) return String.valueOf(x / y);
 
         StringBuilder sb = new StringBuilder();
-        if (sign == -1) sb.append('-');
-        sb.append(a / b);
+        if ((x < 0) ^ (y < 0)) sb.append('-');
+        x = Math.abs(x);
+        y = Math.abs(y);
 
-        if (a % b == 0) return sb.toString();
-        else sb.append('.');
-
-        long c = a % b;
+        sb.append(x / y).append('.');
+        x %= y;
 
         HashMap<Long, Integer> map = new HashMap<>();
-        while (c != 0 && !map.containsKey(c)) {
-            map.put(c, sb.length());
-            sb.append(c * 10 / b);
-            c = c * 10 % b;
+        while (x != 0 && !map.containsKey(x)) {
+            map.put(x, sb.length());
+            x *= 10;
+            sb.append(x / y);
+            x %= y;
         }
-
-        if (c == 0) return sb.toString();
-        sb.insert(map.get(c), "(");
+        if (x == 0) return sb.toString();
+        sb.insert(map.get(x), "(");
         sb.append(')');
         return sb.toString();
     }
@@ -66,4 +56,7 @@ public class LC166_FractiontoRecurringDecimal {
  * 60/7 => 8  4    4
  * 40/7 => 5  5    5
  * 50/7 => 7  1    6
+ *
+ * 模拟下高精度除法
+ * 最多循环n次
  */

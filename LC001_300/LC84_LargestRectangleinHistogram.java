@@ -86,5 +86,4 @@ public class LC84_LargestRectangleinHistogram {
  *
  * 单调栈经典应用：
  * 求每个数左边第一个比它小的数
- * 
  */

@@ -48,4 +48,14 @@ public class LC158_ReadNCharactersGivenRead4IICallmultipletimes {
         }
         return j;
     }
+
+    // helper function
+    private int read4(char[] temp) {
+        char[] res = new char[4];
+        int index = 0;
+        for (int i = 0; i < temp.length; i++) {
+            res[index++] = temp[i];
+        }
+        return index;
+    }
 }

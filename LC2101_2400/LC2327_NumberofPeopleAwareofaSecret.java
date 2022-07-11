@@ -45,19 +45,51 @@ public class LC2327_NumberofPeopleAwareofaSecret {
     }
 
     // S2: dp
-    // time = O(n * k), space = O(n^2)
+    // time = O(n * k), space = O(n)
     public int peopleAwareOfSecret2(int n, int delay, int forget) {
+        long[] f = new long[n + 1];
         long M = (long)(1e9 + 7);
-        long[][] f = new long[n + 1][n + 1];
-        for (int i = 1; i <= forget; i++) f[1][i] = 1;
-        for (int i = 2; i <= n; i++) {
-            for (int j = 1; j <= forget; j++) {
-                if (j == 1) f[i][j] = (f[i - 1][forget - 1] - f[i - 1][delay - 1]) % M;
-                else f[i][j] = (f[i - 1][j - 1] - f[i - 1][j - 2]) % M;
-                f[i][j] = (f[i][j] + f[i][j - 1]) % M;
+        f[1] = 1;
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = i + delay; j < i + forget; j++) {
+                if (j > n) break;
+                f[j] += f[i];
+                f[j] %= M;
             }
         }
-        return (int)((f[n][forget] + M) % M);
+
+        long res = 0;
+        for (int i = 1; i <= n; i++) {
+            if (i + forget > n) {
+                res += f[i];
+                res %= M;
+            }
+        }
+        return (int) res;
+    }
+
+    // S3: dp + diff
+    // time = O(n), space = O(n)
+    public int peopleAwareOfSecret3(int n, int delay, int forget) {
+        long[] f = new long[n + 1];
+        long[] diff = new long[n + 1];
+        long M = (long)(1e9 + 7);
+        diff[1]++;
+        diff[2]--;
+        f[1] = 1;
+
+        for (int i = 1; i <= n; i++) {
+            f[i] = (f[i - 1] + diff[i] + M) % M;
+            if (i + delay <= n) diff[i + delay] += f[i];
+            if (i + forget <= n) diff[i + forget] -= f[i];
+        }
+
+        long res = 0;
+        for (int i = 1; i <= n; i++) {
+            if (i + forget > n) res = (res + f[i]) % M;
+        }
+        return (int) res;
     }
 }
 /**
@@ -80,4 +112,28 @@ public class LC2327_NumberofPeopleAwareofaSecret {
  * =>
  * j > 1: f[i,j] = f[i-1,j-1] - f[i-1,j-2]
  * j = 1: f[i,1] = f[i-1,b-1] - f[i-1,a-1]
+ *
+ * i-th day => [i+delay, i+forget]
+ * 差分 -> 线性，只要考虑前后端点的做法
+ * dp[i]: how many people affected in the i-th day
+ *        NewlyAffectly(i),  AlreadyAffected   -> 区分开来 [i+delay, i+forget-1]
+ * 确定新感染人数很重要 -> 增加一维
+ * 刚被感染 or 前面几天被感染 (老病患 / 新病患) 没办法区分
+ * 有多少人痊愈
+ * dp[i] + ... - NewlyAffected(i-forget)
+ * dp[i]: how many new people get affected in the i-th day
+ * dp[1] = 1
+ * for (int j = i + delay; j < i + forget; j++) {
+ *     dp[j] += dp[i]; // 每天都会新增加感染的人数
+ * }
+ * ret？ dp 不能问什么设什么
+ * 不关心是新感染的还是已经感染的
+ * 这一天感染人数依然在第n天处于感染状态
+ * for (int i = 1; i <= n; i++) {
+ *     if (i + delay > n) ret += dp[i];
+ * }
+ * dp[i] = ... f(existing dp[i-delay])
+ * dp[i] => update futrue dp[i+delay]
+ *
+ * diff[i] = dp[i] - dp[i - 1]
  */
